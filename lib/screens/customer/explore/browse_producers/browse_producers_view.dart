@@ -104,13 +104,13 @@ class _BrowseProducersScreenState extends State<BrowseProducersScreen> {
                     chipText: type,
                     chipColor: _getChipColor(type),
                     onRestaurantTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              RestaurantExploreDetails(tag: type),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) =>
+                      //         RestaurantExploreDetails(tag: type),
+                      //   ),
+                      // );
                     },
                   );
                 },

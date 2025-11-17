@@ -43,8 +43,10 @@ const String getEventsNearMeApiUrl = "$baseUrl/api/producer/event/getAllEvents";
 const String getEventsTypeApiUrl = "$baseUrl/api/producer/event/getEventTypes";
 const String nearByProducersApiUrl = "$baseUrl/api/producer/event/findNearbyProducer";
 const String getEventsByIdApiUrl = "$baseUrl/api/producer/event/getEventById";
+const String getEventsByProducerApiUrl = "$baseUrl/api/producer/event/getEventsByProducerId";
 const String deleteUserAccountApiUrl = "$baseUrl/api/app/profile/deleteProfile";
 const String deleteProducerAccountApiUrl = "$baseUrl/api/producer/profile/deleteProfile";
+const String getNonEventsByIdApiUrl = "$baseUrl/api/producer/event/getProfileById";
 
 
 
@@ -76,4 +78,7 @@ const String updateRestaurantSlotsApiUrl = "$baseUrl/api/producer/profile/update
 const String getUserBookingsApiUrl = "$baseUrl/api/producer/booking/getUserBookings";
 const String cancelBookingApiUrl = "$baseUrl/api/producer/booking/cancelBooking";
 const String checkInBookingApiUrl = "$baseUrl/api/producer/booking/checkIn";
+const String createEventBookingApiUrl = "$baseUrl/api/producer/booking/createBooking";
+const String createNonEventBookingApiUrl = "$baseUrl/api/app/booking/createBooking";
+const String getProducerBookingSlotsApiUrl = "$baseUrl/api/app/booking/getRestaurantSlots";
 
