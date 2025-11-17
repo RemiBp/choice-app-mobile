@@ -1,3 +1,4 @@
+import 'package:choice_app/screens/customer/explore/book_now/book_producer_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -16,6 +17,7 @@ import 'package:readmore/readmore.dart';
 import '../../../../customWidgets/shadow_icon.dart';
 import '../../../../l18n.dart';
 import '../../../../network/api_url.dart' as ApiUrl;
+import '../../../../res/toasts.dart';
 import '../book_now/book_now_view.dart';
 
 import 'non_event_details_provider.dart';
@@ -430,7 +432,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                               if (await canLaunchUrlString(url)) {
                                 await launchUrlString(url);
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Could not open link")));
+                                Toasts.getErrorToast(text:"Could not open link");
                               }
                             },
                             child: ShadowIcon(icon: Assets.websiteIcon, color: AppColors.getPrimaryColorFromContext(context)),
@@ -443,7 +445,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                               if (await canLaunchUrlString(url)) {
                                 await launchUrlString(url);
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Could not open link")));
+                                Toasts.getErrorToast(text:"Could not open link");
                               }
                             },
                             child: ShadowIcon(icon: Assets.instagramIcon, color: AppColors.getPrimaryColorFromContext(context)),
@@ -457,7 +459,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                               if (await canLaunchUrlString(url)) {
                                 await launchUrlString(url);
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Could not open link")));
+                                Toasts.getErrorToast(text:"Could not open link");
                               }
                             },
                             child: ShadowIcon(icon: Assets.xIcon, color: AppColors.getPrimaryColorFromContext(context)),
@@ -471,7 +473,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                               if (await canLaunchUrlString(url)) {
                                 await launchUrlString(url);
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Could not open link")));
+                                Toasts.getErrorToast(text:"Could not open link");
                               }
                             },
                             child: ShadowIcon(icon: Assets.facebookIcon, color: AppColors.getPrimaryColorFromContext(context)),
@@ -496,7 +498,13 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                   child: CustomButton(
                     buttonText: "Book A Reservation",
                     onTap: () {
-                     // Navigator.push(context, MaterialPageRoute(builder: (_) => BookNowScreen()));
+                      Navigator.push(context,
+                          MaterialPageRoute(
+                          builder: (_) => BookProducerView(
+                            producerId: producer.id.toString(),   //  pass it
+                          )
+                      )
+                      );
                     },
                     backgroundColor: AppColors.userPrimaryColor,
                     textColor: AppColors.whiteColor,

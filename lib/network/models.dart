@@ -12,6 +12,7 @@ import 'package:choice_app/models/get_gallery_image_response.dart';
 import 'package:choice_app/models/get_menu_categories_response.dart';
 import 'package:choice_app/models/get_menu_response.dart';
 import 'package:choice_app/models/get_non_events_details_response.dart';
+import 'package:choice_app/models/get_producer_booking_slots_response.dart';
 import 'package:choice_app/models/get_producer_operational_hours_response.dart';
 import 'package:choice_app/models/get_producer_places.dart';
 import 'package:choice_app/models/get_producer_profile_response.dart';
@@ -68,6 +69,8 @@ class Models {
   static const String getEventsDetailsModel = "GET_EVENTS_DETAILS_MODEL";
   static const String getMoreEventsByProducersModel = "MORE_EVENTS_BY_PRODUCER_MODEL";
   static const String getNonEventsDetailsModel = "GET_NON_EVENTS_DETAILS_MODEL";
+  static const String getProducerBookingSlotsModel = "GET_PRODUCER_BOOKING_SLOTS_MODEL";
+
 
 
 
@@ -136,6 +139,8 @@ class Models {
         return EventDetailsResponse.fromJson(json);
       case getNonEventsDetailsModel:
         return NonEventDetailsResponse.fromJson(json);
+      case getProducerBookingSlotsModel:
+        return ProducerBookingSlotsResponse.fromJson(json);
     }
   }
 }

@@ -108,7 +108,7 @@ class ExploreViewProvider extends ChangeNotifier {
       final response = await findNearbyProducers(
         latitude: 31.470404754490897,
         longitude: 74.38929248891314,
-        radius: 1200000000,
+        radius: 120000000000000000,
         keyword: "",
         producerType: typeForApi, // pass single category if provided
       );

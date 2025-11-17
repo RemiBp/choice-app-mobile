@@ -308,3 +308,43 @@ class PersonCounterWidget extends StatelessWidget {
   }
 }
 
+class InternalNotesField extends StatelessWidget {
+  final String hintText;
+  final TextEditingController? controller;
+  final Color? backgroundColor;
+  final Color? borderColor;
+
+  const InternalNotesField({
+    super.key,
+    this.controller,
+    this.hintText = "e.g. Please provide 2 baby chair...",
+    this.backgroundColor,
+    this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor ?? AppColors.whiteColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor ?? AppColors.greyBordersColor),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: 3,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: TextStyle(
+            color: AppColors.inputHintColor,
+            fontSize: sizes!.fontSize14,
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(14),
+        ),
+      ),
+    );
+  }
+}
+
+
