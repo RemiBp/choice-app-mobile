@@ -20,6 +20,7 @@ import '../../userRole/role_provider.dart';
 import '../../utilities/input_formatters.dart';
 import '../restaurant/profile/profile_provider.dart';
 import 'auth_provider.dart';
+import 'dart:io' show Platform;
 
 class UserSignup extends StatefulWidget {
   const UserSignup({super.key});
@@ -287,15 +288,22 @@ class _UserSignupState extends State<UserSignup> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SocialButton(
-                    buttonLabel: al.signupWithApple,
-                    svgString: Assets.appleIcon,
-                    onPress: () {},
+                  if(Platform.isIOS)...[
+                  Expanded(
+                    child: SocialButton(
+                      buttonLabel: al.signupWithApple,
+                      svgString: Assets.appleIcon,
+                      onPress: () {},
+                    ),
                   ),
-                  SocialButton(
-                    buttonLabel: al.signupWithGoogle,
-                    svgString: Assets.googleIcon,
-                    onPress: () {},
+                  SizedBox(width: 20,),
+                  ],
+                  Expanded(
+                    child: SocialButton(
+                      buttonLabel: al.signupWithGoogle,
+                      svgString: Assets.googleIcon,
+                      onPress: () {},
+                    ),
                   ),
                 ],
               ),
