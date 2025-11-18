@@ -113,17 +113,21 @@ class _HomeViewState extends State<HomeView> {
               SizedBox(height: getHeightRatio() * 16),
               UserOriginMapCard(),
               SizedBox(height: getHeightRatio() * 16),
+
               /// Role-based chart
               if (role == UserRole.restaurant) ...[
                 const CustomersChartCard(), // monthly
-              ] else if (role == UserRole.wellness || role == UserRole.leisure) ...[
+              ]
+              else if (role == UserRole.wellness || role == UserRole.leisure) ...[
                 WeeklyRatingsChartCard(), // weekly 0–5 chart
               ],
+
               SizedBox(height: getHeightRatio() * 16),
               const BookingChartCard(),
               SizedBox(height: getHeightRatio() * 16),
               const RepeatCustomersCard(),
               SizedBox(height: getHeightRatio() * 16),
+
               if (role == UserRole.restaurant) ...[
                 MostChosenDishCard(
                   header: al.mostChosenDish,
@@ -142,9 +146,6 @@ class _HomeViewState extends State<HomeView> {
                   bottomText: al.twoXMoreThanLiveMusic,
                 ),
               ],
-
-
-
               SizedBox(height: getHeightRatio() * 16),
               if (role == UserRole.restaurant) ...[
                 const DishDropAlertsCard(), // monthly

@@ -32,8 +32,11 @@ class Strings {
   static const String notificationToken = "notification_token";
   static const String selectedLocale = "selected_locale";
   static const String token = "token";
-
-
+  static const String instagram = "instagram";
+  static const String facebook = "facebook";
+  static const String twitter = "twitter";
+  static const String website = "website";
+  static const String description = "description";
 
   // static const String isSessionStarted = "is_session_started";
 
