@@ -30,7 +30,7 @@ class ExploreViewProvider extends ChangeNotifier {
       double lat = double.tryParse(latString ?? "") ?? 38.716900;
       double lng = double.tryParse(lngString ?? "") ?? -9.139000;
 
-      final url = "$getEventsNearMeApiUrl?lat=$lat&lng=$lng&radius=5";
+      final url = "$getEventsNearMeApiUrl?lat=$lat&lng=$lng&radius=1000000000000";
 
       debugPrint("📍 Calling GET: $url");
 
@@ -108,7 +108,7 @@ class ExploreViewProvider extends ChangeNotifier {
       final response = await findNearbyProducers(
         latitude: 31.470404754490897,
         longitude: 74.38929248891314,
-        radius: 12000,
+        radius: 120000000000000000,
         keyword: "",
         producerType: typeForApi, // pass single category if provided
       );

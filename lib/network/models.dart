@@ -7,22 +7,24 @@ import 'package:choice_app/models/get_all_service_types_response.dart';
 import 'package:choice_app/models/get_cuisine_types_response.dart';
 import 'package:choice_app/models/get_document_response.dart';
 import 'package:choice_app/models/get_event_types_response.dart';
+import 'package:choice_app/models/get_events_details_response.dart';
 import 'package:choice_app/models/get_gallery_image_response.dart';
 import 'package:choice_app/models/get_menu_categories_response.dart';
 import 'package:choice_app/models/get_menu_response.dart';
+import 'package:choice_app/models/get_non_events_details_response.dart';
+import 'package:choice_app/models/get_producer_booking_slots_response.dart';
 import 'package:choice_app/models/get_producer_operational_hours_response.dart';
 import 'package:choice_app/models/get_producer_places.dart';
 import 'package:choice_app/models/get_producer_profile_response.dart';
 
 import 'package:choice_app/models/get_producer_slots_response.dart';
 import 'package:choice_app/models/get_user_bookings_response.dart';
+import 'package:choice_app/models/more_events_by_producer_response.dart';
 import 'package:choice_app/models/producer_delete_document_response.dart';
 import 'package:choice_app/models/producer_delete_gallery_images_response.dart';
 import 'package:choice_app/models/producer_posts_response.dart';
 import 'package:choice_app/models/producer_update_document_response.dart';
 import 'package:choice_app/models/restaurant_update_profile_response.dart';
-import 'package:choice_app/network/api_url.dart';
-
 import '../models/error_model.dart';
 import '../models/get_producers_places_claim_response.dart';
 import '../models/near_by_producers_response.dart';
@@ -63,11 +65,18 @@ class Models {
   static const String getEventsNearMeModel = "GET_ALL_EVENTS_NEAR_ME_MODEL";
   static const String getEventsTypeModel = "GET_EVENTS_TYPE_MODEL";
   static const String getNearByProducersModel = "NEAR_BY_PRODUCERS_MODEL";
-
-
-
-
   static const String getBookingsModel = "GET_BOOKINGS_MODEL";
+  static const String getEventsDetailsModel = "GET_EVENTS_DETAILS_MODEL";
+  static const String getMoreEventsByProducersModel = "MORE_EVENTS_BY_PRODUCER_MODEL";
+  static const String getNonEventsDetailsModel = "GET_NON_EVENTS_DETAILS_MODEL";
+  static const String getProducerBookingSlotsModel = "GET_PRODUCER_BOOKING_SLOTS_MODEL";
+
+
+
+
+
+
+
 
   static Future<dynamic> getModelObject(
     String modelName,
@@ -124,6 +133,14 @@ class Models {
         return GetEventTypesResponse.fromJson(json);
       case getNearByProducersModel:
         return NearbyProducersResponse.fromJson(json);
+      case getMoreEventsByProducersModel:
+        return MoreEventsByProducerResponse.fromJson(json);
+      case getEventsDetailsModel:
+        return EventDetailsResponse.fromJson(json);
+      case getNonEventsDetailsModel:
+        return NonEventDetailsResponse.fromJson(json);
+      case getProducerBookingSlotsModel:
+        return ProducerBookingSlotsResponse.fromJson(json);
     }
   }
 }

@@ -12,6 +12,7 @@ import '../../../../l18n.dart';
 import '../../../../res/res.dart';
 import '../../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../../maps/customer_maps/customer_maps_view.dart';
+import '../restaurant_explore_details/non_event_explore_details.dart';
 import 'customer_explore_view_provider.dart';
 import 'explore_widgets.dart';
 
@@ -196,6 +197,7 @@ class _ExploreViewState extends State<ExploreView> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       RestaurantExploreDetails(
+                                        eventId: event.id!,
                                         tag: event.serviceType ?? "Restaurant",
                                       ),
                                 ),
@@ -276,8 +278,9 @@ class _ExploreViewState extends State<ExploreView> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => RestaurantExploreDetails(
-                                        tag: producer.type,
+                                      builder: (_) => NonEventDetailsScreen(
+                                        type: producer.type.toLowerCase() ?? "",
+                                        producerId: producer.id.toString(),
                                       ),
                                     ),
                                   );

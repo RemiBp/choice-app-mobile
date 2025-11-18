@@ -1,13 +1,23 @@
+import 'package:choice_app/res/toasts.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/common_app_bar.dart';
 import '../../../../customWidgets/custom_button.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../l18n.dart';
 import '../../../../res/res.dart';
+import '../../interested/interestedWidgets/time_slot_widgets.dart';
+import 'create_booking_provider.dart';
 
 class BookNowScreen extends StatefulWidget {
-  const BookNowScreen({super.key});
+  final int eventId;
+  final double pricePerPerson;
+  const BookNowScreen({
+    super.key,
+    required this.eventId,
+    required this.pricePerPerson,
+  });
 
   @override
   State<BookNowScreen> createState() => _BookNowScreenState();
@@ -15,12 +25,12 @@ class BookNowScreen extends StatefulWidget {
 
 class _BookNowScreenState extends State<BookNowScreen> {
   int persons = 2;
-  final double pricePerPerson = 30.0;
+  double get pricePerPerson => widget.pricePerPerson;
 
   @override
   Widget build(BuildContext context) {
     double totalPrice = persons * pricePerPerson;
-
+    final provider = Provider.of<CreateBookingProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: CommonAppBar(title: al.bookNow),
@@ -36,37 +46,10 @@ class _BookNowScreenState extends State<BookNowScreen> {
               fontWeight: FontWeight.w500,
             ),
             SizedBox(height: getHeight() * 0.01),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.greyBordersColor),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.remove, size: 20),
-                    color: AppColors.blackColor,
-                    onPressed: persons > 1
-                        ? () => setState(() => persons--)
-                        : null,
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: CustomText(
-                        text: persons.toString(),
-                        fontSize: sizes?.fontSize16,
-                        color: AppColors.blackColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add, size: 20),
-                    color: AppColors.blackColor,
-                    onPressed: () => setState(() => persons++),
-                  ),
-                ],
-              ),
+            PersonCounterWidget(
+              value: persons,
+              onIncrement: () => setState(() => persons++),
+              onDecrement: () => setState(() => persons--),
             ),
           ],
         ),
@@ -124,8 +107,21 @@ class _BookNowScreenState extends State<BookNowScreen> {
             SizedBox(height: getHeight() * 0.02),
             CustomButton(
               buttonText: al.continueText,
-              onTap: () {
+              onTap: provider.isLoading
+                  ? null
+                  : () async {
+                bool ok = await provider.createEventBooking(
+                  eventId: widget.eventId,
+                  guestCount: persons,
+                );
 
+                if (ok) {
+                  // Show toast
+                  Toasts.getSuccessToast(text: "Booking confirmed successfully!");
+
+                  // Navigate back
+                  Navigator.pop(context, true); // booking successful
+                }
               },
             ),
           ],

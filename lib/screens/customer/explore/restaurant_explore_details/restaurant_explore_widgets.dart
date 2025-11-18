@@ -184,3 +184,76 @@ class OrganizerTile extends StatelessWidget {
     );
   }
 }
+
+class WellnessServiceTile extends StatelessWidget {
+  final String title;
+  final bool isSelected;
+  final VoidCallback? onTap;
+
+  const WellnessServiceTile({
+    super.key,
+    required this.title,
+    this.isSelected = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.greyColor,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+
+            // SERVICE NAME
+            Expanded(
+              child: CustomText(
+                text: title,
+                fontSize: 14,
+                fontFamily: Assets.onsetMedium,
+              ),
+            ),
+
+            SizedBox(width: 12),
+
+            // RIGHT SIDE CIRCLE ICON (MATCHES YOUR SCREENSHOT)
+            Container(
+              height: 22,
+              width: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected
+                    ? AppColors.getPrimaryColorFromContext(context)
+                    : Colors.transparent,
+                border: Border.all(
+                  color: isSelected
+                      ? AppColors.getPrimaryColorFromContext(context)
+                      : AppColors.greyColor,
+                  width: 2,
+                ),
+              ),
+
+              child: isSelected
+                  ? Icon(
+                Icons.check,
+                size: 14,
+                color: Colors.white,
+              )
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
