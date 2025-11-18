@@ -64,6 +64,32 @@ class PreferenceUtils {
     return _prefsInstance?.getString(Strings.name) ?? "";
   }
 
+  static String get address {
+    return _prefsInstance?.getString(Strings.address) ?? "";
+  }
+
+static String get instagram {
+    return _prefsInstance?.getString(Strings.instagram) ?? "";
+  }
+
+static String get facebook {
+    return _prefsInstance?.getString(Strings.facebook) ?? "";
+  }
+
+static String get twitter {
+    return _prefsInstance?.getString(Strings.twitter) ?? "";
+  }
+
+  static String get description {
+    return _prefsInstance?.getString(Strings.description) ?? "";
+  }
+
+static String get website {
+    return _prefsInstance?.getString(Strings.website) ?? "";
+  }
+
+
+
   static String get email {
     return _prefsInstance?.getString(Strings.email) ?? "";
   }
@@ -102,6 +128,11 @@ class PreferenceUtils {
     await PreferenceUtils.setString(Strings.refreshToken, authResponse.refreshToken??"nil");
     await PreferenceUtils.setString(Strings.email, authResponse.user?.email??"nil");
     await PreferenceUtils.setString(Strings.role, authResponse.user?.role?.name??"nil");
+    await PreferenceUtils.setString(Strings.address, authResponse.user?.businessProfile?.address??"nil");
+    await PreferenceUtils.setString(Strings.facebook, authResponse.user?.businessProfile?.facebook??"nil");
+    await PreferenceUtils.setString(Strings.description, authResponse.user?.businessProfile?.description??"nil");
+    await PreferenceUtils.setString(Strings.instagram, authResponse.user?.businessProfile?.instagram??"nil");
+
   }
 
 

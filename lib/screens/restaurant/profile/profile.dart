@@ -51,16 +51,21 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     // Initialize controllers
-    addressController = TextEditingController();
-    passwordController = TextEditingController();
-    websiteController = TextEditingController();
-    instagramController = TextEditingController();
-    twitterController = TextEditingController();
-    facebookController = TextEditingController();
-    descriptionController = TextEditingController();
+    debugPrint("Address ${PreferenceUtils.address}");
+    debugPrint("Email ${PreferenceUtils.email}");
+    debugPrint("Description ${PreferenceUtils.description}");
+    debugPrint("Instagram ${PreferenceUtils.instagram}");
 
+
+    addressController = TextEditingController(text: PreferenceUtils.address);
+    websiteController = TextEditingController(text: PreferenceUtils.website);
+    instagramController = TextEditingController(text: PreferenceUtils.instagram);
+    twitterController = TextEditingController(text: PreferenceUtils.twitter);
+    facebookController = TextEditingController(text: PreferenceUtils.facebook);
+    descriptionController = TextEditingController(text: PreferenceUtils.description);
     fullNameController = TextEditingController();
     usernameController = TextEditingController();
+    passwordController = TextEditingController();
     //emailController = TextEditingController();
 
     // Pre-fill email from login
@@ -596,8 +601,10 @@ class _ProfileState extends State<Profile> {
   }
 
   bool isValidInstagram(String url) {
-    final pattern = RegExp(r'^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._%-]+\/?$');
-    return pattern.hasMatch(url);
+    final pattern = RegExp(
+        r'^(https?:\/\/)?(www\.)?instagram\.com\/([a-zA-Z0-9._](?:(?:[a-zA-Z0-9._]|(?:\.(?!\.))){0,28}(?:[a-zA-Z0-9._])))?\/?$'
+    );
+    return pattern.hasMatch(url.trim());
   }
 
   bool isValidTwitter(String url) {
