@@ -29,6 +29,7 @@ class BookingCard extends StatelessWidget {
   final String? totalPrice;
   final String? bookingId;
   final bool? isEvent;
+  final String buttonText;
 
   const BookingCard({
     super.key,
@@ -46,6 +47,7 @@ class BookingCard extends StatelessWidget {
     this.totalPrice,
     this.bookingId,
     this.isEvent,
+    this.buttonText = '',
   });
 
   @override
@@ -68,7 +70,7 @@ class BookingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.blackColor.withOpacity(0.05),
+              color: AppColors.blackColor.withValues(alpha: 0.05),
               blurRadius: 24,
               offset: Offset(0, 4),
             ),
@@ -189,8 +191,16 @@ class BookingCard extends StatelessWidget {
                     textFontWeight: FontWeight.w700,
                   ),
                   CustomButton(
-                    buttonText: role == UserRole.user ? al.modify : al.checkIn,
-                    onTap: () => onCheckIn!(),
+                    buttonText: buttonText,
+                    onTap:  () {
+                      if (buttonText == al.modify) {
+                        //onCheckIn?.call(); // modify action
+                      } else if (buttonText == 'View') {
+                        onDetails();
+                      } else {
+                        onCheckIn!(); // check-in for producer
+                      }
+                    },
                     buttonWidth: getWidth() * .38,
                     height: getHeight() * 0.06,
                     backgroundColor: AppColors.getPrimaryColorFromContext(
@@ -427,6 +437,7 @@ class CancelConfirmationAlert extends StatelessWidget {
               borderColor: AppColors.greyBordersColor,
               hint: al.shareReason,
               label: al.reason,
+              textEditingController: controller,
             ),
             SizedBox(height: getHeightRatio() * 24),
             Row(
@@ -446,7 +457,7 @@ class CancelConfirmationAlert extends StatelessWidget {
                 ),
                 CustomButton(
                   buttonText: al.yes,
-                  onTap: () {},
+                  onTap: onConfirm,
                   buttonWidth: getWidth() * .38,
                   height: getHeight() * 0.06,
                   backgroundColor: AppColors.getPrimaryColorFromContext(

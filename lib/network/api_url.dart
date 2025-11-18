@@ -76,9 +76,13 @@ const String addUnavailableSlotsApiUrl = "$baseUrl/api/producer/profile/addUnava
 const String updateRestaurantSlotsApiUrl = "$baseUrl/api/producer/profile/updateRestaurantSlots";
 
 const String getUserBookingsApiUrl = "$baseUrl/api/producer/booking/getUserBookings";
-const String cancelBookingApiUrl = "$baseUrl/api/producer/booking/cancelBooking";
+const String userCancelBookingApiUrl = "$baseUrl/api/producer/booking/cancelBooking";
+const String producerCancelBookingApiUrl = "$baseUrl/api/app/booking/cancel";
 const String checkInBookingApiUrl = "$baseUrl/api/producer/booking/checkIn";
 const String createEventBookingApiUrl = "$baseUrl/api/producer/booking/createBooking";
 const String createNonEventBookingApiUrl = "$baseUrl/api/app/booking/createBooking";
 const String getProducerBookingSlotsApiUrl = "$baseUrl/api/app/booking/getRestaurantSlots";
+const String updateBookingsApiUrl = "$baseUrl/api/app/booking/updateBooking";
+const String getEventBookingDetailsApiUrl = "$baseUrl/api/producer/booking/booking";
+
 

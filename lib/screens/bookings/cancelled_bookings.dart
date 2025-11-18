@@ -75,7 +75,10 @@ class _CancelledBookingsState extends State<CancelledBookings> {
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (context) => const UserBookingDetails(),
+                                    (context) => UserBookingDetails(
+                                      bookingId: booking.bookingId!,
+                                      isEvent: booking.isEvent ?? false,
+                                    ),
                               ),
                             );
                           } else {

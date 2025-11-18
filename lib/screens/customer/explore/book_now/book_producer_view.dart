@@ -10,58 +10,89 @@ import '../../../../models/get_producer_booking_slots_response.dart';
 import '../../../../res/res.dart';
 import '../../../../res/toasts.dart';
 import '../../interested/interestedWidgets/time_slot_widgets.dart';
+import '../../../bookings/upcoming_bookings.dart';
 
 class BookProducerView extends StatefulWidget {
-  final String producerId;
+  final String? producerId; // for new booking
+  final BookingCardData? bookingData; // existing booking for modify
+  final bool isModify;
 
-  const BookProducerView({super.key, required this.producerId});
+  const BookProducerView({
+    super.key,
+    this.producerId,
+    this.bookingData,
+    this.isModify = false,
+  });
 
   @override
   State<BookProducerView> createState() => _BookProducerViewState();
 }
 
 class _BookProducerViewState extends State<BookProducerView> {
+  late String currentProducerId;
   int persons = 2;
   int selectedDateIndex = -1;
   int selectedTimeIndex = -1;
   DateTime? selectedDate;
   final TextEditingController messageController = TextEditingController();
-
   late List<Map<String, String>> dates;
 
   @override
   void initState() {
     super.initState();
-    _generateDates(DateTime.now());
+
+    // Determine current producer ID
+    currentProducerId = widget.isModify
+        ? widget.bookingData?.producerId ?? ''
+        : widget.producerId ?? '';
+
+    // Initialize from existing booking if modifying
+    if (widget.isModify && widget.bookingData != null) {
+      persons = widget.bookingData!.guests;
+      messageController.text = widget.bookingData!.internalNotes ?? '';
+      selectedDate = DateTime.tryParse(widget.bookingData!.date);
+    }
+
+    _generateDates(selectedDate ?? DateTime.now());
+
+    // Fetch initial slots for the selected date
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (selectedDate != null && currentProducerId.isNotEmpty) {
+        final formattedDate =
+            "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2,'0')}-${selectedDate!.day.toString().padLeft(2,'0')}";
+
+        await context.read<CreateBookingProvider>().getProducerSlots(
+          producerId: currentProducerId,
+          date: formattedDate,
+        );
+      }
+    });
   }
 
-  // Generate dynamic date chips from today till end of current month
   void _generateDates(DateTime month) {
     final today = DateTime.now();
-    int startDay = 1;
-    if (month.year == today.year && month.month == today.month) {
-      startDay = today.day; // start from today
-    }
+    int startDay = (month.year == today.year && month.month == today.month)
+        ? today.day
+        : 1;
 
     final lastDayOfMonth = DateTime(month.year, month.month + 1, 0).day;
 
     dates = List.generate(lastDayOfMonth - startDay + 1, (index) {
       final date = startDay + index;
-      final dayName =
-      _weekdayName(DateTime(month.year, month.month, date).weekday);
+      final dayName = _weekdayName(DateTime(month.year, month.month, date).weekday);
       return {"day": dayName, "date": date.toString()};
     });
   }
 
   String _weekdayName(int weekday) {
-    const names = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    const names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     return names[weekday - 1];
   }
 
   String _monthAbbreviation(int month) {
     const months = [
-      "Jan","Feb","Mar","Apr","May","Jun",
-      "Jul","Aug","Sep","Oct","Nov","Dec"
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
     return months[month - 1];
   }
@@ -71,11 +102,9 @@ class _BookProducerViewState extends State<BookProducerView> {
     final bookingProvider = context.watch<CreateBookingProvider>();
     final slotsResponse = bookingProvider.slotsResponse;
 
-    // Determine selected day name
     String? selectedDayName =
     selectedDateIndex != -1 ? dates[selectedDateIndex]["day"] : null;
 
-    // Fetch slots for selected day
     List<Slot> slotsForSelectedDay = selectedDayName != null
         ? (slotsResponse?.slots[selectedDayName] ?? [])
         : [];
@@ -83,7 +112,9 @@ class _BookProducerViewState extends State<BookProducerView> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.whiteColor,
-      appBar: CommonAppBar(title: 'Book A Reservation'),
+      appBar: CommonAppBar(
+        title: widget.isModify ? 'Modify Reservation' : 'Book A Reservation',
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: sizes!.pagePadding,
@@ -92,7 +123,7 @@ class _BookProducerViewState extends State<BookProducerView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Select Date text + calendar button
+            // Select Date
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -111,16 +142,15 @@ class _BookProducerViewState extends State<BookProducerView> {
                     final picked = await showDatePicker(
                       context: context,
                       initialDate: selectedDate ?? now,
-                      firstDate: now, // today onwards
-                      lastDate: DateTime(now.year + 5, 12, 31), // allow next 5 years
+                      firstDate: now,
+                      lastDate: DateTime(now.year + 5, 12, 31),
                     );
-
                     if (picked != null) {
                       setState(() {
                         selectedDate = picked;
                         selectedDateIndex = -1;
                         selectedTimeIndex = -1;
-                        _generateDates(picked); // regenerate chips for the picked month
+                        _generateDates(picked);
                       });
 
                       Toasts.getSuccessToast(
@@ -133,7 +163,7 @@ class _BookProducerViewState extends State<BookProducerView> {
             ),
             SizedBox(height: getHeight() * 0.025),
 
-            // Dynamic Date Chips
+            // Date Chips
             SizedBox(
               height: 54,
               child: ListView.separated(
@@ -148,32 +178,33 @@ class _BookProducerViewState extends State<BookProducerView> {
                     day: item["day"]!,
                     date: item["date"]!,
                     isSelected: isSelected,
-                      onTap: () async {
-                        setState(() {
-                          selectedDateIndex = index;
-                          selectedTimeIndex = -1;
-                        });
+                    onTap: () async {
+                      setState(() {
+                        selectedDateIndex = index;
+                        selectedTimeIndex = -1;
+                      });
 
-                        final year = selectedDate?.year ?? DateTime.now().year;
-                        final month = selectedDate?.month ?? DateTime.now().month;
-                        final day = int.parse(item["date"]!);
+                      final year = selectedDate?.year ?? DateTime.now().year;
+                      final month = selectedDate?.month ?? DateTime.now().month;
+                      final day = int.parse(item["date"]!);
 
-                        final formattedDate = "$year-${month.toString().padLeft(2,'0')}-${day.toString().padLeft(2,'0')}";
+                      final formattedDate =
+                          "$year-${month.toString().padLeft(2,'0')}-${day.toString().padLeft(2,'0')}";
 
-                        await context
-                            .read<CreateBookingProvider>()
-                            .getProducerSlots(
-                          producerId: widget.producerId,
+                      if (currentProducerId.isNotEmpty) {
+                        await context.read<CreateBookingProvider>().getProducerSlots(
+                          producerId: currentProducerId,
                           date: formattedDate,
                         );
                       }
+                    },
                   );
                 },
               ),
             ),
             SizedBox(height: getHeight() * 0.04),
 
-            // Select Time Title
+            // Time Slots
             CustomText(
               text: al.selectTime,
               fontSize: sizes!.fontSize16,
@@ -181,8 +212,6 @@ class _BookProducerViewState extends State<BookProducerView> {
               color: AppColors.blackColor,
             ),
             SizedBox(height: getHeight() * 0.02),
-
-            // Dynamic Time Slots from API
             bookingProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : slotsForSelectedDay.isEmpty
@@ -202,8 +231,7 @@ class _BookProducerViewState extends State<BookProducerView> {
                   return TimeChip(
                     label: "${slot.startTime}-${slot.endTime}",
                     isSelected: isSelected,
-                    onTap: () =>
-                        setState(() => selectedTimeIndex = index),
+                    onTap: () => setState(() => selectedTimeIndex = index),
                   );
                 },
               ),
@@ -219,16 +247,14 @@ class _BookProducerViewState extends State<BookProducerView> {
               fontWeight: FontWeight.w500,
             ),
             SizedBox(height: getHeight() * 0.01),
-
             PersonCounterWidget(
               value: persons,
               onIncrement: () => setState(() => persons++),
               onDecrement: () => persons > 1 ? setState(() => persons--) : null,
             ),
-
             SizedBox(height: getHeight() * 0.04),
 
-            // Message field
+            // Special Requests
             CustomText(
               text: 'Any Special Requests?',
               fontSize: sizes!.fontSize16,
@@ -236,15 +262,12 @@ class _BookProducerViewState extends State<BookProducerView> {
               color: AppColors.blackColor,
             ),
             SizedBox(height: getHeight() * 0.01),
-
             InternalNotesField(controller: messageController),
-
             SizedBox(height: getHeight() * 0.05),
           ],
         ),
       ),
 
-      // Bottom Button
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -252,7 +275,7 @@ class _BookProducerViewState extends State<BookProducerView> {
           Padding(
             padding: const EdgeInsets.all(20),
             child: CustomButton(
-              buttonText: "Book A Reservation",
+              buttonText: widget.isModify ? "Modify Your Reservation" : "Book A Reservation",
               onTap: () async {
                 if (selectedDateIndex == -1) {
                   Toasts.getErrorToast(text: "Please select a date");
@@ -263,28 +286,29 @@ class _BookProducerViewState extends State<BookProducerView> {
                   return;
                 }
 
-                // Get slot info from the selected chip
                 final slot = slotsForSelectedDay[selectedTimeIndex];
-
-                // Format date for API (yyyy-MM-dd)
                 final year = selectedDate?.year ?? DateTime.now().year;
                 final month = selectedDate?.month ?? DateTime.now().month;
                 final day = int.parse(dates[selectedDateIndex]["date"]!);
                 final formattedDate =
                     "$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
 
-                // Call non-event booking API
-                final success = await context.read<CreateBookingProvider>().createNonEventBooking(
-                  restaurantId: int.parse(widget.producerId),
-                  slotId: slot.id,
-                  date: formattedDate,
-                  guestCount: persons,
-                  specialRequest: messageController.text,
-                );
-
-                if (success) {
-                  Toasts.getSuccessToast(text: "Reservation created!");
+                if (widget.isModify) {
+                  Toasts.getSuccessToast(text: "Modify API not integrated yet!");
                   Navigator.pop(context);
+                } else {
+                  final success = await context.read<CreateBookingProvider>().createNonEventBooking(
+                    restaurantId: int.parse(currentProducerId),
+                    slotId: slot.id,
+                    date: formattedDate,
+                    guestCount: persons,
+                    specialRequest: messageController.text,
+                  );
+
+                  if (success) {
+                    Toasts.getSuccessToast(text: "Reservation created!");
+                    Navigator.pop(context);
+                  }
                 }
               },
               backgroundColor: AppColors.userPrimaryColor,
