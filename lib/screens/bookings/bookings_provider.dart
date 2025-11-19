@@ -7,6 +7,7 @@ import 'package:choice_app/res/toasts.dart';
 import 'package:flutter/material.dart';
 import 'package:choice_app/network/models.dart';
 
+import '../../l18n.dart';
 import '../../userRole/user_role.dart';
 
 enum BookingStatus { scheduled, inProgress, completed, cancelled }
@@ -951,37 +952,31 @@ class BookingsProvider extends ChangeNotifier {
     try {
       final body = {"reason": reason};
 
-      debugPrint("📝 cancel booking Body: $body");
+      debugPrint("📝 EVENT cancel Body: $body");
 
-      final responseMap = await MyApi.callPutApi(
+      final response = await MyApi.callPutApi(
         url: '$userCancelBookingApiUrl/$bookingId',
         body: body,
       );
 
-      if (responseMap == null) {
-        debugPrint("❌ API returned NULL");
-        Toasts.getErrorToast(text: "Something went wrong");
-        return false;
-      }
-
-      final status = responseMap['status'] ?? 0;
-      final message = responseMap['message'] ?? '';
+      final status = response?['status'] ?? 0;
+      final message = response?['message'] ?? '';
 
       if (status == 200) {
-        debugPrint("✅ Booking cancelled successfully");
-        Toasts.getSuccessToast(text: message.isNotEmpty ? message : "Booking cancelled successfully");
+        Toasts.getSuccessToast(text: message.isNotEmpty ? message : "Booking cancelled");
         return true;
-      } else {
-        debugPrint("❌ Failed to cancel booking: $responseMap");
-        Toasts.getErrorToast(text: message.isNotEmpty ? message : "Failed to cancel booking");
-        return false;
       }
+
+      Toasts.getErrorToast(text: message.isNotEmpty ? message : "Failed to cancel");
+      return false;
+
     } catch (e) {
-      debugPrint("❌ Error in cancel booking: $e");
+      debugPrint("❌ EVENT cancel ERROR: $e");
       Toasts.getErrorToast(text: "Something went wrong");
       return false;
     }
   }
+
 
   Future<bool> cancelBookingForProducer({
     required String reason,
@@ -991,68 +986,89 @@ class BookingsProvider extends ChangeNotifier {
     try {
       final body = {
         "cancelReason": reason,
-        "timeZone": timeZone
+        "timeZone": timeZone,
       };
-      debugPrint("📝 Producer cancel booking Body: $body");
 
-      final responseMap = await MyApi.callPutApi(
+      debugPrint("📝 NON-EVENT cancel Body: $body");
+
+      final response = await MyApi.callPutApi(
         url: '$producerCancelBookingApiUrl/$bookingId',
         body: body,
       );
 
-      if (responseMap != null && responseMap['booking'] != null) {
-        debugPrint("✅ Producer booking cancelled successfully");
-        Toasts.getSuccessToast(text: 'Booking cancelled successfully');
+      // non-event returns { booking: {...} }
+      if (response != null && response['booking'] != null) {
+        Toasts.getSuccessToast(text: "Booking cancelled successfully");
         return true;
-      } else {
-        debugPrint("❌ Producer cancel booking failed: $responseMap");
-        Toasts.getErrorToast(text: "Failed to cancel booking");
-        return false;
       }
+
+      Toasts.getErrorToast(text: "Failed to cancel booking");
+      return false;
+
     } catch (e) {
-      debugPrint("❌ Error in producer cancel booking: $e");
-      Toasts.getErrorToast(text: "Something went wrong");
+      debugPrint("❌ NON-EVENT cancel ERROR: $e");
+      Toasts.getErrorToast(text: al.somethingWentWrong);
       return false;
     }
   }
 
-  Future<bool> cancelBookingUniversal({
-    required int bookingId,
-    required String reason,
-    required UserRole role,
-  }) async {
-    if (role == UserRole.user) {
-      return await cancelBooking(bookingId: bookingId, reason: reason);
-    } else {
-      final timeZone = DateTime.now().timeZoneName; // dynamically get timezone
 
-      return await cancelBookingForProducer(
-        bookingId: bookingId,
-        reason: reason,
-        timeZone: timeZone
-      );
-    }
-  }
 
   Future<bool> checkInBooking({required int bookingId}) async {
     try {
-      debugPrint("📝 cancel booking id: $bookingId");
+      debugPrint("📝 check-in booking id: $bookingId");
 
       final response = await MyApi.callPutApi(
         url: '$checkInBookingApiUrl/$bookingId',
       );
 
-      if (response.status == 200) {
+      if (response == null) {
+        debugPrint("❌ API returned null");
+        Toasts.getErrorToast(text: "Something went wrong");
+        return false;
+      }
+
+      // response is a Map<String, dynamic>
+      final status = response["status"];
+      final message = response["message"];
+
+      if (status == 200) {
         debugPrint("✅ Booking checked-in successfully");
+        Toasts.getSuccessToast(text: message ?? 'Checked-in successfully');
+        return true;
+      } else {
+        debugPrint("❌ Failed to check-in: $response");
+        Toasts.getErrorToast(text: message ?? "Failed to check-in");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("❌ Exception in check-in booking: $e");
+      Toasts.getErrorToast(text: "Something went wrong");
+      return false;
+    }
+  }
+  Future<bool> checkInSimpleBooking({required int bookingId, required String timeZone}) async {
+    try {
+      debugPrint("📝 Check-in simple booking id: $bookingId with timeZone: $timeZone");
+
+      final response = await MyApi.callPutApi(
+        url: '$checkInSimpleBookingApiUrl/$bookingId',
+        body: {
+          "timeZone": timeZone,
+        },
+      );
+
+      if (response.status == 200) {
+        debugPrint("✅ Simple booking checked-in successfully");
         Toasts.getSuccessToast(text: 'Booking checked-in successfully');
         return true;
       } else {
-        debugPrint("❌ Failed to check-in booking: $response");
+        debugPrint("❌ Failed to check-in simple booking: $response");
         Toasts.getErrorToast(text: "Failed to check-in booking");
         return false;
       }
     } catch (e) {
-      debugPrint("❌ Error in check-in booking: $e");
+      debugPrint("❌ Error in check-in simple booking: $e");
       Toasts.getErrorToast(text: "Something went wrong");
       return false;
     }

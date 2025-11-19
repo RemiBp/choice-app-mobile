@@ -10,6 +10,7 @@ class NonEventDetailsProvider extends ChangeNotifier {
   Producer? producer;
   Wellness? wellness;
   Stats? stats;
+  Socials? socials;
 
   List<Photo> photos = [];
   List<MenuCategory> menu = [];
@@ -33,6 +34,7 @@ class NonEventDetailsProvider extends ChangeNotifier {
         producer = parsed.producer;
         wellness = parsed.wellness;
         stats = parsed.stats;
+        socials = parsed.socials;
 
         photos = producer?.photos ?? [];
         menu = producer?.menuCategory ?? [];

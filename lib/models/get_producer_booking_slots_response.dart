@@ -4,15 +4,15 @@ class ProducerBookingSlotsResponse {
   ProducerBookingSlotsResponse({required this.slots});
 
   factory ProducerBookingSlotsResponse.fromJson(Map<String, dynamic> json) {
-    final Map<String, List<Slot>> map = {};
+    final List<dynamic> rawSlots = json['slots'] ?? [];
+    final Map<String, List<Slot>> grouped = {};
 
-    json.forEach((day, list) {
-      map[day] = (list as List<dynamic>)
-          .map((e) => Slot.fromJson(e))
-          .toList();
-    });
+    for (var slotJson in rawSlots) {
+      final slot = Slot.fromJson(slotJson);
+      grouped.putIfAbsent(slot.day, () => []).add(slot);
+    }
 
-    return ProducerBookingSlotsResponse(slots: map);
+    return ProducerBookingSlotsResponse(slots: grouped);
   }
 }
 

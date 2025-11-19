@@ -18,7 +18,6 @@ import '../../../../customWidgets/shadow_icon.dart';
 import '../../../../l18n.dart';
 import '../../../../network/api_url.dart' as ApiUrl;
 import '../../../../res/toasts.dart';
-import '../book_now/book_now_view.dart';
 
 import 'non_event_details_provider.dart';
 import '../../../../models/get_non_events_details_response.dart' hide Dish;
@@ -303,17 +302,17 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                         }).toList(),
                       ],
                     )
-                        : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          sectionTitle("Services"),
-                          const SizedBox(height: 8),
-                          CustomText(text: "No services added", fontSize: 14),
-                        ],
-                      ),
-                    ),
+                        : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            sectionTitle("Services"),
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.only(left:20.0),
+                              child: CustomText(text: "No services added", fontSize: 14),
+                            ),
+                          ],
+                        ),
 
 
 
@@ -439,11 +438,12 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                             },
                             child: ShadowIcon(icon: Assets.websiteIcon, color: AppColors.getPrimaryColorFromContext(context)),
                           ),
-                        if (producer.instagram != null && producer.instagram!.trim().isNotEmpty) ...[
+                        if (provider.socials?.instagram != null && provider.socials!.instagram!.trim().isNotEmpty)
+                          ...[
                           const SizedBox(width: 12),
                           GestureDetector(
                             onTap: () async {
-                              final url = producer.instagram!;
+                              final url = provider.socials!.instagram!;
                               if (await canLaunchUrlString(url)) {
                                 await launchUrlString(url);
                               } else {
@@ -453,11 +453,12 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                             child: ShadowIcon(icon: Assets.instagramIcon, color: AppColors.getPrimaryColorFromContext(context)),
                           ),
                         ],
-                        if (producer.twitter != null && producer.twitter!.trim().isNotEmpty) ...[
+                        if (provider.socials?.twitter != null && provider.socials!.twitter!.trim().isNotEmpty)
+                          ...[
                           const SizedBox(width: 12),
                           GestureDetector(
                             onTap: () async {
-                              final url = producer.twitter!;
+                              final url =  provider.socials!.twitter!;
                               if (await canLaunchUrlString(url)) {
                                 await launchUrlString(url);
                               } else {
@@ -467,11 +468,12 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                             child: ShadowIcon(icon: Assets.xIcon, color: AppColors.getPrimaryColorFromContext(context)),
                           ),
                         ],
-                        if (producer.facebook != null && producer.facebook!.trim().isNotEmpty) ...[
+                        if (provider.socials?.facebook != null && provider.socials!.facebook!.trim().isNotEmpty)
+                          ...[
                           const SizedBox(width: 12),
                           GestureDetector(
                             onTap: () async {
-                              final url = producer.facebook!;
+                              final url = provider.socials!.facebook!;
                               if (await canLaunchUrlString(url)) {
                                 await launchUrlString(url);
                               } else {
@@ -503,7 +505,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                       Navigator.push(context,
                           MaterialPageRoute(
                           builder: (_) => BookProducerView(
-                            producerId: producer.id.toString(),   //  pass it
+                            producerId: producer.userId.toString(),   //  pass it
                           )
                       )
                       );

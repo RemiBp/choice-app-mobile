@@ -10,6 +10,7 @@ import '../../customWidgets/blurry_back_ground.dart';
 import '../../l18n.dart';
 import '../../userRole/role_provider.dart';
 import '../../userRole/user_role.dart';
+import '../../utilities/timezone_helper.dart';
 import '../customer/explore/book_now/book_producer_view.dart';
 import 'bookings_widgets.dart';
 
@@ -104,15 +105,41 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                             );
                           }
                         },
-                        onCheckIn: () {
-                          final bookingId = int.parse(booking.bookingId ?? '0');
-                          provider.checkInBooking(bookingId: bookingId);
+                        onCheckIn: () async {
+                          final bookingIdStr = booking.bookingId;
+                          if (bookingIdStr == null || bookingIdStr.isEmpty) {
+                            Toasts.getErrorToast(text: "Booking ID not available");
+                            return;
+                          }
+
+                          final bookingId = int.tryParse(bookingIdStr);
+                          if (bookingId == null) {
+                            Toasts.getErrorToast(text: "Invalid booking ID");
+                            return;
+                          }
+
+                          bool success = false;
+
+                          if (booking.isEvent == true) {
+                            // Event booking
+                            success = await provider.checkInBooking(bookingId: bookingId);
+                          } else {
+                            // Normal booking
+                            success = await provider.checkInSimpleBooking(
+                              bookingId: bookingId,
+                              timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC', // Success: Uses the cached value
+                            );
+                          }
+
+                          if (success) {
+                            // Refresh bookings after successful check-in
+                            await provider.getBookings(status: BookingStatus.scheduled);
+                          }
                         },
                         onCancel: () {
-                          final bookingId = int.parse(booking.bookingId ?? '0');
                           showCancelConfirmationAlert(
                             context: context,
-                            id: bookingId,
+                            booking: booking,   //  Pass whole booking
                           );
                         },
                       );
@@ -125,7 +152,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
 
   void showCancelConfirmationAlert({
     required BuildContext context,
-    required int id,
+    required BookingCardData booking,
   }) {
     showDialog(
       context: context,
@@ -135,30 +162,41 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
             controller: reasonController,
             onConfirm: () async {
               if (reasonController.text.isEmpty) {
-                Toasts.getErrorToast(
-                  text: 'Please provide a reason for cancellation.',
-                );
+                Toasts.getErrorToast(text: al.provideAReason);
                 return;
               }
-              final role = context.read<RoleProvider>().role;
-              final success = await provider.cancelBookingUniversal(
-                bookingId: id,
-                reason: reasonController.text,
-                role: role,
-              );
+
+              final isEvent = booking.isEvent ?? false;
+              final id = int.parse(booking.bookingId ?? '0');
+
+              bool success;
+
+              if (isEvent) {
+                success = await provider.cancelBooking(
+                  bookingId: id,
+                  reason: reasonController.text,
+                );
+              } else {
+
+                success = await provider.cancelBookingForProducer(
+                  bookingId: id,
+                  reason: reasonController.text,
+                  timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC',
+                );
+              }
+
               if (success) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (context) => BookingDetails(
-                          isCancelled: true,
-                          cancellationReason: reasonController.text,
-                        ),
+                    builder: (context) => BookingDetails(
+                      isCancelled: true,
+                      cancellationReason: reasonController.text,
+                    ),
                   ),
                 );
               } else {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               }
             },
           ),
@@ -166,6 +204,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
       },
     );
   }
+
 
   List<BookingCardData> _buildBookingItems(
     UserBookingsData? data,
@@ -236,6 +275,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           totalPrice: null,
           bookingId: booking?.id?.toString(),
           producerId: entry.producer?.id?.toString(),
+          producerUserId: entry.producer?.userId?.toString(),
           isEvent: false,
           buttonText: isUser ? al.modify : al.checkIn, //  user sees "Modify", producer sees "Check-In"
           address: entry.producer?.address ?? booking?.location,
@@ -259,6 +299,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
 class BookingCardData {
   final String name;
   final String imageUrl;
+  final String? producerUserId;
   final String date;
   final String startTime;
   final String endTime;
@@ -292,5 +333,6 @@ class BookingCardData {
     this.internalNotes,
     this.buttonText = '', // default empty
     this.producerId,
+    this.producerUserId,
   });
 }

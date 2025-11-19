@@ -37,15 +37,15 @@ class CreateBookingProvider with ChangeNotifier {
 
   ProducerBookingSlotsResponse? slotsResponse;
 
-  Future<void> getProducerSlots({
-    required String producerId,
+  Future<void> getRestaurantSlots({
+    required String userId,
     required String date,
   }) async {
     isLoading = true;
     notifyListeners();
 
     final response = await MyApi.callGetApi(
-      url: "$getProducerBookingSlotsApiUrl/$producerId",
+      url: "$getProducerBookingSlotsApiUrl/$userId",
       parameters: {
         "date": date,
         "timeZone": "Asia/Karachi",
@@ -54,12 +54,14 @@ class CreateBookingProvider with ChangeNotifier {
     );
 
     if (response != null && response is ProducerBookingSlotsResponse) {
-      slotsResponse = response;
+      slotsResponse = response; // already grouped
     }
 
     isLoading = false;
     notifyListeners();
   }
+
+
 
   Future<bool> createNonEventBooking({
     required int restaurantId,

@@ -122,6 +122,18 @@ abstract class AppLocalizations {
   /// **'User Account'**
   String get userAccountTitle;
 
+  /// No description provided for @provideAReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason.'**
+  String get provideAReason;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get somethingWentWrong;
+
   /// No description provided for @userAccountDescription.
   ///
   /// In en, this message translates to:

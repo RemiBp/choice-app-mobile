@@ -22,6 +22,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userAccountTitle => 'User Account';
 
   @override
+  String get provideAReason => 'Please provide a reason.';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong';
+
+  @override
   String get userAccountDescription =>
       'To discover restaurants and activities, and follow your favorite providers.';
 

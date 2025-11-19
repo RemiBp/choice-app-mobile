@@ -2,11 +2,13 @@ class NonEventDetailsResponse {
   final Producer? producer;
   final Wellness? wellness;
   final Stats? stats;
+  Socials? socials;
 
   NonEventDetailsResponse({
     required this.producer,
     required this.wellness,
     required this.stats,
+    this.socials,
   });
 
   factory NonEventDetailsResponse.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,9 @@ class NonEventDetailsResponse {
       stats: json["data"]["stats"] != null
           ? Stats.fromJson(json["data"]["stats"])
           : null,
+      socials: json["data"]["socials"] != null
+          ? Socials.fromJson(json["data"]["socials"])
+          : null,
     );
   }
 }
@@ -27,6 +32,7 @@ class NonEventDetailsResponse {
 
 class Producer {
   final int? id;
+  final int? userId;
   final String? name;
   final String? address;
   final String? type; // restaurant | wellness
@@ -42,6 +48,7 @@ class Producer {
 
   Producer({
     this.id,
+    this.userId,
     this.name,
     this.address,
     this.type,
@@ -58,6 +65,7 @@ class Producer {
   factory Producer.fromJson(Map<String, dynamic> json) {
     return Producer(
       id: json["id"],
+      userId: json["userId"],
       name: json["name"],
       address: json["address"],
       type: json["type"],
@@ -185,6 +193,29 @@ class Stats {
     return Stats(
       posts: json["posts"],
       followers: json["followers"],
+    );
+  }
+}
+
+class Socials {
+  final String? instagram;
+  final String? twitter;
+  final String? facebook;
+  final String? website;
+
+  Socials({
+    this.instagram,
+    this.twitter,
+    this.facebook,
+    this.website,
+  });
+
+  factory Socials.fromJson(Map<String, dynamic> json) {
+    return Socials(
+      instagram: json["instagram"],
+      twitter: json["twitter"],
+      facebook: json["facebook"],
+      website: json["website"],
     );
   }
 }

@@ -43,7 +43,7 @@ class _BookProducerViewState extends State<BookProducerView> {
 
     // Determine current producer ID
     currentProducerId = widget.isModify
-        ? widget.bookingData?.producerId ?? ''
+        ? widget.bookingData?.producerUserId ?? ''
         : widget.producerId ?? '';
 
     // Initialize from existing booking if modifying
@@ -61,8 +61,8 @@ class _BookProducerViewState extends State<BookProducerView> {
         final formattedDate =
             "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2,'0')}-${selectedDate!.day.toString().padLeft(2,'0')}";
 
-        await context.read<CreateBookingProvider>().getProducerSlots(
-          producerId: currentProducerId,
+        await context.read<CreateBookingProvider>().getRestaurantSlots(
+          userId: currentProducerId,
           date: formattedDate,
         );
       }
@@ -85,7 +85,7 @@ class _BookProducerViewState extends State<BookProducerView> {
   }
 
   String _weekdayName(int weekday) {
-    const names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     return names[weekday - 1];
   }
 
@@ -192,8 +192,8 @@ class _BookProducerViewState extends State<BookProducerView> {
                           "$year-${month.toString().padLeft(2,'0')}-${day.toString().padLeft(2,'0')}";
 
                       if (currentProducerId.isNotEmpty) {
-                        await context.read<CreateBookingProvider>().getProducerSlots(
-                          producerId: currentProducerId,
+                        await context.read<CreateBookingProvider>().getRestaurantSlots(
+                          userId: currentProducerId,
                           date: formattedDate,
                         );
                       }

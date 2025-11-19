@@ -6,6 +6,8 @@
   "createAnAccount": "Create an Account",
   "chooseAccountType": "Choose the type of account you want to create:",
   "userAccountTitle": "User Account",
+  "provideAReason": "Please provide a reason.",
+  "somethingWentWrong": "Something went wrong",
   "userAccountDescription": "To discover restaurants and activities, and follow your favorite providers.",
   "restaurantProviderAccountTitle": "Restaurant Provider Account",
   "restaurantProviderAccountDescription": "To manage your restaurant and promote your offerings.",
