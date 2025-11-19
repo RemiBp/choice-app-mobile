@@ -33,7 +33,8 @@ class CustomField extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.suffixIcon,
-    this.prefixIconSvg, this.suffixIconSvg,
+    this.prefixIconSvg,
+    this.suffixIconSvg,
 
   });
 

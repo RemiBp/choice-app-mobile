@@ -7,8 +7,10 @@ import 'package:choice_app/screens/bookings/bookings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../customWidgets/blurry_back_ground.dart';
+import '../../l18n.dart';
 import '../../userRole/role_provider.dart';
 import '../../userRole/user_role.dart';
+import '../customer/explore/book_now/book_producer_view.dart';
 import 'bookings_widgets.dart';
 
 class UpcomingBookings extends StatefulWidget {
@@ -67,22 +69,37 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                         isEvent: booking.isEvent,
                         bookingId: booking.bookingId,
                         address: booking.address,
+                        buttonText: booking.buttonText,
                         onDetails: () {
                           if (role == UserRole.user) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => const UserBookingDetails(),
-                              ),
-                            );
+                            if (booking.buttonText == al.modify) {
+                              // User pressed "Modify"
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BookProducerView(
+                                    bookingData: booking,
+                                    isModify: true, // flag for modify mode
+                                  ),
+                                ),
+                              );
+                            } else {
+                              // Normal view for events
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserBookingDetails(
+                                    bookingId: booking.bookingId!,
+                                    isEvent: booking.isEvent ?? false,
+                                  ),
+                                ),
+                              );
+                            }
                           } else {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        BookingDetails(bookingData: booking),
+                                builder: (context) => BookingDetails(bookingData: booking),
                               ),
                             );
                           }
@@ -123,9 +140,11 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                 );
                 return;
               }
-              final success = await provider.cancelBooking(
+              final role = context.read<RoleProvider>().role;
+              final success = await provider.cancelBookingUniversal(
                 bookingId: id,
                 reason: reasonController.text,
+                role: role,
               );
               if (success) {
                 Navigator.push(
@@ -180,6 +199,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           totalPrice: booking?.totalPrice,
           bookingId: booking?.id?.toString(),
           isEvent: true,
+          buttonText: isUser ? 'View' : al.checkIn, //  user sees View and producer sees "Check-In"
           address: event?.venueName ?? event?.location,
           customerName: isUser ? null : null,
           customerEmail: isUser ? null : entry.producer?.user?.email,
@@ -215,7 +235,9 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           guests: booking?.guestCount ?? 0,
           totalPrice: null,
           bookingId: booking?.id?.toString(),
+          producerId: entry.producer?.id?.toString(),
           isEvent: false,
+          buttonText: isUser ? al.modify : al.checkIn, //  user sees "Modify", producer sees "Check-In"
           address: entry.producer?.address ?? booking?.location,
           customerName:
               isUser
@@ -249,6 +271,9 @@ class BookingCardData {
   final String? customerEmail;
   final String? customerPhone;
   final String? internalNotes;
+  final String buttonText;
+  final String? producerId;
+
 
   const BookingCardData({
     required this.name,
@@ -265,5 +290,7 @@ class BookingCardData {
     this.customerEmail,
     this.customerPhone,
     this.internalNotes,
+    this.buttonText = '', // default empty
+    this.producerId,
   });
 }

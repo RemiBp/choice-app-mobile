@@ -73,7 +73,9 @@ class _InProgressBookingsState extends State<InProgressBookings> {
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (context) => const UserBookingDetails(),
+                                    (context) => UserBookingDetails(
+                                      bookingId: booking.bookingId!,
+                                      isEvent: booking.isEvent ?? false,),
                               ),
                             );
                           } else {

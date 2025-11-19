@@ -272,22 +272,22 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                       ],
                     ),
 
-                  //  SERVICES (Wellness)
+                  // SERVICES (Wellness)
                   if (producer.type == "wellness")
-                    provider.wellness != null && provider.wellness!.services.isNotEmpty
-                        ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          sectionTitle("Services"),
-                          const SizedBox(height: 10),
-                          ...provider.wellness!.services.map<Widget>((s) {
-                            final String title = s is String ? s : (s?.toString() ?? '');
-                            final int idx = provider.wellness!.services.indexOf(s);
-                            final isSelected = selectedServiceIndexes.contains(idx);
-                            return WellnessServiceTile(
-                              title: title,
+                    provider.wellness != null && provider.wellness!.selectedServices.isNotEmpty
+                        ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        sectionTitle("Services"), // already has horizontal padding
+                        const SizedBox(height: 10),
+                        ...provider.wellness!.selectedServices.map<Widget>((s) {
+                          final serviceName = s["serviceType"]?["name"] ?? "Unknown";
+                          final int idx = provider.wellness!.selectedServices.indexOf(s);
+                          final isSelected = selectedServiceIndexes.contains(idx);
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 20), // optional, for alignment
+                            child: WellnessServiceTile(
+                              title: serviceName,
                               isSelected: isSelected,
                               onTap: () {
                                 setState(() {
@@ -298,22 +298,24 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                                   }
                                 });
                               },
-                            );
-                          }).toList(),
-                                                ],
-                                              ),
-                        )
-                        : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        sectionTitle("Services"),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: CustomText(text: "No services added", fontSize: 14),
-                        ),
+                            ),
+                          );
+                        }).toList(),
                       ],
+                    )
+                        : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          sectionTitle("Services"),
+                          const SizedBox(height: 8),
+                          CustomText(text: "No services added", fontSize: 14),
+                        ],
+                      ),
                     ),
+
+
 
                   const SizedBox(height: 20),
                   divider(),

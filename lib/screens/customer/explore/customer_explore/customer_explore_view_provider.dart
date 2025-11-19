@@ -69,9 +69,9 @@ class ExploreViewProvider extends ChangeNotifier {
       "latitude": latitude,
       "longitude": longitude,
       "keyword": keyword ?? "",
-      "radius": radius ?? 10000,
+      "radius": radius ?? 1000,
       "page": page ?? 1,
-      "limit": limit ?? 10,
+      "limit": limit ?? 50,
     };
 
     if (producerType != null && producerType.isNotEmpty) {
@@ -106,9 +106,9 @@ class ExploreViewProvider extends ChangeNotifier {
 
       // Hardcoded lat, long and radius for now
       final response = await findNearbyProducers(
-        latitude: 31.470404754490897,
-        longitude: 74.38929248891314,
-        radius: 120000000000000000,
+        latitude: 48.856600,
+        longitude: 2.352200,
+        radius: 15,
         keyword: "",
         producerType: typeForApi, // pass single category if provided
       );
@@ -133,6 +133,4 @@ class ExploreViewProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-
 }
