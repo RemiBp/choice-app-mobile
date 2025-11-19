@@ -935,7 +935,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordInvalidCharacters.
   ///
   /// In en, this message translates to:
-  /// **'Password contains invalid characters (no emojis allowed)'**
+  /// **'Password contains invalid characters. Only letters, numbers, and !@#\\\$%& are allowed'**
   String get passwordInvalidCharacters;
 
   /// No description provided for @emailMissing.
@@ -955,6 +955,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid Password'**
   String get invalidPassword;
+
+  /// No description provided for @passwordMustBeAtLeast8Chars.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters long'**
+  String get passwordMustBeAtLeast8Chars;
+
+  /// No description provided for @passwordCannotContainSpaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot contain spaces'**
+  String get passwordCannotContainSpaces;
+
+  /// No description provided for @passwordMustContainUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one uppercase letter (A-Z)'**
+  String get passwordMustContainUppercase;
+
+  /// No description provided for @passwordMustContainLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one lowercase letter (a-z)'**
+  String get passwordMustContainLowercase;
+
+  /// No description provided for @passwordMustContainNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one number (0-9)'**
+  String get passwordMustContainNumber;
+
+  /// No description provided for @passwordMustContainSpecialChar.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one special character (!@#\\\$%&)'**
+  String get passwordMustContainSpecialChar;
 
   /// No description provided for @interest.
   ///
@@ -1033,6 +1069,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Browse by Category'**
   String get browseByCategory;
+
+  /// No description provided for @welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome'**
+  String get welcome;
+
+  /// No description provided for @sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get sound;
+
+  /// No description provided for @length.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get length;
+
+  /// No description provided for @ratingsByTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings by Theme'**
+  String get ratingsByTheme;
+
+  /// No description provided for @interestSplitByPriceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Interest Split by Price Type'**
+  String get interestSplitByPriceType;
+
+  /// No description provided for @weeklyEvolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Evolution'**
+  String get weeklyEvolution;
+
+  /// No description provided for @criteriaRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'Criteria Ratings'**
+  String get criteriaRatings;
+
+  /// No description provided for @cleanliness.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleanliness'**
+  String get cleanliness;
+
+  /// No description provided for @staffExpertise.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Expertise'**
+  String get staffExpertise;
+
+  /// No description provided for @ambiance.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambiance'**
+  String get ambiance;
+
+  /// No description provided for @numberOfInterests.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of interests'**
+  String get numberOfInterests;
 
   /// No description provided for @expiryDate1Placeholder.
   ///
@@ -1448,12 +1550,6 @@ abstract class AppLocalizations {
   /// **'Portions'**
   String get portions;
 
-  /// No description provided for @ambiance.
-  ///
-  /// In en, this message translates to:
-  /// **'Ambiance'**
-  String get ambiance;
-
   /// No description provided for @dishesAndMenusConsumed.
   ///
   /// In en, this message translates to:
@@ -1825,12 +1921,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See Full Gallery'**
   String get seeFullGallery;
-
-  /// No description provided for @welcome.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome'**
-  String get welcome;
 
   /// No description provided for @unblock.
   ///

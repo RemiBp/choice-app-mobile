@@ -1,16 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:provider/provider.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_text.dart';
 import '../../../l18n.dart';
 import '../../../res/res.dart';
-
+import '../../../userRole/role_provider.dart';
+import '../../../userRole/user_role.dart';
 
 class WeeklyRatingsChartCard extends StatelessWidget {
   WeeklyRatingsChartCard({super.key});
-
   final List<String> xLabels = [
     'Mon',
     'Tue',
@@ -31,9 +30,10 @@ class WeeklyRatingsChartCard extends StatelessWidget {
     FlSpot(5, 4.2),
     FlSpot(6, 3.8),
   ];
-
+  late UserRole role;
   @override
   Widget build(BuildContext context) {
+    role = context.read<RoleProvider>().role;
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: getWidthRatio() * 16,
@@ -58,7 +58,10 @@ class WeeklyRatingsChartCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               CustomText(
-                text: al.weeklyRatings,
+                text:
+                    role == UserRole.restaurant
+                        ? al.weeklyRatings
+                        : al.weeklyEvolution,
                 fontSize: sizes?.fontSize14,
                 fontWeight: FontWeight.w500,
                 color: AppColors.primarySlateColor,
@@ -107,7 +110,15 @@ class WeeklyRatingsChartCard extends StatelessWidget {
                       interval: 1,
                       reservedSize: getHeight() * 0.05,
                       getTitlesWidget: (value, meta) {
-                        final labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        final labels = [
+                          'Mon',
+                          'Tue',
+                          'Wed',
+                          'Thu',
+                          'Fri',
+                          'Sat',
+                          'Sun',
+                        ];
                         final index = value.toInt();
 
                         if (index < 0 || index >= labels.length) {
@@ -118,7 +129,11 @@ class WeeklyRatingsChartCard extends StatelessWidget {
                           meta: meta,
                           child: Transform.translate(
                             offset: Offset(
-                              index == 0 ? 7 : (index == labels.length - 1 ? -7 : 0), // push Mon right, Sun left
+                              index == 0
+                                  ? 7
+                                  : (index == labels.length - 1
+                                      ? -7
+                                      : 0), // push Mon right, Sun left
                               0,
                             ),
                             child: CustomText(
@@ -132,9 +147,11 @@ class WeeklyRatingsChartCard extends StatelessWidget {
                     ),
                   ),
                   topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 lineBarsData: [
                   LineChartBarData(
@@ -147,7 +164,7 @@ class WeeklyRatingsChartCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           AppColors.orangeWithOpacity,
-                          AppColors.orangeTransparent
+                          AppColors.orangeTransparent,
                         ],
                       ),
                     ),

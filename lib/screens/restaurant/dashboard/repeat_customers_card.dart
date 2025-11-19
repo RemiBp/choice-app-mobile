@@ -29,7 +29,8 @@ class _RepeatCustomersCardState extends State<RepeatCustomersCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return
+      Container(
       padding: EdgeInsets.symmetric(horizontal: getWidthRatio() * 24, vertical: getHeightRatio() * 12,),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,

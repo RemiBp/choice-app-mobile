@@ -347,36 +347,131 @@ class _UserSignupState extends State<UserSignup> {
     var userName = userNameController.text.toString().trim();
     var phoneNumber = context.read<CustomerProfileProvider>().phoneNumber;
 
-
-
-    // debugPrint("phone is : ${phone?.nsn}");
+    // Validate name fields
     if (fullName.isEmpty) {
       Toasts.getErrorToast(text: al.nameMissing);
+      return;
     } else if (userName.isEmpty) {
       Toasts.getErrorToast(text: al.usernameMissing);
+      return;
     }
+
+    // Validate phone number
     if (!_formKey.currentState!.validate()) {
-      // If phone validation fails, show custom toast
       if (phoneNumber == null || !_phoneController.value!.isValid()) {
         Toasts.getErrorToast(text: "Please enter a valid phone number.");
       }
       return;
     }
-    else if (email.isEmpty) {
+
+    // Validate email
+    if (email.isEmpty) {
       Toasts.getErrorToast(text: al.emailMissing);
+      return;
     } else if (email.validateEmail() == false) {
       Toasts.getErrorToast(text: al.invalidEmail);
-    } else if (password.isEmpty) {
-      Toasts.getErrorToast(text: al.passwordMissing);
-    } else {
-      final cleanedPhone = phoneNumber?.international.replaceAll(RegExp(r'\D'), '');
-      context.read<AuthProvider>().registerUser(
-        fullName: fullName,
-        userName: userName,
-        phone:cleanedPhone ?? "nil" ,
-        email: email, role: context
-          .read<RoleProvider>()
-          .role.name, password: password,);
+      return;
     }
+
+    // Validate password
+    if (password.isEmpty) {
+      Toasts.getErrorToast(text: al.passwordMissing);
+      return;
+    }
+
+    final passwordError = validatePassword(password);
+    if (passwordError != null) {
+      Toasts.getErrorToast(text: passwordError);
+      return;
+    }
+
+    // All validations passed
+    final cleanedPhone = phoneNumber?.international.replaceAll(RegExp(r'\D'), '');
+    context.read<AuthProvider>().registerUser(
+      fullName: fullName,
+      userName: userName,
+      phone: cleanedPhone ?? "nil",
+      email: email,
+      role: context.read<RoleProvider>().role.name,
+      password: password,
+    );
   }
+
+  String? validatePassword(String password) {
+    if (password.length < 8) {
+      Toasts.getErrorToast(text: al.passwordMustBeAtLeast8Chars);
+      return al.passwordMustBeAtLeast8Chars;
+    }
+
+    if (password.contains(' ')) {
+      Toasts.getErrorToast(text: al.passwordCannotContainSpaces);
+      return al.passwordCannotContainSpaces;
+    }
+
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainUppercase);
+      return al.passwordMustContainUppercase;
+    }
+
+    if (!RegExp(r'[a-z]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainLowercase);
+      return al.passwordMustContainLowercase;
+    }
+
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainNumber);
+      return al.passwordMustContainNumber;
+    }
+
+    if (!RegExp(r'[!@#$%&]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainSpecialChar);
+      return al.passwordMustContainSpecialChar;
+    }
+
+    if (!RegExp(r'^[a-zA-Z0-9!@#$%&]+$').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordInvalidCharacters);
+      return al.passwordInvalidCharacters;
+    }
+
+    return null; // No error
+  }
+  // onSignupTap() {
+  //   var email = emailController.text.toString().trim();
+  //   var password = passwordController.text.toString().trim();
+  //   var fullName = fullNameController.text.toString().trim();
+  //   var userName = userNameController.text.toString().trim();
+  //   var phoneNumber = context.read<CustomerProfileProvider>().phoneNumber;
+  //
+  //
+  //
+  //   // debugPrint("phone is : ${phone?.nsn}");
+  //   if (fullName.isEmpty) {
+  //     Toasts.getErrorToast(text: al.nameMissing);
+  //   } else if (userName.isEmpty) {
+  //     Toasts.getErrorToast(text: al.usernameMissing);
+  //   }
+  //   if (!_formKey.currentState!.validate()) {
+  //     // If phone validation fails, show custom toast
+  //     if (phoneNumber == null || !_phoneController.value!.isValid()) {
+  //       Toasts.getErrorToast(text: "Please enter a valid phone number.");
+  //     }
+  //     return;
+  //   }
+  //   else if (email.isEmpty) {
+  //     Toasts.getErrorToast(text: al.emailMissing);
+  //   } else if (email.validateEmail() == false) {
+  //     Toasts.getErrorToast(text: al.invalidEmail);
+  //   } else if (password.isEmpty) {
+  //     Toasts.getErrorToast(text: al.passwordMissing);
+  //   } else {
+  //     final cleanedPhone = phoneNumber?.international.replaceAll(RegExp(r'\D'), '');
+  //     context.read<AuthProvider>().registerUser(
+  //       fullName: fullName,
+  //       userName: userName,
+  //       phone:cleanedPhone ?? "nil" ,
+  //       email: email, role: context
+  //         .read<RoleProvider>()
+  //         .role.name, password: password,);
+  //   }
+  // }
 }
