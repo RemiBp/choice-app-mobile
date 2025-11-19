@@ -11,6 +11,8 @@ import '../../../customWidgets/custom_text.dart';
 import '../../../customWidgets/filter_drop_down.dart';
 import '../../../l18n.dart';
 import '../../../res/res.dart';
+import '../../../userRole/role_provider.dart';
+import '../../../userRole/user_role.dart';
 
 
 
@@ -173,23 +175,41 @@ class BookingChartCard extends StatefulWidget {
 class _BookingChartCardState extends State<BookingChartCard> {
   String selectedRange = al.category;
 
-  List<double> barData = [];
+
   List<String> xLabels = [];
+  List<double> barData = [];
+  late UserRole role;
 
   @override
   void initState() {
     super.initState();
+    role = context.read<RoleProvider>().role;
     fetchChartData(selectedRange);
   }
 
   void fetchChartData(String range) {
+    if (role == UserRole.restaurant) {
+      _fetchRestaurantChartData(range);
+    } else if (role == UserRole.leisure) {
+      _fetchLeisureChartData(range);
+    }
+  }
+
+  void _fetchRestaurantChartData(String range) {
     if (range == al.category) {
       xLabels = ['Bowl', 'Lasagna', 'Sushi', 'Burger', 'Ramen'];
-      // Ratings (1.0–5.0)
       barData = [3.2, 3.5, 3.0, 3.3, 5.0];
     } else if (range == al.lastMonth) {
       xLabels = [al.week1, al.week2, al.week3, al.week4];
       barData = [2.5, 3.8, 4.1, 3.6];
+    }
+    setState(() {});
+  }
+
+  void _fetchLeisureChartData(String range) {
+    if (range == al.category) {
+      xLabels = ['Free', 'Discount', 'Full Price'];
+      barData = [3.2, 3.5, 3.0];
     }
     setState(() {});
   }
@@ -218,65 +238,67 @@ class _BookingChartCardState extends State<BookingChartCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with dropdown
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomText(
-                text: al.dishRating,
+                text: role == UserRole.restaurant
+                    ? al.dishRating
+                    : al.interestSplitByPriceType,
                 fontSize: sizes?.fontSize14,
                 fontFamily: Assets.onsetMedium,
                 fontWeight: FontWeight.w500,
                 color: AppColors.primarySlateColor,
               ),
-              Container(
-                height: getHeight() * 0.042, // smaller height (~36–38px)
-                padding: EdgeInsets.symmetric(
-                  horizontal: getWidthRatio() * 6, // slightly tighter padding
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.greyBordersColor, width: 0.8), // thinner border
-                  borderRadius: BorderRadius.circular(6), // slightly smaller radius
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedRange,
-                        icon: const SizedBox.shrink(), // hide default dropdown icon
-                        items: [al.category, al.lastMonth].map((e) {
-                          return DropdownMenuItem(
-                            value: e,
-                            child: CustomText(
-                              text: e,
-                              fontSize: sizes?.fontSize12,
-                              fontFamily: Assets.onsetMedium,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.primarySlateColor,
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() => selectedRange = value);
-                            fetchChartData(value);
-                          }
-                        },
+
+              if (role == UserRole.restaurant)
+                Container(
+                  height: getHeight() * 0.042,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: getWidthRatio() * 6,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.greyBordersColor, width: 0.8),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedRange,
+                          icon: const SizedBox.shrink(),
+                          items: [al.category, al.lastMonth].map((e) {
+                            return DropdownMenuItem(
+                              value: e,
+                              child: CustomText(
+                                text: e,
+                                fontSize: sizes?.fontSize12,
+                                fontFamily: Assets.onsetMedium,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.primarySlateColor,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() => selectedRange = value);
+                              fetchChartData(value);
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                    SizedBox(width: getWidthRatio() * 4), // tighter spacing between text & icon
-                    const Icon(
-                      Icons.keyboard_arrow_down,
-                      size: 16, // smaller icon
-                      color: AppColors.primarySlateColor,
-                    ),
-                  ],
+                      SizedBox(width: getWidthRatio() * 4),
+                      const Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 16,
+                        color: AppColors.primarySlateColor,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
-
           SizedBox(height: getHeightRatio() * 16),
 
           /// Chart

@@ -435,7 +435,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordInvalidCharacters =>
-      'Password contains invalid characters (no emojis allowed)';
+      'Password contains invalid characters. Only letters, numbers, and !@#\\\$%& are allowed';
 
   @override
   String get emailMissing => 'Email is missing';
@@ -445,6 +445,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidPassword => 'Invalid Password';
+
+  @override
+  String get passwordMustBeAtLeast8Chars =>
+      'Password must be at least 8 characters long';
+
+  @override
+  String get passwordCannotContainSpaces => 'Password cannot contain spaces';
+
+  @override
+  String get passwordMustContainUppercase =>
+      'Password must contain at least one uppercase letter (A-Z)';
+
+  @override
+  String get passwordMustContainLowercase =>
+      'Password must contain at least one lowercase letter (a-z)';
+
+  @override
+  String get passwordMustContainNumber =>
+      'Password must contain at least one number (0-9)';
+
+  @override
+  String get passwordMustContainSpecialChar =>
+      'Password must contain at least one special character (!@#\\\$%&)';
 
   @override
   String get interest => 'Interest';
@@ -484,6 +507,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get browseByCategory => 'Browse by Category';
+
+  @override
+  String get welcome => 'Welcome';
+
+  @override
+  String get sound => 'Sound';
+
+  @override
+  String get length => 'Length';
+
+  @override
+  String get ratingsByTheme => 'Ratings by Theme';
+
+  @override
+  String get interestSplitByPriceType => 'Interest Split by Price Type';
+
+  @override
+  String get weeklyEvolution => 'Weekly Evolution';
+
+  @override
+  String get criteriaRatings => 'Criteria Ratings';
+
+  @override
+  String get cleanliness => 'Cleanliness';
+
+  @override
+  String get staffExpertise => 'Staff Expertise';
+
+  @override
+  String get ambiance => 'Ambiance';
+
+  @override
+  String get numberOfInterests => 'Number of interests';
 
   @override
   String get expiryDate1Placeholder => 'Please Select Expiry Date 1';
@@ -697,9 +753,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get portions => 'Portions';
 
   @override
-  String get ambiance => 'Ambiance';
-
-  @override
   String get dishesAndMenusConsumed => 'Dishes and Menus Consumed';
 
   @override
@@ -887,9 +940,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seeFullGallery => 'See Full Gallery';
-
-  @override
-  String get welcome => 'Welcome';
 
   @override
   String get unblock => 'Unblock';

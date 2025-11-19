@@ -56,11 +56,12 @@ class _HomeViewState extends State<HomeView> {
               HomeAppBar(
                 // isSeen: !(notificationProvider.hasUnreadNotifications ?? true),
                 isSeen: false,
-                onNotificationTap: (){
-
+                onNotificationTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => NotificationsView()),
+                    MaterialPageRoute(
+                      builder: (context) => NotificationsView(),
+                    ),
                   );
                   // Navigator.push(context, Transitions(page: const NotificationsView())).then((onValue){
                   //   notificationProvider.getNotificationAPI(page: 1, limit: 50);
@@ -71,12 +72,10 @@ class _HomeViewState extends State<HomeView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  DashboardCard(width: getWidth() * 0.42),
                   DashboardCard(
                     width: getWidth() * 0.42,
-                  ),
-                  DashboardCard(
-                    width: getWidth() * 0.42,
-                    header: al.bookmark,
+                    header: al.numberOfInterests,
                     price: "348",
                   ),
                 ],
@@ -104,12 +103,14 @@ class _HomeViewState extends State<HomeView> {
                 price: "18%",
               ),
               SizedBox(height: getHeightRatio() * 16),
-              DashboardCard(
-                width: getWidth() * 0.9,
-                header: al.favoriteChoiceOfMonth,
-                price: "18%",
-                duration: al.thisWeek,
-              ),
+              if (role == UserRole.restaurant) ...[
+                DashboardCard(
+                  width: getWidth() * 0.9,
+                  header: al.favoriteChoiceOfMonth,
+                  price: "18%",
+                  duration: al.thisWeek,
+                ),
+              ],
               SizedBox(height: getHeightRatio() * 16),
               UserOriginMapCard(),
               SizedBox(height: getHeightRatio() * 16),
@@ -118,14 +119,14 @@ class _HomeViewState extends State<HomeView> {
               if (role == UserRole.restaurant) ...[
                 const CustomersChartCard(), // monthly
               ]
+
               else if (role == UserRole.wellness || role == UserRole.leisure) ...[
                 WeeklyRatingsChartCard(), // weekly 0–5 chart
               ],
-
               SizedBox(height: getHeightRatio() * 16),
-              const BookingChartCard(),
+              if (role == UserRole.restaurant || role == UserRole.leisure)...[const BookingChartCard(),],
               SizedBox(height: getHeightRatio() * 16),
-              const RepeatCustomersCard(),
+              if (role == UserRole.restaurant) ...[const RepeatCustomersCard()],
               SizedBox(height: getHeightRatio() * 16),
 
               if (role == UserRole.restaurant) ...[
@@ -149,11 +150,13 @@ class _HomeViewState extends State<HomeView> {
               SizedBox(height: getHeightRatio() * 16),
               if (role == UserRole.restaurant) ...[
                 const DishDropAlertsCard(), // monthly
-              ] else if (role == UserRole.wellness || role == UserRole.leisure) ...[
-                WeeklyRatingsChartCard(), // weekly 0–5 chart
-              ],
+              ] ,
+              // else if (role == UserRole.wellness ||
+              //     role == UserRole.leisure) ...[
+              //   WeeklyRatingsChartCard(), // weekly 0–5 chart
+              // ],
               SizedBox(height: getHeightRatio() * 16),
-               RatingsByThemeCard(),
+              RatingsByThemeCard(),
               SizedBox(height: getHeight() * 0.025),
             ],
           ),
@@ -161,5 +164,4 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
-
 }

@@ -72,6 +72,27 @@
   "choosePreferredLanguage": "Choisissez votre langue préférée pour continuer",
   "continueText": "Continuer",
   "phoneNumber": "Numéro de téléphone",
+  "weeklyEvolution": "Évolution Hebdomadaire",
+
+  "welcome": "Bienvenue",
+  "sound": "Son",
+  "length": "Longueur",
+    "ratingsByTheme": "Notes par thème",
+     "interestSplitByPriceType": "Répartition des intérêts par type de prix",
+
+  "passwordMustBeAtLeast8Chars": "Le mot de passe doit contenir au moins 8 caractères",
+  "passwordCannotContainSpaces": "Le mot de passe ne peut pas contenir d'espaces",
+  "passwordMustContainUppercase": "Le mot de passe doit contenir au moins une lettre majuscule (A-Z)",
+  "passwordMustContainLowercase": "Le mot de passe doit contenir au moins une lettre minuscule (a-z)",
+  "passwordMustContainNumber": "Le mot de passe doit contenir au moins un chiffre (0-9)",
+  "passwordMustContainSpecialChar": "Le mot de passe doit contenir au moins un caractère spécial (!@#\\$%&)",
+  "passwordInvalidCharacters": "Le mot de passe contient des caractères invalides. Seules les lettres, chiffres et !@#\\$%& sont autorisés",
+  "criteriaRatings": "Notes des Critères",
+    "cleanliness": "Propreté",
+    "staffExpertise": "Expertise du Personnel",
+    "ambiance": "Ambiance",
+      "numberOfInterests": "Nombre d'intérêts",
+    
 
   "reclaimAccount": "Récupérez votre compte",
   "retrieveAccess": "Récupérez l'accès à votre profil existant",

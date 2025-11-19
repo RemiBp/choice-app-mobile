@@ -121,7 +121,7 @@ class AuthProvider extends ChangeNotifier{
       debugPrint("register response : $signupResponse");
       if (signupResponse?["message"] != null) {
         debugPrint("register response : ${signupResponse?["message"]}");
-        Toasts.getSuccessToast(text: al.registrationSuccessful);
+        // Toasts.getSuccessToast(text: al.registrationSuccessful);
         context?.push(Routes.otpVerificationRoute, extra: {
           "email": email,
           "isResetPassFlow": false,
@@ -207,7 +207,7 @@ class AuthProvider extends ChangeNotifier{
       debugPrint("register response : $signupResponse");
       if (signupResponse?["message"] != null) {
         debugPrint("register response : ${signupResponse?["message"]}");
-        Toasts.getSuccessToast(text: al.registrationSuccessful);
+        // Toasts.getSuccessToast(text: al.registrationSuccessful);
         context?.push(Routes.otpVerificationRoute, extra: {
           "email": email,
           "isResetPassFlow": false,

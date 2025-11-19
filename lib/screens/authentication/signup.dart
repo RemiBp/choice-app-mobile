@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:choice_app/appColors/colors.dart';
 import 'package:choice_app/customWidgets/custom_button.dart';
 import 'package:choice_app/customWidgets/custom_text.dart';
@@ -191,15 +193,22 @@ class _SignupState extends State<Signup> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SocialButton(
-                  buttonLabel: al.signupWithApple,
-                  svgString: Assets.appleIcon,
-                  onPress: () {},
-                ),
-                SocialButton(
-                  buttonLabel: al.signupWithGoogle,
-                  svgString: Assets.googleIcon,
-                  onPress: () {},
+                if(Platform.isIOS)...[
+                  Expanded(
+                    child: SocialButton(
+                      buttonLabel: al.signupWithApple,
+                      svgString: Assets.appleIcon,
+                      onPress: () {},
+                    ),
+                  ),
+                  SizedBox(width: 20,),
+                ],
+                Expanded(
+                  child: SocialButton(
+                    buttonLabel: al.signupWithGoogle,
+                    svgString: Assets.googleIcon,
+                    onPress: () {},
+                  ),
                 ),
               ],
             ),
@@ -240,27 +249,68 @@ class _SignupState extends State<Signup> {
     var businessName = businessNameController.text.toString().trim();
 
     final nameRegex = RegExp(r"^[a-zA-Z0-9\s\-,.&']+$");
-    final passwordRegex = RegExp(r'^[a-zA-Z0-9!@#\$%^&*(),.?":{}|<>_\-]+$');
 
     if (businessName.isEmpty) {
       Toasts.getErrorToast(text: al.businessNameMissing);
     } else if (!nameRegex.hasMatch(businessName)) {
       Toasts.getErrorToast(text: al.businessNameInvalidCharacters);
     } else if (email.isEmpty) {
-    Toasts.getErrorToast(text: al.emailMissing);
+      Toasts.getErrorToast(text: al.emailMissing);
     } else if (email.validateEmail() == false) {
-    Toasts.getErrorToast(text: al.invalidEmail);
+      Toasts.getErrorToast(text: al.invalidEmail);
     } else if (password.isEmpty) {
-    Toasts.getErrorToast(text: al.passwordMissing);
-    } else if (!passwordRegex.hasMatch(password)) {
-    Toasts.getErrorToast(text: al.passwordInvalidCharacters);
+      Toasts.getErrorToast(text: al.passwordMissing);
     } else {
-    context.read<AuthProvider>().register(
-    businessName: businessName,
-    email: email,
-    role: context.read<RoleProvider>().role.name,
-    password: password,
-    );
+      final passwordError = validatePassword(password);
+      if (passwordError != null) {
+        Toasts.getErrorToast(text: passwordError);
+      } else {
+        context.read<AuthProvider>().register(
+          businessName: businessName,
+          email: email,
+          role: context.read<RoleProvider>().role.name,
+          password: password,
+        );
+      }
     }
+  }
+
+  String? validatePassword(String password) {
+    if (password.length < 8) {
+      Toasts.getErrorToast(text: al.passwordMustBeAtLeast8Chars);
+      return al.passwordMustBeAtLeast8Chars;
+    }
+
+    if (password.contains(' ')) {
+      Toasts.getErrorToast(text: al.passwordCannotContainSpaces);
+      return al.passwordCannotContainSpaces;
+    }
+
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainUppercase);
+      return al.passwordMustContainUppercase;
+    }
+
+    if (!RegExp(r'[a-z]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainLowercase);
+      return al.passwordMustContainLowercase;
+    }
+
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainNumber);
+      return al.passwordMustContainNumber;
+    }
+
+    if (!RegExp(r'[!@#$%&]').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordMustContainSpecialChar);
+      return al.passwordMustContainSpecialChar;
+    }
+
+    if (!RegExp(r'^[a-zA-Z0-9!@#$%&]+$').hasMatch(password)) {
+      Toasts.getErrorToast(text: al.passwordInvalidCharacters);
+      return al.passwordInvalidCharacters;
+    }
+
+    return null; // No error
   }
 }
