@@ -33,6 +33,7 @@ class NonEventDetailsResponse {
 class Producer {
   final int? id;
   final int? userId;
+  String? phoneNumber;
   final String? name;
   final String? address;
   final String? type; // restaurant | wellness
@@ -60,6 +61,7 @@ class Producer {
     this.businessHours,
     this.photos,
     this.menuCategory,
+    this.phoneNumber
   });
 
   factory Producer.fromJson(Map<String, dynamic> json) {
@@ -74,8 +76,9 @@ class Producer {
       facebook: json["facebook"],
       instagram: json["instagram"],
       details: json["details"],
+      phoneNumber: json['phoneNumber'],
 
-      businessHours: json["user"]?["operationalHours"] != null
+        businessHours: json["user"]?["operationalHours"] != null
           ? (json["user"]["operationalHours"] as List)
           .map((e) => BusinessHour.fromJson(e))
           .toList()

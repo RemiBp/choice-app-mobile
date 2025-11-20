@@ -5,6 +5,7 @@ import 'package:choice_app/screens/authentication/otpVerification/otp_verificati
 import 'package:choice_app/screens/authentication/accountReclaim/reclaim_account.dart';
 import 'package:choice_app/screens/authentication/signup.dart';
 import 'package:choice_app/screens/authentication/upload_docs.dart';
+import 'package:choice_app/screens/bookings/bookings_view.dart';
 import 'package:choice_app/screens/chatbot/chatbot_home.dart';
 import 'package:choice_app/screens/customer/home/choiceWidgets/choice_selection.dart';
 import 'package:choice_app/screens/customer/home/create_choice.dart';
@@ -60,6 +61,7 @@ class Routes {
   static const String resetPasswordRoute = '/reset_password';
   static const String editOperationHoursRoute = '/edit_operation_hours';
   static const String galleryViewRoute = '/gallery_view';
+  static const String bookingViewRoute = '/bookings_view';
   static const String slotManagementViewRoute = '/slot_management_view';
 
   // restaurant
@@ -262,6 +264,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.subscribeRoute,
       builder: (context, state) => const SubscribeScreen(),
+    ),
+    GoRoute(
+      path: Routes.bookingViewRoute,
+      builder: (context, state) => const BookingsView(),
     ),
     GoRoute(
       path: Routes.heatmapRoute,

@@ -83,7 +83,9 @@ const String checkInSimpleBookingApiUrl = "$baseUrl/api/app/booking/checkin";
 const String createEventBookingApiUrl = "$baseUrl/api/producer/booking/createBooking";
 const String createNonEventBookingApiUrl = "$baseUrl/api/app/booking/createBooking";
 const String getProducerBookingSlotsApiUrl = "$baseUrl/api/app/booking/getRestaurantSlots";
-const String updateBookingsApiUrl = "$baseUrl/api/app/booking/updateBooking";
+const String updateBookingsApiUrl = "$baseUrl/api/app/booking/updateBookingTemp";
 const String getEventBookingDetailsApiUrl = "$baseUrl/api/producer/booking/booking";
+const String getSimpleBookingDetailsApiUrl = "$baseUrl/api/app/booking/getBooking";
+
 
 

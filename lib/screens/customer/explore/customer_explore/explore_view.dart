@@ -273,7 +273,6 @@ class _ExploreViewState extends State<ExploreView> {
                                   bottom: getHeight() * 0.01,
                                   right: getWidth() * 0.03,
                                 ),
-                                onFavouriteTap: () {},
                                 onRestaurantTap: () {
                                   Navigator.push(
                                     context,

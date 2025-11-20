@@ -62,6 +62,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                       return BookingCard(
                         name: booking.name,
                         imageUrl: booking.imageUrl,
+                        bookingType: booking.type ?? "Unknown", // for chips
                         date: booking.date,
                         startTime: booking.startTime,
                         endTime: booking.endTime,
@@ -71,31 +72,32 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                         bookingId: booking.bookingId,
                         address: booking.address,
                         buttonText: booking.buttonText,
-                        onDetails: () {
+                        onDetails: ({bool isFromModifyButton = false}) {
                           if (role == UserRole.user) {
-                            if (booking.buttonText == al.modify) {
-                              // User pressed "Modify"
+                            if (isFromModifyButton) {
+                              // Only modify button should reach here
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => BookProducerView(
                                     bookingData: booking,
-                                    isModify: true, // flag for modify mode
+                                    isModify: true,
                                   ),
                                 ),
                               );
-                            } else {
-                              // Normal view for events
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserBookingDetails(
-                                    bookingId: booking.bookingId!,
-                                    isEvent: booking.isEvent ?? false,
-                                  ),
-                                ),
-                              );
+                              return;
                             }
+
+                            // Card tap → always go to UserBookingDetails
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserBookingDetails(
+                                  bookingId: booking.bookingId!,
+                                  isEvent: booking.isEvent ?? false,
+                                ),
+                              ),
+                            );
                           } else {
                             Navigator.push(
                               context,
@@ -220,6 +222,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
     for (final entry in data.eventBookings ?? []) {
       final booking = entry.booking;
       final event = booking?.event;
+
       final eventImages = event?.eventImages ?? [];
       final eventName = event?.title ?? '';
       final producerName = entry.producer?.name ?? event?.producer?.name ?? '';
@@ -244,6 +247,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           customerEmail: isUser ? null : entry.producer?.user?.email,
           customerPhone: isUser ? null : entry.producer?.user?.phoneNumber,
           internalNotes: booking?.internalNotes,
+          type: event?.serviceType,
         ),
       );
     }
@@ -288,6 +292,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           customerEmail: customer?.email,
           customerPhone: customer?.phoneNumber?.toString(),
           internalNotes: booking?.specialRequest,
+          type: entry.producer?.type,
         ),
       );
     }
@@ -314,6 +319,7 @@ class BookingCardData {
   final String? internalNotes;
   final String buttonText;
   final String? producerId;
+  final String? type;
 
 
   const BookingCardData({
@@ -334,5 +340,6 @@ class BookingCardData {
     this.buttonText = '', // default empty
     this.producerId,
     this.producerUserId,
+    this.type
   });
 }
