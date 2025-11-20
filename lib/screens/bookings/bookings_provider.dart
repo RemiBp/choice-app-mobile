@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:choice_app/network/models.dart';
 
 import '../../l18n.dart';
+import '../../models/get_normal_booking_details_response.dart';
 import '../../userRole/user_role.dart';
 
 enum BookingStatus { scheduled, inProgress, completed, cancelled }
@@ -1101,6 +1102,39 @@ class BookingsProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("❌ Error fetching event booking details: $e");
       _loader.hideLoader(context!);
+      Toasts.getErrorToast(text: "Failed to fetch booking details");
+      return null;
+    }
+  }
+
+  SimpleBookingDetailsResponse? simpleBookingDetails;
+
+  Future<SimpleBookingDetailsResponse?> fetchSimpleBookingDetails(
+      BuildContext context,
+      int bookingId,
+      ) async {
+    try {
+      _loader.showLoader(context: context);
+
+      final response = await MyApi.callGetApi(
+        url: "$getSimpleBookingDetailsApiUrl/$bookingId",
+        modelName: Models.getSimpleBookingDetailsModel,
+        parameters: {"timeZone": "Asia/Karachi"}, // FIXED
+      );
+
+      _loader.hideLoader(context);
+
+      if (response != null) {
+        simpleBookingDetails = response;
+        notifyListeners();
+        return response;
+      } else {
+        Toasts.getErrorToast(text: "Failed to fetch booking details");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching simple booking details: $e");
+      _loader.hideLoader(context);
       Toasts.getErrorToast(text: "Failed to fetch booking details");
       return null;
     }

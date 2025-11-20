@@ -1180,13 +1180,12 @@ class BookmarkRestaurantCard extends StatelessWidget {
 
 
 
-class FavouriteRestaurantCard extends StatelessWidget {
+class FavouriteRestaurantCard extends StatefulWidget {
   final String imageUrl;
   final String restaurantName;
   final String address;
   final bool isFavourite;
   final EdgeInsetsGeometry? margin;
-  final VoidCallback? onFavouriteTap;
   final VoidCallback? onRestaurantTap;
   final String? chipText;
   final Color? chipColor;
@@ -1196,8 +1195,7 @@ class FavouriteRestaurantCard extends StatelessWidget {
     required this.imageUrl,
     required this.restaurantName,
     required this.address,
-    this.isFavourite = true,
-    this.onFavouriteTap,
+    this.isFavourite = false,
     this.onRestaurantTap,
     this.margin,
     this.chipText,
@@ -1205,12 +1203,31 @@ class FavouriteRestaurantCard extends StatelessWidget {
   });
 
   @override
+  State<FavouriteRestaurantCard> createState() => _FavouriteRestaurantCardState();
+}
+
+class _FavouriteRestaurantCardState extends State<FavouriteRestaurantCard> {
+  late bool _isFavourite;
+
+  @override
+  void initState() {
+    super.initState();
+    _isFavourite = widget.isFavourite;
+  }
+
+  void _toggleFavourite() {
+    setState(() {
+      _isFavourite = !_isFavourite;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onRestaurantTap,
+      onTap: widget.onRestaurantTap,
       child: Container(
         height: getHeightRatio() * 210,
-        margin: margin ?? EdgeInsets.symmetric(
+        margin: widget.margin ?? EdgeInsets.symmetric(
             horizontal: sizes!.pagePadding, vertical: getHeight() * 0.015),
         padding: EdgeInsets.symmetric(
             horizontal: getWidth() * 0.025, vertical: getHeight() * 0.015),
@@ -1222,21 +1239,19 @@ class FavouriteRestaurantCard extends StatelessWidget {
               color: AppColors.blackColor.withAlpha(20),
               offset: const Offset(0, 0),
               blurRadius: 24,
-              spreadRadius: 0,
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image + Favourite Button Stack
             Expanded(
               child: Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      imageUrl,
+                      widget.imageUrl,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -1245,7 +1260,7 @@ class FavouriteRestaurantCard extends StatelessWidget {
                     top: getHeight() * 0.015,
                     right: getWidth() * 0.04,
                     child: GestureDetector(
-                      onTap: onFavouriteTap,
+                      onTap: _toggleFavourite,
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: const BoxDecoration(
@@ -1253,14 +1268,14 @@ class FavouriteRestaurantCard extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          isFavourite ? Icons.favorite : Icons.favorite_border,
-                          color: AppColors.redColor,
+                          _isFavourite ? Icons.favorite : Icons.favorite_border,
+                          color: _isFavourite ? AppColors.redColor : Colors.grey,
                           size: 20,
                         ),
                       ),
                     ),
                   ),
-                  if (chipText != null)
+                  if (widget.chipText != null)
                     Positioned(
                       top: getHeight() * 0.015,
                       left: getWidth() * 0.015,
@@ -1270,24 +1285,23 @@ class FavouriteRestaurantCard extends StatelessWidget {
                           vertical: getHeight() * 0.01,
                         ),
                         decoration: BoxDecoration(
-                          color: _getChipColor(chipText!).withAlpha(40), // semi-transparent
-                          borderRadius: BorderRadius.circular(40), // pill shape
+                          color: (widget.chipColor ?? Colors.grey).withAlpha(40),
+                          borderRadius: BorderRadius.circular(40),
                         ),
                         child: CustomText(
-                          text: chipText!,
+                          text: widget.chipText!,
                           fontSize: sizes?.fontSize12,
                           fontWeight: FontWeight.w500,
-                          color: _getChipColor(chipText!), // text color same as type color
+                          color: widget.chipColor ?? Colors.grey,
                         ),
                       ),
                     ),
-
                 ],
               ),
             ),
             SizedBox(height: getHeight() * 0.01),
             CustomText(
-              text: restaurantName,
+              text: widget.restaurantName,
               fontSize: sizes?.fontSize14,
               fontWeight: FontWeight.w500,
               color: AppColors.blackColor,
@@ -1303,7 +1317,7 @@ class FavouriteRestaurantCard extends StatelessWidget {
                 SizedBox(width: getWidth() * 0.01),
                 Expanded(
                   child: CustomText(
-                    text: address,
+                    text: widget.address,
                     fontSize: sizes?.fontSize12,
                     fontWeight: FontWeight.w500,
                     lines: 2,
@@ -1317,18 +1331,6 @@ class FavouriteRestaurantCard extends StatelessWidget {
         ),
       ),
     );
-  }
-  Color _getChipColor(String type) {
-    switch (type.toLowerCase()) {
-      case "restaurant":
-        return AppColors.restaurantPrimaryColor; // redish
-      case "wellness":
-        return AppColors.wellnessPrimaryColor; // greenish
-      case "leisure":
-        return AppColors.leisurePrimaryColor; // greenish
-      default:
-        return AppColors.userPrimaryColor; // default fallback
-    }
   }
 }
 

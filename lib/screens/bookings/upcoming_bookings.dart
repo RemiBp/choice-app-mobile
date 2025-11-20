@@ -60,7 +60,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
               return BookingCard(
                 name: booking.name,
                 imageUrl: booking.imageUrl,
-                date: booking.date,
+                bookingType: booking.type ?? "Unknown", // for chipsdate: booking.date,
                 startTime: booking.startTime,
                 endTime: booking.endTime,
                 guests: booking.guests,
@@ -69,31 +69,31 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                 bookingId: booking.bookingId,
                 address: booking.address,
                 buttonText: booking.buttonText,
-                onDetails: () {
+                onDetails: ({bool isFromModifyButton = false}) {
                   if (role == UserRole.user) {
-                    if (booking.buttonText == al.modify) {
-                      // User pressed "Modify"
+                    if (isFromModifyButton) {
+                      // Only modify button should reach here
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => BookProducerView(
                             bookingData: booking,
-                            isModify: true, // flag for modify mode
+                            isModify: true, ),
                           ),
-                        ),
-                      );
-                    } else {
-                      // Normal view for events
+                        );
+                      return;
+                    }
+                      // Card tap → always go to UserBookingDetails
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => UserBookingDetails(
                             bookingId: booking.bookingId!,
                             isEvent: booking.isEvent ?? false,
-                          ),
+
                         ),
-                      );
-                    }
+                      ),
+                    );
                   } else {
                     Navigator.push(
                       context,
@@ -244,6 +244,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           customerEmail: isUser ? null : entry.producer?.user?.email,
           customerPhone: isUser ? null : entry.producer?.user?.phoneNumber,
           internalNotes: booking?.internalNotes,
+          type: event?.serviceType,
         ),
       );
     }
@@ -286,6 +287,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           customerEmail: customer?.email,
           customerPhone: customer?.phoneNumber?.toString(),
           internalNotes: booking?.specialRequest,
+          type: entry.producer?.type,
         ),
       );
     }
@@ -312,6 +314,7 @@ class BookingCardData {
   final String? internalNotes;
   final String buttonText;
   final String? producerId;
+  final String? type;
 
   const BookingCardData({
     required this.name,
@@ -331,5 +334,6 @@ class BookingCardData {
     this.buttonText = '',
     this.producerId,
     this.producerUserId,
+    this.type
   });
 }

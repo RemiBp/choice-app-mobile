@@ -17,6 +17,7 @@ import 'package:choice_app/screens/customer/explore/full_menu/full_menu_view.dar
 import 'package:choice_app/screens/customer/explore/participants/participants_screen.dart';
 import 'package:choice_app/screens/customer/explore/customer_gallery/customer_gallery_screen.dart';
 import 'package:choice_app/screens/customer/explore/restaurant_explore_details/restaurant_explore_widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../models/get_events_details_response.dart';
 import '../../../onboarding/menu/menu_widgets.dart';
@@ -615,7 +616,6 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
                         top: getHeightRatio() * 8,
                         bottom: getHeightRatio() * 8,
                         right: getWidth() * 0.03),
-                    onFavouriteTap: () {},
                     onRestaurantTap: () {
                       Navigator.push(
                         context,
@@ -700,13 +700,13 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
   Widget _buildOrganizerTile(Producer? producer) {
     final profileImage = producer?.profileImage ?? '';
     final name = producer?.name ?? '';
+    final phoneNumber = producer?.phoneNumber ?? ''; // get the phone
 
     return Row(
       children: [
         CircleAvatar(
           radius: getHeight() * 0.03,
-          backgroundImage:
-          profileImage.isNotEmpty ? NetworkImage(profileImage) : null,
+          backgroundImage: profileImage.isNotEmpty ? NetworkImage(profileImage) : null,
           backgroundColor: Colors.grey.shade200,
           child: profileImage.isEmpty ? const Icon(Icons.person) : null,
         ),
@@ -729,19 +729,41 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
             ],
           ),
         ),
-        ShadowIcon(
-          icon: Assets.phoneIcon,
-          color: AppColors.getPrimaryColorFromContext(context),
+        // Phone icon
+        GestureDetector(
+          onTap: () async {
+            final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+            if (await canLaunchUrl(phoneUri)) {
+              await launchUrl(phoneUri);
+            } else {
+              // optional: show toast/error
+              debugPrint("Cannot launch dialer");
+            }
+          },
+          child: ShadowIcon(
+            icon: Assets.phoneIcon,
+            color: AppColors.getPrimaryColorFromContext(context),
+          ),
         ),
         SizedBox(width: getWidth() * 0.02),
-        ShadowIcon(
-          icon: Assets.messagesIcon,
-          color: AppColors.getPrimaryColorFromContext(context),
+        // Message icon
+        GestureDetector(
+          onTap: () async {
+            final Uri smsUri = Uri(scheme: 'sms', path: phoneNumber);
+            if (await canLaunchUrl(smsUri)) {
+              await launchUrl(smsUri);
+            } else {
+              debugPrint("Cannot launch SMS app");
+            }
+          },
+          child: ShadowIcon(
+            icon: Assets.messagesIcon,
+            color: AppColors.getPrimaryColorFromContext(context),
+          ),
         ),
       ],
     );
   }
-
   Widget _buildAvatar(String imageUrl) {
     return CircleAvatar(
       radius: 16,

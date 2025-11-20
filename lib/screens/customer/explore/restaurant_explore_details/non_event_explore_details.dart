@@ -206,13 +206,28 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                             fontFamily: Assets.onsetSemiBold,
                           ),
                         ),
-                        SvgPicture.asset(
-                          Assets.messagesIcon,
-                          height: 24,
-                          width: 24,
-                          colorFilter: ColorFilter.mode(
-                            AppColors.getPrimaryColorFromContext(context),
-                            BlendMode.srcIn,
+                        GestureDetector(
+                          onTap: () async {
+                            final phoneNumber = producer.phoneNumber ?? ""; // get producer's phone
+                            if (phoneNumber.isEmpty) {
+                              Toasts.getErrorToast(text: "Phone number not available");
+                              return;
+                            }
+                            final smsUrl = "sms:$phoneNumber";
+                            if (await canLaunchUrlString(smsUrl)) {
+                              await launchUrlString(smsUrl);
+                            } else {
+                              Toasts.getErrorToast(text: "Could not open messaging app");
+                            }
+                          },
+                          child: SvgPicture.asset(
+                            Assets.messagesIcon,
+                            height: 24,
+                            width: 24,
+                            colorFilter: ColorFilter.mode(
+                              AppColors.getPrimaryColorFromContext(context),
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
                       ],
