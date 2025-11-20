@@ -29,6 +29,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
+  final _formKey = GlobalKey<FormState>();
   TextEditingController businessNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -95,23 +96,31 @@ class _SignupState extends State<Signup> {
               borderColor: AppColors.greyBordersColor,
               hint: al.emailPlaceholder,
               label: al.emailLabel,
+              textInputType: TextInputType.emailAddress,
               inputFormatters: [AllowOnlyAlphabetUnderscore()],
+
             ),
             SizedBox(height: getHeight() * .01),
             Consumer<AuthProvider>(
               builder: (context, state, child) {
-                return CustomField(
-                  textEditingController: passwordController,
-                  borderColor: AppColors.greyBordersColor,
-                  hint: al.passwordLabel,
-                  label: al.passwordLabel,
-                  obscure: true,
-                  hidePassword: state.signupPassVisibility,
-                  maxLines: 1,
-                  clickIcon: () {
-                    state.toggleSignupPassVisibility();
-                  },
-                  inputFormatters: [AllowOnlyAsciiCharacters()],
+                return Form(
+                  key: _formKey,
+                  child: CustomField(
+                    validate: (value){
+                      return validatePassword(value??"");
+                    },
+                    textEditingController: passwordController,
+                    borderColor: AppColors.greyBordersColor,
+                    hint: al.passwordLabel,
+                    label: al.passwordLabel,
+                    obscure: true,
+                    hidePassword: state.signupPassVisibility,
+                    maxLines: 1,
+                    clickIcon: () {
+                      state.toggleSignupPassVisibility();
+                    },
+                    inputFormatters: [AllowOnlyAsciiCharacters()],
+                  ),
                 );
               },
             ),
@@ -244,6 +253,7 @@ class _SignupState extends State<Signup> {
   }
 
   onSignupTap() {
+
     var email = emailController.text.toString().trim();
     var password = passwordController.text.toString().trim();
     var businessName = businessNameController.text.toString().trim();
@@ -258,13 +268,8 @@ class _SignupState extends State<Signup> {
       Toasts.getErrorToast(text: al.emailMissing);
     } else if (email.validateEmail() == false) {
       Toasts.getErrorToast(text: al.invalidEmail);
-    } else if (password.isEmpty) {
-      Toasts.getErrorToast(text: al.passwordMissing);
     } else {
-      final passwordError = validatePassword(password);
-      if (passwordError != null) {
-        Toasts.getErrorToast(text: passwordError);
-      } else {
+      if(_formKey.currentState!.validate()){
         context.read<AuthProvider>().register(
           businessName: businessName,
           email: email,
@@ -277,37 +282,35 @@ class _SignupState extends State<Signup> {
 
   String? validatePassword(String password) {
     if (password.length < 8) {
-      Toasts.getErrorToast(text: al.passwordMustBeAtLeast8Chars);
       return al.passwordMustBeAtLeast8Chars;
     }
 
     if (password.contains(' ')) {
-      Toasts.getErrorToast(text: al.passwordCannotContainSpaces);
       return al.passwordCannotContainSpaces;
     }
 
     if (!RegExp(r'[A-Z]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainUppercase);
+      // Toasts.getErrorToast(text: al.passwordMustContainUppercase);
       return al.passwordMustContainUppercase;
     }
 
     if (!RegExp(r'[a-z]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainLowercase);
+      // Toasts.getErrorToast(text: al.passwordMustContainLowercase);
       return al.passwordMustContainLowercase;
     }
 
     if (!RegExp(r'[0-9]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainNumber);
+      // Toasts.getErrorToast(text: al.passwordMustContainNumber);
       return al.passwordMustContainNumber;
     }
 
     if (!RegExp(r'[!@#$%&]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainSpecialChar);
+      // Toasts.getErrorToast(text: al.passwordMustContainSpecialChar);
       return al.passwordMustContainSpecialChar;
     }
 
     if (!RegExp(r'^[a-zA-Z0-9!@#$%&]+$').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordInvalidCharacters);
+      // Toasts.getErrorToast(text: al.passwordInvalidCharacters);
       return al.passwordInvalidCharacters;
     }
 

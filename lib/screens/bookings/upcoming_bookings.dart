@@ -12,6 +12,7 @@ import '../../userRole/role_provider.dart';
 import '../../userRole/user_role.dart';
 import '../../utilities/timezone_helper.dart';
 import '../customer/explore/book_now/book_producer_view.dart';
+import 'bookings_view.dart';
 import 'bookings_widgets.dart';
 
 class UpcomingBookings extends StatefulWidget {
@@ -38,9 +39,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
 
   @override
   Widget build(BuildContext context) {
-    // final bookingsProvider = context.watch<BookingsProvider>();
     final bookingsProvider = Provider.of<BookingsProvider>(context);
-
     final role = context.watch<RoleProvider>().role;
     final bookingItems = _buildBookingItems(
       bookingsProvider.getUpcomingBookingsResponse?.data,
@@ -50,101 +49,100 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
     return Column(
       children: [
         Expanded(
-          child:
-              bookingItems.isEmpty
-                  ? NoItemFound()
-                  : ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    itemCount: bookingItems.length,
-                    itemBuilder: (context, index) {
-                      final booking = bookingItems[index];
+          child: bookingItems.isEmpty
+              ? NoItemFound()
+              : ListView.builder(
+            padding: const EdgeInsets.only(bottom: 16),
+            itemCount: bookingItems.length,
+            itemBuilder: (context, index) {
+              final booking = bookingItems[index];
 
-                      return BookingCard(
-                        name: booking.name,
-                        imageUrl: booking.imageUrl,
-                        date: booking.date,
-                        startTime: booking.startTime,
-                        endTime: booking.endTime,
-                        guests: booking.guests,
-                        totalPrice: booking.totalPrice,
-                        isEvent: booking.isEvent,
-                        bookingId: booking.bookingId,
-                        address: booking.address,
-                        buttonText: booking.buttonText,
-                        onDetails: () {
-                          if (role == UserRole.user) {
-                            if (booking.buttonText == al.modify) {
-                              // User pressed "Modify"
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BookProducerView(
-                                    bookingData: booking,
-                                    isModify: true, // flag for modify mode
-                                  ),
-                                ),
-                              );
-                            } else {
-                              // Normal view for events
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserBookingDetails(
-                                    bookingId: booking.bookingId!,
-                                    isEvent: booking.isEvent ?? false,
-                                  ),
-                                ),
-                              );
-                            }
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BookingDetails(bookingData: booking),
-                              ),
-                            );
-                          }
-                        },
-                        onCheckIn: () async {
-                          final bookingIdStr = booking.bookingId;
-                          if (bookingIdStr == null || bookingIdStr.isEmpty) {
-                            Toasts.getErrorToast(text: "Booking ID not available");
-                            return;
-                          }
-
-                          final bookingId = int.tryParse(bookingIdStr);
-                          if (bookingId == null) {
-                            Toasts.getErrorToast(text: "Invalid booking ID");
-                            return;
-                          }
-
-                          bool success = false;
-
-                          if (booking.isEvent == true) {
-                            // Event booking
-                            success = await provider.checkInBooking(bookingId: bookingId);
-                          } else {
-                            // Normal booking
-                            success = await provider.checkInSimpleBooking(
-                              bookingId: bookingId,
-                              timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC', // Success: Uses the cached value
-                            );
-                          }
-
-                          if (success) {
-                            // Refresh bookings after successful check-in
-                            await provider.getBookings(status: BookingStatus.scheduled);
-                          }
-                        },
-                        onCancel: () {
-                          showCancelConfirmationAlert(
-                            context: context,
-                            booking: booking,   //  Pass whole booking
-                          );
-                        },
+              return BookingCard(
+                name: booking.name,
+                imageUrl: booking.imageUrl,
+                date: booking.date,
+                startTime: booking.startTime,
+                endTime: booking.endTime,
+                guests: booking.guests,
+                totalPrice: booking.totalPrice,
+                isEvent: booking.isEvent,
+                bookingId: booking.bookingId,
+                address: booking.address,
+                buttonText: booking.buttonText,
+                onDetails: () {
+                  if (role == UserRole.user) {
+                    if (booking.buttonText == al.modify) {
+                      // User pressed "Modify"
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookProducerView(
+                            bookingData: booking,
+                            isModify: true, // flag for modify mode
+                          ),
+                        ),
                       );
-                    },
-                  ),
+                    } else {
+                      // Normal view for events
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserBookingDetails(
+                            bookingId: booking.bookingId!,
+                            isEvent: booking.isEvent ?? false,
+                          ),
+                        ),
+                      );
+                    }
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookingDetails(bookingData: booking),
+                      ),
+                    );
+                  }
+                },
+                onCheckIn: () async {
+                  final bookingIdStr = booking.bookingId;
+                  if (bookingIdStr == null || bookingIdStr.isEmpty) {
+                    Toasts.getErrorToast(text: "Booking ID not available");
+                    return;
+                  }
+
+                  final bookingId = int.tryParse(bookingIdStr);
+                  if (bookingId == null) {
+                    Toasts.getErrorToast(text: "Invalid booking ID");
+                    return;
+                  }
+
+                  bool success = false;
+
+                  if (booking.isEvent == true) {
+                    // Event booking
+                    success = await provider.checkInBooking(bookingId: bookingId);
+                  } else {
+                    // Normal booking
+                    success = await provider.checkInSimpleBooking(
+                      bookingId: bookingId,
+                      timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC',
+                    );
+                  }
+
+                  if (success) {
+                    // Refresh bookings after successful check-in
+                    await provider.getBookings(status: BookingStatus.scheduled);
+                  }
+                },
+                onCancel: () {
+                  showCancelConfirmationAlert(
+                    context: context,
+                    booking: booking,   //  Pass whole booking
+                  );
+                },
+              );
+            },
+          ),
         ),
       ],
     );
@@ -154,6 +152,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
     required BuildContext context,
     required BookingCardData booking,
   }) {
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -166,6 +165,10 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                 return;
               }
 
+              // Close the dialog first
+              Navigator.pop(context);
+
+              // Process cancellation
               final isEvent = booking.isEvent ?? false;
               final id = int.parse(booking.bookingId ?? '0');
 
@@ -177,7 +180,6 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                   reason: reasonController.text,
                 );
               } else {
-
                 success = await provider.cancelBookingForProducer(
                   bookingId: id,
                   reason: reasonController.text,
@@ -186,17 +188,17 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
               }
 
               if (success) {
-                Navigator.push(
+                Toasts.getSuccessToast(text: "Booking cancelled successfully!");
+
+                await provider.getBookings(status: BookingStatus.scheduled);
+
+                Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => BookingDetails(
-                      isCancelled: true,
-                      cancellationReason: reasonController.text,
-                    ),
-                  ),
+                  MaterialPageRoute(builder: (context) => BookingsView()),
+                      (route) => false,
                 );
               } else {
-                Navigator.pop(context);
+                Toasts.getErrorToast(text: "Failed to cancel booking");
               }
             },
           ),
@@ -205,11 +207,10 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
     );
   }
 
-
   List<BookingCardData> _buildBookingItems(
-    UserBookingsData? data,
-    UserRole role,
-  ) {
+      UserBookingsData? data,
+      UserRole role,
+      ) {
     if (data == null) {
       return [];
     }
@@ -226,10 +227,9 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
 
       bookings.add(
         BookingCardData(
-          name:
-              isUser
-                  ? eventName
-                  : (producerName.isNotEmpty ? producerName : eventName),
+          name: isUser
+              ? eventName
+              : (producerName.isNotEmpty ? producerName : eventName),
           imageUrl: eventImages.isNotEmpty ? eventImages.first : '',
           date: event?.date ?? '',
           startTime: event?.startTime ?? '',
@@ -238,7 +238,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           totalPrice: booking?.totalPrice,
           bookingId: booking?.id?.toString(),
           isEvent: true,
-          buttonText: isUser ? 'View' : al.checkIn, //  user sees View and producer sees "Check-In"
+          buttonText: isUser ? 'View' : al.checkIn,
           address: event?.venueName ?? event?.location,
           customerName: isUser ? null : null,
           customerEmail: isUser ? null : entry.producer?.user?.email,
@@ -255,18 +255,17 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
 
       final restaurantName =
           entry.producer?.name ??
-          restaurant?.producer?.name ??
-          restaurant?.fullName ??
-          restaurant?.userName ??
-          '';
+              restaurant?.producer?.name ??
+              restaurant?.fullName ??
+              restaurant?.userName ??
+              '';
       final customerName = customer?.fullName ?? booking?.customerName ?? '';
 
       bookings.add(
         BookingCardData(
-          name:
-              isUser
-                  ? restaurantName
-                  : (customerName.isNotEmpty ? customerName : restaurantName),
+          name: isUser
+              ? restaurantName
+              : (customerName.isNotEmpty ? customerName : restaurantName),
           imageUrl: restaurant?.profileImageUrl ?? '',
           date: booking?.bookingDate ?? booking?.date ?? '',
           startTime: booking?.slotStartTime ?? booking?.startDateTime ?? '',
@@ -277,14 +276,13 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           producerId: entry.producer?.id?.toString(),
           producerUserId: entry.producer?.userId?.toString(),
           isEvent: false,
-          buttonText: isUser ? al.modify : al.checkIn, //  user sees "Modify", producer sees "Check-In"
+          buttonText: isUser ? al.modify : al.checkIn,
           address: entry.producer?.address ?? booking?.location,
-          customerName:
-              isUser
-                  ? customerName
-                  : (customerName.isNotEmpty
-                      ? customerName
-                      : booking?.customerName),
+          customerName: isUser
+              ? customerName
+              : (customerName.isNotEmpty
+              ? customerName
+              : booking?.customerName),
           customerEmail: customer?.email,
           customerPhone: customer?.phoneNumber?.toString(),
           internalNotes: booking?.specialRequest,
@@ -315,7 +313,6 @@ class BookingCardData {
   final String buttonText;
   final String? producerId;
 
-
   const BookingCardData({
     required this.name,
     required this.imageUrl,
@@ -331,7 +328,7 @@ class BookingCardData {
     this.customerEmail,
     this.customerPhone,
     this.internalNotes,
-    this.buttonText = '', // default empty
+    this.buttonText = '',
     this.producerId,
     this.producerUserId,
   });

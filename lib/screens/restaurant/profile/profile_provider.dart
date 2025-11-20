@@ -88,6 +88,7 @@ class ProfileProvider extends ChangeNotifier {
 
   void setPhoneNumber(PhoneNumber? phone) {
     phoneNumber = phone;
+    debugPrint("in provider $phoneNumber");
     notifyListeners();
   }
 
