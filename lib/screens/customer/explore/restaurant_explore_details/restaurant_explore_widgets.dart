@@ -224,33 +224,33 @@ class WellnessServiceTile extends StatelessWidget {
               ),
             ),
 
-            SizedBox(width: 12),
-
-            // RIGHT SIDE CIRCLE ICON (MATCHES YOUR SCREENSHOT)
-            Container(
-              height: 22,
-              width: 22,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected
-                    ? AppColors.getPrimaryColorFromContext(context)
-                    : Colors.transparent,
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.getPrimaryColorFromContext(context)
-                      : AppColors.greyColor,
-                  width: 2,
-                ),
-              ),
-
-              child: isSelected
-                  ? Icon(
-                Icons.check,
-                size: 14,
-                color: Colors.white,
-              )
-                  : null,
-            ),
+            // SizedBox(width: 12),
+            //
+            // // RIGHT SIDE CIRCLE ICON (MATCHES YOUR SCREENSHOT)
+            // Container(
+            //   height: 22,
+            //   width: 22,
+            //   decoration: BoxDecoration(
+            //     shape: BoxShape.circle,
+            //     color: isSelected
+            //         ? AppColors.getPrimaryColorFromContext(context)
+            //         : Colors.transparent,
+            //     border: Border.all(
+            //       color: isSelected
+            //           ? AppColors.getPrimaryColorFromContext(context)
+            //           : AppColors.greyColor,
+            //       width: 2,
+            //     ),
+            //   ),
+            //
+            //   child: isSelected
+            //       ? Icon(
+            //     Icons.check,
+            //     size: 14,
+            //     color: Colors.white,
+            //   )
+            //       : null,
+            // ),
           ],
         ),
       ),

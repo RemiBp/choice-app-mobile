@@ -61,6 +61,7 @@ class _CompletedBookingsState extends State<CompletedBookings> {
                       return BookingCard(
                         name: booking.name,
                         imageUrl: booking.imageUrl,
+                        bookingType: booking.type ?? "Unknown", // for chips
                         date: booking.date,
                         startTime: booking.startTime,
                         endTime: booking.endTime,
@@ -129,6 +130,7 @@ class _CompletedBookingsState extends State<CompletedBookings> {
           totalPrice: booking?.totalPrice,
           bookingId: booking?.id?.toString(),
           isEvent: true,
+          type: event?.serviceType,
         ),
       );
     }
@@ -160,6 +162,7 @@ class _CompletedBookingsState extends State<CompletedBookings> {
           totalPrice: null,
           bookingId: booking?.id?.toString(),
           isEvent: false,
+          type: entry.producer?.type,
         ),
       );
     }

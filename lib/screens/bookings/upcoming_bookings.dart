@@ -320,6 +320,7 @@ class BookingCardData {
   final String buttonText;
   final String? producerId;
   final String? type;
+  final String? cancelReason;
 
 
   const BookingCardData({
@@ -340,6 +341,7 @@ class BookingCardData {
     this.buttonText = '', // default empty
     this.producerId,
     this.producerUserId,
-    this.type
+    this.type,
+    this.cancelReason,
   });
 }

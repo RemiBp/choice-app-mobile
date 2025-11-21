@@ -85,18 +85,18 @@ class _BookingDetailsState extends State<BookingDetails> {
                       SizedBox(height: getHeight() * 0.01),
                       BookingInfoRow(
                         label: al.date,
-                        value: booking?.date ?? 'Unknown',
+                        value: formatDisplayDate(booking!.date) ?? 'Unknown',
                       ),
                       SizedBox(height: getHeight() * 0.01),
                       BookingInfoRow(
                         label: al.time,
-                        value: "${booking?.startTime} - ${booking?.endTime}",
+                        value: "${booking.startTime} - ${booking.endTime}",
                       ),
-                      if (booking?.totalPrice != null) ...[
+                      if (booking.totalPrice != null) ...[
                         SizedBox(height: getHeight() * 0.01),
                         BookingInfoRow(
                           label: al.amount,
-                          value: "\$${booking?.totalPrice}",
+                          value: "\$${booking.totalPrice}",
                         ),
                       ],
                       Divider(
@@ -111,21 +111,21 @@ class _BookingDetailsState extends State<BookingDetails> {
                         fontWeight: FontWeight.w600,
                       ),
                       SizedBox(height: getHeight() * 0.02),
-                      if (booking?.customerName != null) ...[
+                      if (booking.customerName != null) ...[
                         BookingInfoRow(
                           label: al.customerName,
-                          value: booking?.customerName ?? 'Unknown',
+                          value: booking.customerName ?? 'Unknown',
                         ),
                         SizedBox(height: getHeight() * 0.01),
                       ],
                       BookingInfoRow(
                         label: al.emailLabel1,
-                        value: booking?.customerEmail ?? 'Unknown',
+                        value: booking.customerEmail ?? 'Unknown',
                       ),
                       SizedBox(height: getHeight() * 0.01),
                       BookingInfoRow(
                         label: al.phoneLabel,
-                        value: booking?.customerPhone ?? 'Unknown',
+                        value: booking.customerPhone ?? 'Unknown',
                       ),
                       Divider(
                         color: AppColors.greyBordersColor,
@@ -141,8 +141,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                       SizedBox(height: getHeight() * 0.02),
                       CustomText(
                         text:
-                            booking?.internalNotes != null
-                                ? "\"${booking?.internalNotes}\""
+                            booking.internalNotes != null
+                                ? "\"${booking.internalNotes}\""
                                 : 'No internal notes',
                         fontSize: sizes?.fontSize14,
                         color: AppColors.primarySlateColor,
@@ -156,5 +156,19 @@ class _BookingDetailsState extends State<BookingDetails> {
         ),
       ),
     );
+  }
+  String formatDisplayDate(String rawDate) {
+    try {
+      final date = DateTime.parse(rawDate);
+
+      const months = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+      ];
+
+      return "${months[date.month - 1]} ${date.day}, ${date.year}";
+    } catch (_) {
+      return rawDate;
+    }
   }
 }
