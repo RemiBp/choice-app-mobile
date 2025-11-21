@@ -47,7 +47,7 @@ class _CustomerEditProfileState extends State<CustomerEditProfile> {
     bioController = TextEditingController(text: provider.user?.bio);
     emailController = TextEditingController(text: provider.user?.email);
     phoneController = TextEditingController(text: provider.user?.phoneNumber);
-
+    debugPrint("Here ${provider.user?.phoneNumber}");
     networkProvider = Provider.of<NetworkProvider>(context, listen: false);
     networkProvider.context = context;
   }

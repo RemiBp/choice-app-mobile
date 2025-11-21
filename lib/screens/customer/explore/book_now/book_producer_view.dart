@@ -9,6 +9,7 @@ import '../../../../l18n.dart';
 import '../../../../models/get_producer_booking_slots_response.dart';
 import '../../../../res/res.dart';
 import '../../../../res/toasts.dart';
+import '../../../bookings/bookings_view.dart';
 import '../../interested/interestedWidgets/time_slot_widgets.dart';
 import '../../../bookings/upcoming_bookings.dart';
 
@@ -42,9 +43,10 @@ class _BookProducerViewState extends State<BookProducerView> {
     super.initState();
 
     // Determine current producer ID
-    currentProducerId = widget.isModify
-        ? widget.bookingData?.producerUserId ?? ''
-        : widget.producerId ?? '';
+    currentProducerId =
+        widget.isModify
+            ? widget.bookingData?.producerUserId ?? ''
+            : widget.producerId ?? '';
 
     // Initialize from existing booking if modifying
     if (widget.isModify && widget.bookingData != null) {
@@ -59,7 +61,7 @@ class _BookProducerViewState extends State<BookProducerView> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (selectedDate != null && currentProducerId.isNotEmpty) {
         final formattedDate =
-            "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2,'0')}-${selectedDate!.day.toString().padLeft(2,'0')}";
+            "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}";
 
         await context.read<CreateBookingProvider>().getRestaurantSlots(
           userId: currentProducerId,
@@ -71,28 +73,49 @@ class _BookProducerViewState extends State<BookProducerView> {
 
   void _generateDates(DateTime month) {
     final today = DateTime.now();
-    int startDay = (month.year == today.year && month.month == today.month)
-        ? today.day
-        : 1;
+    int startDay =
+        (month.year == today.year && month.month == today.month)
+            ? today.day
+            : 1;
 
     final lastDayOfMonth = DateTime(month.year, month.month + 1, 0).day;
 
     dates = List.generate(lastDayOfMonth - startDay + 1, (index) {
       final date = startDay + index;
-      final dayName = _weekdayName(DateTime(month.year, month.month, date).weekday);
+      final dayName = _weekdayName(
+        DateTime(month.year, month.month, date).weekday,
+      );
       return {"day": dayName, "date": date.toString()};
     });
   }
 
   String _weekdayName(int weekday) {
-    const names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const names = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
     return names[weekday - 1];
   }
 
   String _monthAbbreviation(int month) {
     const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
     return months[month - 1];
   }
@@ -103,11 +126,12 @@ class _BookProducerViewState extends State<BookProducerView> {
     final slotsResponse = bookingProvider.slotsResponse;
 
     String? selectedDayName =
-    selectedDateIndex != -1 ? dates[selectedDateIndex]["day"] : null;
+        selectedDateIndex != -1 ? dates[selectedDateIndex]["day"] : null;
 
-    List<Slot> slotsForSelectedDay = selectedDayName != null
-        ? (slotsResponse?.slots[selectedDayName] ?? [])
-        : [];
+    List<Slot> slotsForSelectedDay =
+        selectedDayName != null
+            ? (slotsResponse?.slots[selectedDayName] ?? [])
+            : [];
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -134,9 +158,10 @@ class _BookProducerViewState extends State<BookProducerView> {
                   color: AppColors.blackColor,
                 ),
                 CalendarButton(
-                  month: selectedDate != null
-                      ? _monthAbbreviation(selectedDate!.month)
-                      : _monthAbbreviation(DateTime.now().month),
+                  month:
+                      selectedDate != null
+                          ? _monthAbbreviation(selectedDate!.month)
+                          : _monthAbbreviation(DateTime.now().month),
                   onTap: () async {
                     final now = DateTime.now();
                     final picked = await showDatePicker(
@@ -154,7 +179,8 @@ class _BookProducerViewState extends State<BookProducerView> {
                       });
 
                       Toasts.getSuccessToast(
-                        text: "${al.selected}: ${picked.day}/${picked.month}/${picked.year}",
+                        text:
+                            "${al.selected}: ${picked.day}/${picked.month}/${picked.year}",
                       );
                     }
                   },
@@ -189,13 +215,15 @@ class _BookProducerViewState extends State<BookProducerView> {
                       final day = int.parse(item["date"]!);
 
                       final formattedDate =
-                          "$year-${month.toString().padLeft(2,'0')}-${day.toString().padLeft(2,'0')}";
+                          "$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
 
                       if (currentProducerId.isNotEmpty) {
-                        await context.read<CreateBookingProvider>().getRestaurantSlots(
-                          userId: currentProducerId,
-                          date: formattedDate,
-                        );
+                        await context
+                            .read<CreateBookingProvider>()
+                            .getRestaurantSlots(
+                              userId: currentProducerId,
+                              date: formattedDate,
+                            );
                       }
                     },
                   );
@@ -216,26 +244,23 @@ class _BookProducerViewState extends State<BookProducerView> {
                 ? const Center(child: CircularProgressIndicator())
                 : slotsForSelectedDay.isEmpty
                 ? CustomText(
-              text: "No slots available for this date",
-              color: AppColors.blackColor,
-            )
+                  text: "No slots available for this date",
+                  color: AppColors.blackColor,
+                )
                 : Wrap(
-              spacing: 17,
-              runSpacing: 12,
-              children: List.generate(
-                slotsForSelectedDay.length,
-                    (index) {
-                  final slot = slotsForSelectedDay[index];
-                  final bool isSelected = selectedTimeIndex == index;
+                  spacing: 17,
+                  runSpacing: 12,
+                  children: List.generate(slotsForSelectedDay.length, (index) {
+                    final slot = slotsForSelectedDay[index];
+                    final bool isSelected = selectedTimeIndex == index;
 
-                  return TimeChip(
-                    label: "${slot.startTime}-${slot.endTime}",
-                    isSelected: isSelected,
-                    onTap: () => setState(() => selectedTimeIndex = index),
-                  );
-                },
-              ),
-            ),
+                    return TimeChip(
+                      label: "${slot.startTime}-${slot.endTime}",
+                      isSelected: isSelected,
+                      onTap: () => setState(() => selectedTimeIndex = index),
+                    );
+                  }),
+                ),
 
             SizedBox(height: getHeight() * 0.04),
 
@@ -275,7 +300,10 @@ class _BookProducerViewState extends State<BookProducerView> {
           Padding(
             padding: const EdgeInsets.all(20),
             child: CustomButton(
-              buttonText: widget.isModify ? "Modify Your Reservation" : "Book A Reservation",
+              buttonText:
+                  widget.isModify
+                      ? "Modify Your Reservation"
+                      : "Book A Reservation",
               onTap: () async {
                 if (selectedDateIndex == -1) {
                   Toasts.getErrorToast(text: "Please select a date");
@@ -294,20 +322,29 @@ class _BookProducerViewState extends State<BookProducerView> {
                     "$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
 
                 if (widget.isModify) {
-                  Toasts.getSuccessToast(text: "Modify API not integrated yet!");
+                  Toasts.getSuccessToast(
+                    text: "Modify API not integrated yet!",
+                  );
                   Navigator.pop(context);
                 } else {
-                  final success = await context.read<CreateBookingProvider>().createNonEventBooking(
-                    restaurantId: int.parse(currentProducerId),
-                    slotId: slot.id,
-                    date: formattedDate,
-                    guestCount: persons,
-                    specialRequest: messageController.text,
-                  );
-
+                  final success = await context
+                      .read<CreateBookingProvider>()
+                      .createNonEventBooking(
+                        restaurantId: int.parse(currentProducerId),
+                        slotId: slot.id,
+                        date: formattedDate,
+                        guestCount: persons,
+                        specialRequest: messageController.text,
+                      );
                   if (success) {
                     Toasts.getSuccessToast(text: "Reservation created!");
-                    Navigator.pop(context);
+                    debugPrint("Replacement");
+
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => BookingsView()),
+                      (route) => route.isFirst,
+                    );
                   }
                 }
               },

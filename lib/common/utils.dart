@@ -124,15 +124,15 @@ static String get website {
   }
 
   static Future<void>  setAuthResponse(AuthResponse authResponse)async{
-    await PreferenceUtils.setString(Strings.token, authResponse.accessToken??"nil");
-    await PreferenceUtils.setString(Strings.refreshToken, authResponse.refreshToken??"nil");
-    await PreferenceUtils.setString(Strings.email, authResponse.user?.email??"nil");
-    await PreferenceUtils.setString(Strings.role, authResponse.user?.role?.name??"nil");
-    await PreferenceUtils.setString(Strings.address, authResponse.user?.businessProfile?.address??"nil");
-    await PreferenceUtils.setString(Strings.facebook, authResponse.user?.businessProfile?.facebook??"nil");
-    await PreferenceUtils.setString(Strings.description, authResponse.user?.businessProfile?.description??"nil");
-    await PreferenceUtils.setString(Strings.instagram, authResponse.user?.businessProfile?.instagram??"nil");
-
+    await PreferenceUtils.setString(Strings.token, authResponse.accessToken??"");
+    await PreferenceUtils.setString(Strings.refreshToken, authResponse.refreshToken??"");
+    await PreferenceUtils.setString(Strings.email, authResponse.user?.email??"");
+    await PreferenceUtils.setString(Strings.role, authResponse.user?.role?.name??"");
+    await PreferenceUtils.setString(Strings.address, authResponse.user?.businessProfile?.address??"");
+    await PreferenceUtils.setString(Strings.facebook, authResponse.user?.businessProfile?.facebook??"");
+    await PreferenceUtils.setString(Strings.description, authResponse.user?.businessProfile?.description??"");
+    await PreferenceUtils.setString(Strings.instagram, authResponse.user?.businessProfile?.instagram??"");
+    await PreferenceUtils.setString(Strings.phoneNumber, authResponse.user?.businessProfile?.phoneNumber??"");
   }
 
 

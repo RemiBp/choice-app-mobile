@@ -27,7 +27,7 @@ class _RestaurantChoiceViewState extends State<RestaurantChoiceView> {
       padding: EdgeInsets.symmetric(
           horizontal: sizes!.pagePadding
       ),
-      itemCount: 2,
+      itemCount: 0,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: (){

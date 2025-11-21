@@ -50,19 +50,13 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    // Initialize controllers
-    debugPrint("Address ${PreferenceUtils.address}");
-    debugPrint("Email ${PreferenceUtils.email}");
-    debugPrint("Description ${PreferenceUtils.description}");
-    debugPrint("Instagram ${PreferenceUtils.instagram}");
+    addressController = TextEditingController();
+    websiteController = TextEditingController();
+    instagramController = TextEditingController();
+    twitterController = TextEditingController();
+    facebookController = TextEditingController();
+    descriptionController = TextEditingController();
 
-
-    addressController = TextEditingController(text: PreferenceUtils.address);
-    websiteController = TextEditingController(text: PreferenceUtils.website);
-    instagramController = TextEditingController(text: PreferenceUtils.instagram);
-    twitterController = TextEditingController(text: PreferenceUtils.twitter);
-    facebookController = TextEditingController(text: PreferenceUtils.facebook);
-    descriptionController = TextEditingController(text: PreferenceUtils.description);
     fullNameController = TextEditingController();
     usernameController = TextEditingController();
     passwordController = TextEditingController();
@@ -104,6 +98,7 @@ class _ProfileState extends State<Profile> {
       //  Phone number
       if (producer.phoneNumber != null && producer.phoneNumber!.isNotEmpty) {
         try {
+          // debugPrint("Phone Number====> ${PhoneNumber.parse(producer.phoneNumber!)}");
           provider.setPhoneNumber(PhoneNumber.parse(producer.phoneNumber!));
         } catch (e) {
           debugPrint('Error parsing phone number: $e');
@@ -521,7 +516,7 @@ class _ProfileState extends State<Profile> {
 
 
                     String? profileImageUrl;
-                    
+
                     if (provider.profilePhoto != null) {
                       // User selected a new image - upload it
                       final bytes = await provider.profilePhoto!.readAsBytes();
@@ -559,7 +554,7 @@ class _ProfileState extends State<Profile> {
                       description: descriptionController.text,
                       profileImageUrl: profileImageUrl!,
                     );
-                    
+
                     if (success && context.mounted) {
                       if(widget.isFromSettings) {
                         context.pop();
