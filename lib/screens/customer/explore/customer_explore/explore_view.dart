@@ -1,3 +1,5 @@
+import 'package:choice_app/screens/customer/explore/browse_producers/browse_producers_view.dart';
+import 'package:choice_app/screens/customer/explore/browse_producers/search_producer_view.dart';
 import 'package:choice_app/screens/customer/explore/restaurant_explore_details/restaurant_explore_details.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +12,7 @@ import '../../../../l18n.dart';
 import '../../../../res/res.dart';
 import '../../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../../maps/customer_maps/customer_maps_view.dart';
+import '../restaurant_explore_details/non_event_explore_details.dart';
 import 'customer_explore_view_provider.dart';
 import 'explore_widgets.dart';
 
@@ -25,8 +28,12 @@ class _ExploreViewState extends State<ExploreView> {
   @override
   void initState() {
     super.initState();
+    final provider = Provider.of<ExploreViewProvider>(context, listen: false);
     Future.microtask(() {
-      Provider.of<ExploreViewProvider>(context, listen: false).getEventsNearMe();
+      provider.getEventsNearMe();
+      provider.getNearbyProducers(
+        allowedTypes: ["wellness", "restaurant"],
+      ); // fetch producers for Surprise Me
     });
   }
   @override
@@ -90,10 +97,22 @@ class _ExploreViewState extends State<ExploreView> {
             //  SEARCH stays fixed
             Padding(
               padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
-              child: CustomField(
-                borderColor: AppColors.greyBordersColor,
-                hint: al.searchPlaceholder,
-                prefixIconSvg: Assets.searchIcon,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SearchProducersScreen(),
+                    ),
+                  );
+                },
+                child: AbsorbPointer(
+                  child: CustomField(
+                    borderColor: AppColors.greyBordersColor,
+                    hint: al.searchPlaceholder,
+                    prefixIconSvg: Assets.searchIcon,
+                  ),
+                ),
               ),
             ),
             SizedBox(height: getHeight() * .02),
@@ -117,6 +136,17 @@ class _ExploreViewState extends State<ExploreView> {
                         al.categoryWellness,
                         al.categoryLeisure,
                       ],
+                      onCategoryTap: (category) {
+                        // Navigate based on the tapped category
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BrowseProducersScreen(
+                              categoryType: category, // optional parameter you can define
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   SizedBox(height: getHeight() * 0.02),
@@ -153,8 +183,8 @@ class _ExploreViewState extends State<ExploreView> {
                               "${event.date ?? ''} ${event.startTime ?? ''} - ${event.endTime ?? ''}",
                               price: "\$${event.pricePerGuest ?? '0'}",
                               imageUrl: event.eventImages?.isNotEmpty == true
-                                  ? "https://elasticbeanstalk-us-west-1-841019700848.s3.us-west-1.amazonaws.com/${event.eventImages!.first}"
-                                  : "https://via.placeholder.com/300",
+                              ? "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/${event.eventImages!.first}"
+                                : "https://via.placeholder.com/300",
                             ),
                             margin: EdgeInsets.only(
                               top: getHeight() * 0.01,
@@ -167,6 +197,7 @@ class _ExploreViewState extends State<ExploreView> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       RestaurantExploreDetails(
+                                        eventId: event.id!,
                                         tag: event.serviceType ?? "Restaurant",
                                       ),
                                 ),
@@ -189,28 +220,73 @@ class _ExploreViewState extends State<ExploreView> {
 
                   SizedBox(
                     height: getHeight() * 0.28,
-                    child: ListView.builder(
-                      padding:
-                      EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return SizedBox(
-                          width: getWidth() * 0.75,
-                          child: FavouriteRestaurantCard(
-                            imageUrl:
-                            "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
-                            restaurantName: "Restaurant ${index + 1}",
-                            address: "123 Main Street, City",
-                            isFavourite: index % 2 == 0,
-                            margin: EdgeInsets.only(
-                              top: getHeight() * 0.01,
-                              bottom: getHeight() * 0.01,
-                              right: getWidth() * 0.03,
+                    child: Consumer<ExploreViewProvider>(
+                      builder: (context, provider, _) {
+                        if (provider.isProducersLoading) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        final producers = provider.nearbyProducers;
+
+                        if (producers.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              "No nearby producers found",
+                              style: TextStyle(color: Colors.grey),
                             ),
-                            onFavouriteTap: () {},
-                            onRestaurantTap: () {},
-                          ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: producers.length,
+                          itemBuilder: (context, index) {
+                            final producer = producers[index];
+                            final type = producer.type?.toLowerCase() ?? "";
+
+                            return SizedBox(
+                              width: getWidth() * 0.75,
+                              child: FavouriteRestaurantCard(
+                                imageUrl: producer.profileImage != null
+                                    ? "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/${producer.profileImage}"
+                                    : "https://via.placeholder.com/300",
+                                restaurantName: producer.name,
+                                address: producer.address.isNotEmpty
+                                    ? producer.address
+                                    : "No address available",
+                                isFavourite: false,
+                                chipText: type.isNotEmpty
+                                    ? (type == "restaurant"
+                                    ? "Restaurant"
+                                    : type == "wellness"
+                                    ? "Wellness"
+                                    : null)
+                                    : null,
+                                chipColor: type == "restaurant"
+                                    ? AppColors.restaurantPrimaryColor.withValues(alpha: 90)
+                                    : type == "wellness"
+                                    ? AppColors.wellnessPrimaryColor.withValues(alpha: 90)
+                                    : Colors.grey,
+                                margin: EdgeInsets.only(
+                                  top: getHeight() * 0.01,
+                                  bottom: getHeight() * 0.01,
+                                  right: getWidth() * 0.03,
+                                ),
+                                onRestaurantTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => NonEventDetailsScreen(
+                                        type: producer.type.toLowerCase() ?? "",
+                                        producerId: producer.id.toString(),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         );
                       },
                     ),

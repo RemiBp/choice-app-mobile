@@ -88,6 +88,7 @@ class ProfileProvider extends ChangeNotifier {
 
   void setPhoneNumber(PhoneNumber? phone) {
     phoneNumber = phone;
+    debugPrint("in provider $phoneNumber");
     notifyListeners();
   }
 
@@ -135,19 +136,16 @@ class ProfileProvider extends ChangeNotifier {
     debugPrint("hasAddress: $hasAddress (${address.trim()})");
     debugPrint("hasPassword: $hasPassword (${password.trim()})");
     debugPrint("hasPhone: $hasPhone (${phoneNumber?.international})");
-    debugPrint("hasWebsite: $hasWebsite (${website.trim()})");
-    debugPrint("hasInstagram: $hasInstagram (${instagram.trim()})");
-    debugPrint("hasTwitter: $hasTwitter (${twitter.trim()})");
-    debugPrint("hasFacebook: $hasFacebook (${facebook.trim()})");
+    // debugPrint("hasWebsite: $hasWebsite (${website.trim()})");
+    // debugPrint("hasInstagram: $hasInstagram (${instagram.trim()})");
+    // debugPrint("hasTwitter: $hasTwitter (${twitter.trim()})");
+    // debugPrint("hasFacebook: $hasFacebook (${facebook.trim()})");
     debugPrint("hasDescription: $hasDescription (${description.trim()})");
+    debugPrint("Business Name: $hasDescription ($globalBusinessName)");
 
     if (!hasAddress &&
         !hasPassword &&
         !hasPhone &&
-        !hasWebsite &&
-        !hasInstagram &&
-        !hasTwitter &&
-        !hasFacebook &&
         !hasDescription) {
       debugPrint("All fields are empty - validation failed");
       Toasts.getErrorToast(
@@ -207,25 +205,25 @@ class ProfileProvider extends ChangeNotifier {
     }
 
     // Validate URL formats if provided
-    if (!hasWebsite && !_isValidUrl(website.trim())) {
+    if (hasWebsite && !_isValidUrl(website.trim())) {
       debugPrint("Website URL validation failed: ${website.trim()}");
       Toasts.getErrorToast(text: al.validWebsiteUrl);
       return false;
     }
 
-    if (!hasInstagram && !_isValidUrl(instagram.trim())) {
+    if (hasInstagram && !_isValidUrl(instagram.trim())) {
       debugPrint("Instagram URL validation failed: ${instagram.trim()}");
       Toasts.getErrorToast(text: al.validInstagramUrl);
       return false;
     }
 
-    if (!hasTwitter && !_isValidUrl(twitter.trim())) {
+    if (hasTwitter && !_isValidUrl(twitter.trim())) {
       debugPrint("Twitter URL validation failed: ${twitter.trim()}");
       Toasts.getErrorToast(text: al.validTwitterUrl);
       return false;
     }
 
-    if (!hasFacebook && !_isValidUrl(facebook.trim())) {
+    if (hasFacebook && !_isValidUrl(facebook.trim())) {
       debugPrint("Facebook URL validation failed: ${facebook.trim()}");
       Toasts.getErrorToast(text: al.validFacebookUrl);
       return false;
@@ -465,7 +463,7 @@ class ProfileProvider extends ChangeNotifier {
     required BuildContext context,
   }) async {
     try {
-      // 🚫 Remove loader here
+      //  Remove loader here
       List<Map<String, dynamic>> images = [];
       for (String url in imageUrls) {
         String s3Key = _extractS3Key(url);

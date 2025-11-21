@@ -4,6 +4,7 @@ import 'package:choice_app/screens/authentication/auth_provider.dart';
 import 'package:choice_app/screens/authentication/otpVerification/otp_provider.dart';
 import 'package:choice_app/screens/authentication/passwordManagement/password_provider.dart';
 import 'package:choice_app/screens/bookings/bookings_provider.dart';
+import 'package:choice_app/screens/customer/explore/book_now/create_booking_provider.dart';
 import 'package:choice_app/screens/customer/explore/customer_explore/customer_explore_view_provider.dart';
 import 'package:choice_app/screens/customer/profile/customer_profile/customer_profile_provider.dart';
 import 'package:choice_app/screens/languageSelection/language_selection_provider.dart';
@@ -11,9 +12,10 @@ import 'package:choice_app/screens/producer_maps/offer_provider.dart';
 import 'package:choice_app/screens/restaurant/event/event_provider.dart';
 import 'package:choice_app/screens/restaurant/home/choice_provider.dart';
 import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
+import '../screens/customer/explore/restaurant_explore_details/event_details_provider.dart';
+import '../screens/customer/explore/restaurant_explore_details/non_event_details_provider.dart';
 import '../screens/customer/home/choice_provider.dart';
 import '../userRole/role_provider.dart';
 
@@ -77,4 +79,17 @@ final multiProviders = [
     create: (context) => BookingsProvider(),
     lazy: true,
   ),
+  ChangeNotifierProvider<EventDetailsProvider>(
+    create: (context) => EventDetailsProvider(),
+    lazy: true,
+  ),
+  ChangeNotifierProvider<NonEventDetailsProvider>(
+    create: (context) => NonEventDetailsProvider(),
+    lazy: true,
+  ),
+  ChangeNotifierProvider<CreateBookingProvider>(
+    create: (context) => CreateBookingProvider(),
+    lazy: true,
+  ),
+
 ];

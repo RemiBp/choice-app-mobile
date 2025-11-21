@@ -33,7 +33,9 @@ class CustomField extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.suffixIcon,
-    this.prefixIconSvg, this.suffixIconSvg,
+    this.prefixIconSvg,
+    this.suffixIconSvg,
+    // this.validator,
 
   });
 
@@ -62,6 +64,7 @@ class CustomField extends StatelessWidget {
   final IconData? suffixIcon;
   final String? prefixIconSvg;
   final String? suffixIconSvg;
+  // final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +107,8 @@ class CustomField extends StatelessWidget {
             expands: maxLines != null ? false : true,
             controller: textEditingController,
             obscureText: hidePassword,
-            obscuringCharacter: "●",
 
+            obscuringCharacter: "●",
             cursorHeight: getHeight() * .025,
             keyboardType: textInputType ?? TextInputType.text,
             style: Theme.of(
@@ -125,8 +128,8 @@ class CustomField extends StatelessWidget {
                   borderColor != null
                       ? buildOutlineInputBorder(AppColors.inputHintColor)
                       : InputBorder.none,
-              errorBorder: InputBorder.none,
-              focusedErrorBorder: InputBorder.none,
+              errorBorder: buildOutlineInputBorder(AppColors.inputHintColor),
+              focusedErrorBorder: buildOutlineInputBorder(AppColors.inputHintColor),
               prefixIcon:
                   prefixIconSvg != null
                       ? SvgPicture.asset(prefixIconSvg!)

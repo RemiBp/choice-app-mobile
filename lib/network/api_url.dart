@@ -40,6 +40,16 @@ const String submitProducerDocumentApiUrl = "$baseUrl/api/producer/auth/submitDo
 const String getProducerPostsApiUrl = "$baseUrl/api/producer/post/getPostsByProducer";
 const String deleteGalleryImagesApiUrl = "$baseUrl/api/producer/profile/deleteGalleryImages";
 const String getEventsNearMeApiUrl = "$baseUrl/api/producer/event/getAllEvents";
+const String getEventsTypeApiUrl = "$baseUrl/api/producer/event/getEventTypes";
+const String nearByProducersApiUrl = "$baseUrl/api/producer/event/findNearbyProducer";
+const String getEventsByIdApiUrl = "$baseUrl/api/producer/event/getEventById";
+const String getEventsByProducerApiUrl = "$baseUrl/api/producer/event/getEventsByProducerId";
+const String deleteUserAccountApiUrl = "$baseUrl/api/app/profile/deleteProfile";
+const String deleteProducerAccountApiUrl = "$baseUrl/api/producer/profile/deleteProfile";
+const String getNonEventsByIdApiUrl = "$baseUrl/api/producer/event/getProfileById";
+
+
+
 
 
 
@@ -66,6 +76,16 @@ const String addUnavailableSlotsApiUrl = "$baseUrl/api/producer/profile/addUnava
 const String updateRestaurantSlotsApiUrl = "$baseUrl/api/producer/profile/updateRestaurantSlots";
 
 const String getUserBookingsApiUrl = "$baseUrl/api/producer/booking/getUserBookings";
-const String cancelBookingApiUrl = "$baseUrl/api/producer/booking/cancelBooking";
+const String userCancelBookingApiUrl = "$baseUrl/api/producer/booking/cancelBooking";
+const String producerCancelBookingApiUrl = "$baseUrl/api/app/booking/cancel";
 const String checkInBookingApiUrl = "$baseUrl/api/producer/booking/checkIn";
+const String checkInSimpleBookingApiUrl = "$baseUrl/api/app/booking/checkin";
+const String createEventBookingApiUrl = "$baseUrl/api/producer/booking/createBooking";
+const String createNonEventBookingApiUrl = "$baseUrl/api/app/booking/createBooking";
+const String getProducerBookingSlotsApiUrl = "$baseUrl/api/app/booking/getRestaurantSlots";
+const String updateBookingsApiUrl = "$baseUrl/api/app/booking/updateBookingTemp";
+const String getEventBookingDetailsApiUrl = "$baseUrl/api/producer/booking/booking";
+const String getSimpleBookingDetailsApiUrl = "$baseUrl/api/app/booking/getBooking";
+
+
 

@@ -1,30 +1,65 @@
+import 'package:choice_app/screens/customer/explore/restaurant_explore_details/event_details_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:readmore/readmore.dart';
+
+import 'package:choice_app/customWidgets/custom_text.dart';
+import 'package:choice_app/customWidgets/custom_button.dart';
+import 'package:choice_app/customWidgets/shadow_icon.dart';
+import 'package:choice_app/appAssets/app_assets.dart';
+import 'package:choice_app/appColors/colors.dart';
+import 'package:choice_app/l18n.dart';
+import 'package:choice_app/res/res.dart';
 import 'package:choice_app/screens/customer/explore/book_now/book_now_view.dart';
 import 'package:choice_app/screens/customer/explore/full_menu/full_menu_view.dart';
 import 'package:choice_app/screens/customer/explore/participants/participants_screen.dart';
+import 'package:choice_app/screens/customer/explore/customer_gallery/customer_gallery_screen.dart';
 import 'package:choice_app/screens/customer/explore/restaurant_explore_details/restaurant_explore_widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:readmore/readmore.dart';
-import '../../../../appAssets/app_assets.dart';
-import '../../../../appColors/colors.dart';
-import '../../../../customWidgets/custom_button.dart';
-import '../../../../customWidgets/custom_text.dart';
-import '../../../../customWidgets/shadow_icon.dart';
-import '../../../../l18n.dart';
-import '../../../../res/res.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../models/get_events_details_response.dart';
 import '../../../onboarding/menu/menu_widgets.dart';
 import '../../../restaurant/profile_menu/profile_menu_widgets.dart';
-import '../customer_gallery/customer_gallery_screen.dart';
+import 'package:choice_app/screens/onboarding/menu/menu_widgets.dart' as menuWidgets;
+
 
 class RestaurantExploreDetails extends StatefulWidget {
+  final int eventId;
   final String tag;
-  const RestaurantExploreDetails({super.key, required this.tag});
+
+  const RestaurantExploreDetails({
+    super.key,
+    required this.eventId,
+    required this.tag,
+  });
 
   @override
-  State<RestaurantExploreDetails> createState() => _RestaurantExploreDetailsState();
+  State<RestaurantExploreDetails> createState() =>
+      _RestaurantExploreDetailsState();
 }
 
 class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
+  int _currentImageIndex = 0;
+  PageController? _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+
+    Future.microtask(() {
+      Provider.of<EventDetailsProvider>(context, listen: false)
+          .getEventById(widget.eventId);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController?.dispose();
+    super.dispose();
+  }
 
   Color getTagColor() {
     switch (widget.tag.toLowerCase()) {
@@ -39,405 +74,696 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
     }
   }
 
-  final List<MenuGroup> menuGroups = [
-    MenuGroup(
-      title: 'Brochettes',
-      dishes: List.generate(3, (_) => Dish(name: 'Al Salmone', description: 'Sauce blanche, saumon fume', price: 20)),
-    ),
-  ];
+  String formatEventDate(String? date) {
+    if (date == null || date.isEmpty) return '';
+    try {
+      DateTime dt = DateTime.parse(date);
+      return DateFormat('EEEE, MMMM d, yyyy').format(dt);
+      // Example output: Monday, November 6, 2025
+    } catch (e) {
+      return date; // fallback to raw string if parse fails
+    }
+  }
+
+  String formatEventTime(String? start, String? end) {
+    if ((start ?? "").isEmpty && (end ?? "").isEmpty) return "";
+    DateFormat input = DateFormat('HH:mm'); // backend format
+    DateFormat output = DateFormat('h:mm a'); // 12-hour with AM/PM
+
+    String startFormatted = '';
+    String endFormatted = '';
+
+    if (start != null && start.isNotEmpty) {
+      try {
+        startFormatted = output.format(input.parse(start));
+      } catch (_) {}
+    }
+
+    if (end != null && end.isNotEmpty) {
+      try {
+        endFormatted = output.format(input.parse(end));
+      } catch (_) {}
+    }
+
+    if (startFormatted.isEmpty) return endFormatted;
+    if (endFormatted.isEmpty) return startFormatted;
+
+    return "$startFormatted - $endFormatted"; // Example: 12:00 PM - 10:00 PM
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ImageGalleryScreen(restaurantId: "3",)),
-                );
-              },
-              child: ExploreEventHeader(),
-            ),
-            SizedBox(height: getHeight() * 0.02),
+    return ChangeNotifierProvider<EventDetailsProvider>(
+      create: (ctx) => EventDetailsProvider()..getEventById(widget.eventId),
+      builder: (context, _) {
+        return Consumer<EventDetailsProvider>(
+          builder: (context, provider, _) {
+            final loading = provider.isLoading;
+            final EventData? event = provider.eventData;
 
-            Row(
-              children: [
-                EventTag(
-                  margin: EdgeInsets.only(left: sizes!.pagePadding, right: getWidth() * 0.02),
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : event == null
+                  ? Center(
+                child: CustomText(
+                  text: "Event not found",
+                  fontSize: sizes?.fontSize16,
                 ),
-                EventTag(
-                  text: widget.tag,
-                  color: getTagColor(),
+              )
+                  : _buildContent(context, provider, event),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildContent(BuildContext context, EventDetailsProvider provider,
+      EventData event) {
+    final images = event.eventImages ?? [];
+    final producer = event.producer;
+
+    // Menu categories
+    final menuCategories = producer?.menuCategory ?? [];
+
+    // Socials
+    final website = producer?.website;
+    final instagram = producer?.instagram;
+    final twitter = producer?.twitter;
+    final facebook = producer?.facebook;
+
+    final participantCount = event.totalParticipants ?? 0;
+    final maxCapacity = event.maxCapacity ?? 0;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image carousel
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ImageGalleryScreen(
+                    restaurantId: producer?.id.toString() ?? '0',
+                  ),
+                ),
+              );
+            },
+            child: Stack(
+              children: [
+                Container(
+                  color: Colors.grey.shade200,
+                  height: getHeight() * .33,
+                  width: double.infinity,
+                  child: images.isEmpty
+                      ? Image.asset(
+                    Assets.mapImage,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  )
+                      : PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: (idx) {
+                      setState(() => _currentImageIndex = idx);
+                    },
+                    itemCount: images.length,
+                    itemBuilder: (context, index) {
+                      final imgPath = images[index];
+                      final url =
+                          "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/$imgPath";
+                      return Image.network(
+                        url,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        loadingBuilder: (c, child, progress) {
+                          if (progress == null) return child;
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        },
+                        errorBuilder: (c, e, s) => Container(
+                          color: Colors.grey.shade200,
+                          child:
+                          const Center(child: Icon(Icons.image)),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                // Back button
+                Positioned(
+                  top: getHeight() * .06,
+                  left: 16,
+                  child: IconButton.filled(
+                    style: IconButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      backgroundColor: Colors.white30,
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                ),
+                // Image counter
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: Container(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      "${images.isEmpty ? 0 : (_currentImageIndex + 1)}/${images.length == 0 ? 1 : images.length}",
+                      style:
+                      const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: getHeight() * 0.02),
+          ),
 
+          const SizedBox(height: 12),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
-              child: CustomText(
-                text: "Flavors of the Season",
-                fontSize: sizes?.fontSize20,
-                fontFamily: Assets.onsetSemiBold,
+          // Tags row
+          Row(
+            children: [
+              EventTag(
+                margin: EdgeInsets.only(left: sizes!.pagePadding, right: 8),
               ),
-            ),
-            SizedBox(height: getHeight() * 0.02),
-            IconTextWidget(
-              text: "${al.monday}, ${al.june} 28, 2025 ",
-              icon: Assets.calender,
-              subText: "08:00 PM - 11:00 PM",
-              color: AppColors.getPrimaryColorFromContext(context),
-            ),
-            SizedBox(height: getHeight() * 0.01),
-            IconTextWidget(
-              text: "Gustave Eiffel, Paris, France",
-              icon: Assets.restaurantLocationIcon,
-              subText: " Av. Gustave Eiffel, 75007 Paris, France",
-              color: AppColors.getPrimaryColorFromContext(context),
-            ),
-
-            SizedBox(height: getHeight() * 0.01),
-            IconTextWidget(
-              text: "Gustave Eiffel, Paris, France",
-              icon: Assets.ticketIcon,
-              subText: " Av. Gustave Eiffel, 75007 Paris, France",
-              color: AppColors.getPrimaryColorFromContext(context),
-            ),
-
-            Divider(color: AppColors.greyColor,),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomText(
-                    text: al.participants,
-                    fontSize: sizes?.fontSize16,
-                    fontFamily: Assets.onsetSemiBold,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ParticipantsScreen()),
-                      );
-                    },
-                    child: CustomText(
-                      text: al.showAll,
-                      fontSize: sizes?.fontSize14,
-                      fontFamily: Assets.onsetMedium,
-                      color: AppColors.getPrimaryColorFromContext(context),
-                    ),
-                  ),
-                ],
+              EventTag(
+                text: widget.tag,
+                color: getTagColor(),
               ),
+            ],
+          ),
+          SizedBox(height: getHeight() * .02),
+
+          // Title
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
+            child: CustomText(
+              text: event.title ?? '',
+              fontSize: sizes?.fontSize20,
+              fontFamily: Assets.onsetSemiBold,
             ),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: Row(
-                children: [
-                  Stack(
-                    children: [
-                      Container(width: getWidth() * .23),
-                      CircleAvatar(backgroundColor: Colors.transparent),
+          ),
+
+          SizedBox(height: getHeight() * .02),
+
+          // Date/time
+          IconTextWidget(
+            text: formatEventDate(event.date),
+            icon: Assets.calender,
+            subText: formatEventTime(event.startTime, event.endTime),
+            color: AppColors.getPrimaryColorFromContext(context),
+          ),
+          SizedBox(height: getHeight() * .01),
+
+          // Address
+          IconTextWidget(
+            text: event.location ?? (producer?.address ?? ''),
+            icon: Assets.restaurantLocationIcon,
+            subText: producer?.address ?? '',
+            color: AppColors.getPrimaryColorFromContext(context),
+          ),
+          SizedBox(height: getHeight() * .01),
+
+          // Ticket info
+          IconTextWidget(
+            text:  event.pricePerGuest != null ? "\$${event.pricePerGuest}${al.perPerson}" : "-",
+            icon: Assets.ticketIcon,
+            subText:al.ticketPrice,
+            color: AppColors.getPrimaryColorFromContext(context),
+          ),
+
+          Divider(color: AppColors.greyColor),
+          SizedBox(height: getHeight() * .01),
+
+          // Participants
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomText(
+                  text: al.participants,
+                  fontSize: sizes?.fontSize16,
+                  fontFamily: Assets.onsetSemiBold,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ParticipantsScreen()),
+                    );
+                  },
+                  child: CustomText(
+                    text: al.showAll,
+                    fontSize: sizes?.fontSize14,
+                    fontFamily: Assets.onsetMedium,
+                    color: AppColors.getPrimaryColorFromContext(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: getHeight() * .01),
+
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: Row(
+              children: [
+                Stack(
+                  children: [
+                    Container(width: getWidth() * .23),
+                    if (participantCount > 0)
                       Positioned(
                         right: 60,
                         child: _buildAvatar(
-                          'https://randomuser.me/api/portraits/women/65.jpg',
-                        ),
+                            'https://randomuser.me/api/portraits/women/65.jpg'),
                       ),
-                      Positioned(
-                        right: 60,
-                        child: _buildAvatar(
-                          'https://randomuser.me/api/portraits/women/65.jpg',
-                        ),
-                      ),
+                    if (participantCount > 1)
                       Positioned(
                         right: 40,
                         child: _buildAvatar(
-                          'https://randomuser.me/api/portraits/women/60.jpg',
-                        ),
+                            'https://randomuser.me/api/portraits/women/60.jpg'),
                       ),
+                    if (participantCount > 2)
                       Positioned(
                         right: 20,
                         child: _buildAvatar(
-                          'https://randomuser.me/api/portraits/men/62.jpg',
-                        ),
+                            'https://randomuser.me/api/portraits/men/62.jpg'),
                       ),
-                      Positioned(
-                        right: 0,
-                        child: _buildAvatarCircle('+10'),
-                      ),
-                    ],
-                  ),
-                  Spacer(),
-                  SvgPicture.asset(Assets.peopleIcon),
-                  CustomText(text: " 10/120", fontSize: sizes?.fontSize12),
-                ],
-              ),
-            ),
-            if(widget.tag.toLowerCase() == "restaurant")
-            Divider(color: AppColors.greyColor,),
-            if(widget.tag.toLowerCase() == "restaurant")
-            SizedBox(height: getHeight() * 0.01),
-            if(widget.tag.toLowerCase() == "restaurant")
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: MenuGroupWidget(
-                menuGroup: menuGroups[0],
-                header: al.menu,
-                optionText: al.seeFullMenu,
-                hideBorder: true,
-                onAddDish: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FullMenuView()),
-                  );
-                },
-              ),
-            ),
-            Divider(color: AppColors.greyColor,),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: CustomText(
-                text: al.aboutEvent,
-                fontSize: sizes?.fontSize16,
-                fontFamily: Assets.onsetSemiBold,
-              ),
-            ),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: ReadMoreText(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nisi viverra mauris sagittis dis. Sed quis enim nulla arcu turpis in.",
-                trimMode: TrimMode.Line,
-                trimLines: 2,
-                colorClickableText: Colors.pink,
-                trimCollapsedText: al.readMore,
-                trimExpandedText: al.seeLess,
-                style: TextStyle(
-                  fontSize: sizes?.fontSize16,
-                  color: AppColors.blackColor,
-                ),
-                moreStyle: TextStyle(
-                  fontSize: sizes?.fontSize14,
-                  color: AppColors.getPrimaryColorFromContext(context),
-                  fontFamily: Assets.onsetMedium,
-                ),
-              ),
-            ),
-
-
-            SizedBox(height: getHeight() * 0.01),
-            Divider(color: AppColors.greyColor),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: CustomText(
-                text: al.location,
-                fontSize: sizes?.fontSize16,
-                fontFamily: Assets.onsetSemiBold,
-              ),
-            ),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SvgPicture.asset(
-                    Assets.locationIcon,
-                    height: getHeight() * 0.022,
-                    width: getHeight() * 0.022,
-                    colorFilter: ColorFilter.mode(AppColors.getPrimaryColorFromContext(context),BlendMode.srcIn),
-
-                  ),
-                  SizedBox(width: getWidth() * 0.01), // horizontal gap
-                  Expanded(
-                    child: CustomText(
-                      text: "Av. Gustave Eiffel, 75007 Paris, France",
-                      fontSize: sizes?.fontSize12,
+                    Positioned(
+                      right: 0,
+                      child: _buildAvatarCircle(
+                          '+${participantCount > 3 ? participantCount - 3 : 0}'),
                     ),
+                  ],
+                ),
+                const Spacer(),
+                SvgPicture.asset(Assets.peopleIcon),
+                CustomText(
+                  text: " $participantCount/$maxCapacity",
+                  fontSize: sizes?.fontSize12,
+                ),
+              ],
+            ),
+          ),
+
+          // Restaurant menu
+          if ((widget.tag.toLowerCase() == "restaurant") &&
+              menuCategories.isNotEmpty)
+            Column(
+              children: [
+                Divider(color: AppColors.greyColor),
+                SizedBox(height: getHeight() * .01),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+                  child: MenuGroupWidget(
+                    menuGroup: MenuGroup(
+                      title: menuCategories.first.name ?? '',
+                      dishes: (menuCategories.first.dishes ?? [])
+                          .map((d) => menuWidgets.Dish(
+                        name: d.name ?? '',
+                        description: d.description ?? '',
+                        price: d.price ?? 0,
+                      ))
+                          .toList(),
+                    ),
+                    header: al.menu,
+                    optionText: al.seeFullMenu,
+                    hideBorder: true,
+                    onAddDish: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => FullMenuView()));
+                    },
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: getHeight() * 0.008), // small vertical gap
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: Image.asset(Assets.mapImage, height: getHeight() * .2),
+                ),
+              ],
             ),
 
+          Divider(color: AppColors.greyColor),
+          SizedBox(height: getHeight() * .01),
 
-            SizedBox(height: getHeight() * 0.01),
-            Divider(color: AppColors.greyColor),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: CustomText(
-                text: al.socialLinks,
+          // About / description
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: CustomText(
+              text: al.aboutEvent,
+              fontSize: sizes?.fontSize16,
+              fontFamily: Assets.onsetSemiBold,
+            ),
+          ),
+          SizedBox(height: getHeight() * .01),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: ReadMoreText(
+              event.description ?? '',
+              trimMode: TrimMode.Line,
+              trimLines: 3,
+              colorClickableText:
+              AppColors.getPrimaryColorFromContext(context),
+              trimCollapsedText: al.readMore,
+              trimExpandedText: al.seeLess,
+              style: TextStyle(
                 fontSize: sizes?.fontSize16,
-                fontFamily: Assets.onsetSemiBold,
+                color: AppColors.blackColor,
+              ),
+              moreStyle: TextStyle(
+                fontSize: sizes?.fontSize14,
+                color: AppColors.getPrimaryColorFromContext(context),
+                fontFamily: Assets.onsetMedium,
               ),
             ),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: Row(
-                children: [
+          ),
+
+          SizedBox(height: getHeight() * .01),
+          Divider(color: AppColors.greyColor),
+
+          // Location preview
+          SizedBox(height: getHeight() * .01),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: CustomText(
+              text: al.location,
+              fontSize: sizes?.fontSize16,
+              fontFamily: Assets.onsetSemiBold,
+            ),
+          ),
+          SizedBox(height: getHeight() * .01),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SvgPicture.asset(
+                  Assets.locationIcon,
+                  height: getHeight() * 0.022,
+                  width: getHeight() * 0.022,
+                  colorFilter: ColorFilter.mode(
+                      AppColors.getPrimaryColorFromContext(context),
+                      BlendMode.srcIn),
+                ),
+                SizedBox(width: getWidth() * 0.01),
+                Expanded(
+                  child: CustomText(
+                    text: producer?.address ?? '',
+                    fontSize: sizes?.fontSize12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: getHeight() * .008),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: Image.asset(Assets.mapImage, height: getHeight() * .2),
+          ),
+
+          SizedBox(height: getHeight() * .01),
+          Divider(color: AppColors.greyColor),
+
+          // Social links
+          SizedBox(height: getHeight() * .01),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: CustomText(
+              text: al.socialLinks,
+              fontSize: sizes?.fontSize16,
+              fontFamily: Assets.onsetSemiBold,
+            ),
+          ),
+          SizedBox(height: getHeight() * .01),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: Row(
+              children: [
+                if (website != null && website.isNotEmpty)
                   ShadowIcon(
                     icon: Assets.websiteIcon,
                     color: AppColors.getPrimaryColorFromContext(context),
                   ),
-                  SizedBox(width: getWidth() * 0.02),
+                if (instagram != null && instagram.isNotEmpty)
                   ShadowIcon(
                     icon: Assets.instagramIcon,
                     color: AppColors.getPrimaryColorFromContext(context),
                   ),
-                  SizedBox(width: getWidth() * 0.02),
+                if (twitter != null && twitter.isNotEmpty)
                   ShadowIcon(
                     icon: Assets.xIcon,
                     color: AppColors.getPrimaryColorFromContext(context),
                   ),
-                  SizedBox(width: getWidth() * 0.02),
+                if (facebook != null && facebook.isNotEmpty)
                   ShadowIcon(
                     icon: Assets.facebookIcon,
                     color: AppColors.getPrimaryColorFromContext(context),
                   ),
-                ],
-              ),
+              ],
             ),
+          ),
 
-            SizedBox(height: getHeight() * 0.01),
-            Divider(color: AppColors.greyColor),
-            SizedBox(height: getHeight() * 0.01),
+          SizedBox(height: getHeight() * .01),
+          Divider(color: AppColors.greyColor),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+          // Organizer section
+          SizedBox(height: getHeight() * .01),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: CustomText(
+              text: al.organizer,
+              fontSize: sizes?.fontSize16,
+              fontFamily: Assets.onsetSemiBold,
+            ),
+          ),
+          SizedBox(height: getHeight() * .01),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: _buildOrganizerTile(producer),
+          ),
+
+          SizedBox(height: getHeight() * .01),
+          Divider(color: AppColors.greyColor),
+
+          // More events
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: CustomText(
+                    text: al.moreEventsLikeThis,
+                    fontSize: sizes?.fontSize16,
+                    fontFamily: Assets.onsetSemiBold,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {},
+                  child: CustomText(
+                    text: al.showAll,
+                    fontSize: sizes?.fontSize14,
+                    fontFamily: Assets.onsetMedium,
+                    color: AppColors.getPrimaryColorFromContext(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: getHeightRatio() * 230,
+            child: provider.isMoreEventsLoading
+                ? const Center(child: CircularProgressIndicator())
+                : provider.moreEventsList == null || provider.moreEventsList!.isEmpty
+                ? Center(
               child: CustomText(
-                text: al.organizer,
-                fontSize: sizes?.fontSize16,
-                fontFamily: Assets.onsetSemiBold,
+                text: "No similar events found",
+                fontSize: sizes?.fontSize14,
               ),
-            ),
-            SizedBox(height: getHeight() * 0.01),
-            OrganizerTile(color: AppColors.getPrimaryColorFromContext(context)),
-            SizedBox(height: getHeight() * 0.01),
-            Divider(color: AppColors.greyColor),
-            SizedBox(height: getHeight() * 0.01),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: CustomText(
-                      text: al.moreEventsLikeThis,
-                      fontSize: sizes?.fontSize16,
-                      fontFamily: Assets.onsetSemiBold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: CustomText(
-                      text: al.showAll,
-                      fontSize: sizes?.fontSize14,
-                      fontFamily: Assets.onsetMedium,
-                      color: AppColors.getPrimaryColorFromContext(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: getHeightRatio() * 230,
-              child: ListView.builder(
-                padding: EdgeInsets.only(left: getWidth() * 0.06, right: getWidth() * 0.03),
-                scrollDirection: Axis.horizontal,
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return SizedBox(
-                    width: getWidthRatio() * 280,
-                    child: FavouriteRestaurantCard(
-                      imageUrl: "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
-                      restaurantName: "Restaurant ${index + 1}",
-                      address: "123 Main Street, City",
-                      isFavourite: index % 2 == 0,
-                      margin: EdgeInsets.only(top: getHeightRatio() * 8, bottom: getHeightRatio() * 8, right: getWidth() * 0.03),
-                      onFavouriteTap: () {},
-                      onRestaurantTap: () {},
-                    ),
-                  );
-                },
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.06, vertical: getHeight() * 0.02),
-              color: AppColors.whiteColor,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        text: al.ticketPrice,
-                        fontSize: sizes?.fontSize12,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.inputHintColor,
-                      ),
-                      Row(
-                        children: [
-                          CustomText(
-                            text: "\$30.00",
-                            fontSize: sizes?.fontSize16,
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          CustomText(
-                            text: al.perPerson,
-                            fontSize: sizes?.fontSize14,
-                            color: AppColors.inputHintColor,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  CustomButton(
-                    buttonText: al.bookNow,
-                    onTap: () {
+            )
+                : ListView.builder(
+              padding: EdgeInsets.only(
+                  left: getWidth() * 0.06, right: getWidth() * 0.03),
+              scrollDirection: Axis.horizontal,
+              itemCount: provider.moreEventsList!.length,
+              itemBuilder: (context, index) {
+                final event = provider.moreEventsList![index];
+
+                final img = (event.eventImages != null &&
+                    event.eventImages!.isNotEmpty)
+                    ? "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/${event.eventImages!.first}"
+                    : null;
+
+                return SizedBox(
+                  width: getWidthRatio() * 280,
+                  child: FavouriteRestaurantCard(
+                    restaurantName: event.title ?? 'Event',
+                    address: event.location ?? '',
+                    imageUrl: img ?? "https://dummyimage.com/600x400/cccccc/000000&text=No+Image",
+                    isFavourite: false,
+                    margin: EdgeInsets.only(
+                        top: getHeightRatio() * 8,
+                        bottom: getHeightRatio() * 8,
+                        right: getWidth() * 0.03),
+                    onRestaurantTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BookNowScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => RestaurantExploreDetails(
+                            eventId: event.id!,
+                            tag: widget.tag,
+                          ),
+                        ),
                       );
                     },
-                    buttonWidth: getWidth() * .38,
-                    height: getHeight() * 0.06,
-                    backgroundColor: AppColors.userPrimaryColor,
-                    borderColor: Colors.transparent,
-                    textColor: Colors.white,
-                    textFontWeight: FontWeight.w700,
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+          // Bottom ticket + book now
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+                horizontal: getWidth() * 0.06, vertical: getHeight() * 0.02),
+            color: AppColors.whiteColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: al.ticketPrice,
+                      fontSize: sizes?.fontSize12,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.inputHintColor,
+                    ),
+                    Row(
+                      children: [
+                        CustomText(
+                          text: event.pricePerGuest != null
+                              ? "\$${event.pricePerGuest}"
+                              : "\$0.00",
+                          fontSize: sizes?.fontSize16,
+                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        CustomText(
+                          text: al.perPerson,
+                          fontSize: sizes?.fontSize14,
+                          color: AppColors.inputHintColor,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                CustomButton(
+                  buttonText: al.bookNow,
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BookNowScreen(
+                              eventId: event.id!,
+                              pricePerPerson: double.tryParse(event.pricePerGuest ?? "0") ?? 0.0,
+                            )
+                        ));
+                  },
+                  buttonWidth: getWidth() * .38,
+                  height: getHeight() * 0.06,
+                  backgroundColor: AppColors.userPrimaryColor,
+                  borderColor: Colors.transparent,
+                  textColor: Colors.white,
+                  textFontWeight: FontWeight.w700,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
+  Widget _buildOrganizerTile(Producer? producer) {
+    final profileImage = producer?.profileImage ?? '';
+    final name = producer?.name ?? '';
+    final phoneNumber = producer?.phoneNumber ?? ''; // get the phone
+
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: getHeight() * 0.03,
+          backgroundImage: profileImage.isNotEmpty ? NetworkImage(profileImage) : null,
+          backgroundColor: Colors.grey.shade200,
+          child: profileImage.isEmpty ? const Icon(Icons.person) : null,
+        ),
+        SizedBox(width: getWidth() * 0.02),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                text: name,
+                fontWeight: FontWeight.w500,
+                fontSize: sizes?.fontSize14,
+                color: AppColors.blackColor,
+              ),
+              CustomText(
+                text: 'Organize Team',
+                fontWeight: FontWeight.w400,
+                fontSize: sizes?.fontSize14,
+              ),
+            ],
+          ),
+        ),
+        // Phone icon
+        GestureDetector(
+          onTap: () async {
+            final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+            if (await canLaunchUrl(phoneUri)) {
+              await launchUrl(phoneUri);
+            } else {
+              // optional: show toast/error
+              debugPrint("Cannot launch dialer");
+            }
+          },
+          child: ShadowIcon(
+            icon: Assets.phoneIcon,
+            color: AppColors.getPrimaryColorFromContext(context),
+          ),
+        ),
+        SizedBox(width: getWidth() * 0.02),
+        // Message icon
+        GestureDetector(
+          onTap: () async {
+            final Uri smsUri = Uri(scheme: 'sms', path: phoneNumber);
+            if (await canLaunchUrl(smsUri)) {
+              await launchUrl(smsUri);
+            } else {
+              debugPrint("Cannot launch SMS app");
+            }
+          },
+          child: ShadowIcon(
+            icon: Assets.messagesIcon,
+            color: AppColors.getPrimaryColorFromContext(context),
+          ),
+        ),
+      ],
+    );
+  }
   Widget _buildAvatar(String imageUrl) {
     return CircleAvatar(
       radius: 16,
@@ -455,7 +781,7 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
         backgroundColor: Colors.grey.shade400,
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 10,
             color: Colors.white,
             fontWeight: FontWeight.bold,

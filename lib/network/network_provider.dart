@@ -229,6 +229,23 @@ class  NetworkProvider extends ChangeNotifier{
     }
   }
 
+  static String extractS3Key(String fullUrl) {
+    try {
+      final uri = Uri.parse(fullUrl);
+      String path = uri.path;
+
+      // Remove leading slash if present
+      if (path.startsWith('/')) {
+        path = path.substring(1);
+      }
+
+      return path;
+    } catch (e) {
+      print("Error extracting S3 key: $e");
+      return fullUrl;
+    }
+  }
+
 
 
 }

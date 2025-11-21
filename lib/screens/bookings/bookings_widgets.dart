@@ -24,11 +24,12 @@ class BookingCard extends StatelessWidget {
   final Function onDetails;
   final Function? onCheckIn;
   final Function? onCancel;
-  final String bookingType; // "Restaurant" | "Wellness"
+  final String bookingType; // "Restaurant" | "Wellness" | "Leisure"
   final String? address;
   final String? totalPrice;
   final String? bookingId;
   final bool? isEvent;
+  final String buttonText;
 
   const BookingCard({
     super.key,
@@ -46,11 +47,24 @@ class BookingCard extends StatelessWidget {
     this.totalPrice,
     this.bookingId,
     this.isEvent,
+    this.buttonText = '',
   });
 
   @override
   Widget build(BuildContext context) {
     final role = context.watch<RoleProvider>().role;
+
+    // Map of type colors
+    final Map<String, Color> typeColors = {
+      "Restaurant": const Color(0xFFFFAC12),
+      "Wellness": const Color(0xFF6FAF5B),
+      "Leisure": const Color(0xFF8F2DA3),
+    };
+
+    // Normalize bookingType
+    String normalizedType = bookingType.isNotEmpty
+        ? bookingType[0].toUpperCase() + bookingType.substring(1).toLowerCase()
+        : '';
 
     return GestureDetector(
       onTap: () => onDetails(),
@@ -68,7 +82,7 @@ class BookingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.blackColor.withOpacity(0.05),
+              color: AppColors.blackColor.withValues(alpha: 0.05),
               blurRadius: 24,
               offset: Offset(0, 4),
             ),
@@ -87,23 +101,32 @@ class BookingCard extends StatelessWidget {
                 ),
                 const Spacer(),
 
-                //  Event Chip
-                if (isEvent ?? false) _buildChip(al.event, AppColors.redColor),
+                // Chips
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    // Event chip (only for events)
+                    if (isEvent ?? false)
+                      _buildChip(al.event, AppColors.redColor),
 
-                // SizedBox(width: 4),
-                //
-                // //  Restaurant / Wellness Chip
-                // _buildChip(
-                //   bookingType,
-                //   AppColors.restaurantPrimaryColor,
-                // ),
+                    // Booking type chip (always shown)
+                    if (normalizedType.isNotEmpty)
+                      _buildChip(
+                        normalizedType,
+                        typeColors[normalizedType] ??
+                            AppColors.getPrimaryColorFromContext(context),
+                      ),
+                  ],
+                ),
+
                 if (onCheckIn == null && onCancel == null)
                   Padding(
                     padding: EdgeInsets.only(left: getWidth() * 0.011),
                     child: Icon(
                       Icons.check_circle,
                       color: AppColors.wellnessPrimaryColor,
-                      size: 18, // reduced icon size
+                      size: 18,
                     ),
                   ),
               ],
@@ -114,7 +137,7 @@ class BookingCard extends StatelessWidget {
               height: getHeight() * 0.03,
             ),
 
-            //  Booking Info Content
+            // Booking Info Content
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -138,7 +161,6 @@ class BookingCard extends StatelessWidget {
                         "$guests ${al.guests}",
                         context,
                       ),
-
                       SizedBox(height: getHeightRatio() * 8),
 
                       // Date & Time
@@ -151,28 +173,29 @@ class BookingCard extends StatelessWidget {
                         ),
                         context,
                       ),
-
                       SizedBox(height: getHeightRatio() * 8),
 
-                      //  Price or Address
+                      // Price or Address
                       role == UserRole.user
                           ? _locationRow(
-                            Assets.locationIcon, //  svg asset
-                            address ?? "Unknown",
-                            context,
-                          )
-                          : totalPrice != null ? _infoRow(
-                            Assets.priceIcon,
-                            totalPrice ?? 'Unknown',
-                            context,
-                          ) : SizedBox(),
+                        Assets.locationIcon,
+                        address ?? "Unknown",
+                        context,
+                      )
+                          : totalPrice != null
+                          ? _infoRow(
+                        Assets.priceIcon,
+                        totalPrice ?? 'Unknown',
+                        context,
+                      )
+                          : SizedBox(),
                     ],
                   ),
                 ),
               ],
             ),
 
-            //  Buttons (Cancel + Check-In / Modify)
+            // Buttons (Cancel + Check-In / Modify)
             if (onCheckIn != null && onCancel != null) ...[
               SizedBox(height: getHeight() * 0.02),
               Row(
@@ -189,13 +212,20 @@ class BookingCard extends StatelessWidget {
                     textFontWeight: FontWeight.w700,
                   ),
                   CustomButton(
-                    buttonText: role == UserRole.user ? al.modify : al.checkIn,
-                    onTap: () => onCheckIn!(),
+                    buttonText: buttonText,
+                    onTap: () {
+                      if (buttonText == al.modify) {
+                        onDetails(isFromModifyButton: true);
+                      } else if (buttonText == 'View') {
+                        onDetails();
+                      } else {
+                        onCheckIn!();
+                      }
+                    },
                     buttonWidth: getWidth() * .38,
                     height: getHeight() * 0.06,
-                    backgroundColor: AppColors.getPrimaryColorFromContext(
-                      context,
-                    ),
+                    backgroundColor:
+                    AppColors.getPrimaryColorFromContext(context),
                     borderColor: Colors.transparent,
                     textColor: Colors.white,
                     textFontWeight: FontWeight.w700,
@@ -213,7 +243,7 @@ class BookingCard extends StatelessWidget {
   Widget _buildChip(String label, Color color) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: getWidth() * 0.025, //  reduced padding
+        horizontal: getWidth() * 0.025,
         vertical: getHeight() * 0.006,
       ),
       decoration: BoxDecoration(
@@ -229,7 +259,7 @@ class BookingCard extends StatelessWidget {
     );
   }
 
-  //  Booking Image
+  // Booking Image
   Widget _buildImage(BuildContext context) {
     if (imageUrl == "") {
       return Container(
@@ -258,9 +288,7 @@ class BookingCard extends StatelessWidget {
               width: getWidthRatio() * 64,
               height: getHeightRatio() * 64,
               decoration: BoxDecoration(
-                color: AppColors.getPrimaryColorFromContext(
-                  context,
-                ).withAlpha(40),
+                color: AppColors.getPrimaryColorFromContext(context).withAlpha(40),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -275,7 +303,7 @@ class BookingCard extends StatelessWidget {
     }
   }
 
-  //  Info Row (png assets)
+  // Info Row (png assets)
   Widget _infoRow(String icon, String text, BuildContext context) {
     return Row(
       children: [
@@ -299,7 +327,7 @@ class BookingCard extends StatelessWidget {
     );
   }
 
-  //  Location Row (SVG asset)
+  // Location Row (SVG asset)
   Widget _locationRow(String icon, String text, BuildContext context) {
     return Row(
       children: [
@@ -327,18 +355,9 @@ class BookingCard extends StatelessWidget {
   String formatDateTime({String? date, String? startTime, String? endTime}) {
     if (date == null || startTime == null || endTime == null) return '';
     try {
-      final formattedDate = Formatter.formatDateFromString(
-        date,
-        newPattern: 'MMM d',
-      );
-      final formattedStart = Formatter.formatDateFromString(
-        startTime,
-        newPattern: 'h:mm a',
-      );
-      final formattedEnd = Formatter.formatDateFromString(
-        endTime,
-        newPattern: 'h:mm a',
-      );
+      final formattedDate = Formatter.formatDateFromString(date, newPattern: 'MMM d');
+      final formattedStart = Formatter.formatDateFromString(startTime, newPattern: 'h:mm a');
+      final formattedEnd = Formatter.formatDateFromString(endTime, newPattern: 'h:mm a');
       return '$formattedDate, $formattedStart - $formattedEnd';
     } catch (e) {
       return '';
@@ -427,6 +446,7 @@ class CancelConfirmationAlert extends StatelessWidget {
               borderColor: AppColors.greyBordersColor,
               hint: al.shareReason,
               label: al.reason,
+              textEditingController: controller,
             ),
             SizedBox(height: getHeightRatio() * 24),
             Row(
@@ -446,7 +466,7 @@ class CancelConfirmationAlert extends StatelessWidget {
                 ),
                 CustomButton(
                   buttonText: al.yes,
-                  onTap: () {},
+                  onTap: onConfirm,
                   buttonWidth: getWidth() * .38,
                   height: getHeight() * 0.06,
                   backgroundColor: AppColors.getPrimaryColorFromContext(

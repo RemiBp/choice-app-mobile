@@ -1180,34 +1180,57 @@ class BookmarkRestaurantCard extends StatelessWidget {
 
 
 
-class FavouriteRestaurantCard extends StatelessWidget {
+class FavouriteRestaurantCard extends StatefulWidget {
   final String imageUrl;
   final String restaurantName;
   final String address;
   final bool isFavourite;
   final EdgeInsetsGeometry? margin;
-  final VoidCallback? onFavouriteTap;
   final VoidCallback? onRestaurantTap;
+  final String? chipText;
+  final Color? chipColor;
 
   const FavouriteRestaurantCard({
     super.key,
     required this.imageUrl,
     required this.restaurantName,
     required this.address,
-    this.isFavourite = true,
-    this.onFavouriteTap,
+    this.isFavourite = false,
     this.onRestaurantTap,
-    this.margin
+    this.margin,
+    this.chipText,
+    this.chipColor,
   });
+
+  @override
+  State<FavouriteRestaurantCard> createState() => _FavouriteRestaurantCardState();
+}
+
+class _FavouriteRestaurantCardState extends State<FavouriteRestaurantCard> {
+  late bool _isFavourite;
+
+  @override
+  void initState() {
+    super.initState();
+    _isFavourite = widget.isFavourite;
+  }
+
+  void _toggleFavourite() {
+    setState(() {
+      _isFavourite = !_isFavourite;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onRestaurantTap,
+      onTap: widget.onRestaurantTap,
       child: Container(
         height: getHeightRatio() * 210,
-        margin: margin?? EdgeInsets.symmetric(horizontal: sizes!.pagePadding, vertical: getHeight() * 0.015),
-        padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.025, vertical: getHeight() * 0.015),
+        margin: widget.margin ?? EdgeInsets.symmetric(
+            horizontal: sizes!.pagePadding, vertical: getHeight() * 0.015),
+        padding: EdgeInsets.symmetric(
+            horizontal: getWidth() * 0.025, vertical: getHeight() * 0.015),
         decoration: BoxDecoration(
           color: AppColors.whiteColor,
           borderRadius: BorderRadius.circular(8),
@@ -1216,21 +1239,19 @@ class FavouriteRestaurantCard extends StatelessWidget {
               color: AppColors.blackColor.withAlpha(20),
               offset: const Offset(0, 0),
               blurRadius: 24,
-              spreadRadius: 0,
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image + Favourite Button Stack
             Expanded(
               child: Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      Assets.galleryImage,
+                    child: Image.network(
+                      widget.imageUrl,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -1239,7 +1260,7 @@ class FavouriteRestaurantCard extends StatelessWidget {
                     top: getHeight() * 0.015,
                     right: getWidth() * 0.04,
                     child: GestureDetector(
-                      onTap: onFavouriteTap,
+                      onTap: _toggleFavourite,
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: const BoxDecoration(
@@ -1247,37 +1268,40 @@ class FavouriteRestaurantCard extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          isFavourite ? Icons.favorite : Icons.favorite_border,
-                          color: AppColors.redColor,
+                          _isFavourite ? Icons.favorite : Icons.favorite_border,
+                          color: _isFavourite ? AppColors.redColor : Colors.grey,
                           size: 20,
                         ),
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: getHeight() * 0.015,
-                    left: getWidth() * 0.04,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.025, vertical: getHeight() * 0.01),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: AppColors.getPrimaryColorFromContext(context).withAlpha(90),
-                        // shape: BoxShape.circle,
-                      ),
-                      child: CustomText(
-                        text: al.categoryWellness,
-                        color: AppColors.whiteColor,
-                        fontSize: sizes?.fontSize12,
-                        fontWeight: FontWeight.w500
+                  if (widget.chipText != null)
+                    Positioned(
+                      top: getHeight() * 0.015,
+                      left: getWidth() * 0.015,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getWidth() * 0.035,
+                          vertical: getHeight() * 0.01,
+                        ),
+                        decoration: BoxDecoration(
+                          color: (widget.chipColor ?? Colors.grey).withAlpha(40),
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        child: CustomText(
+                          text: widget.chipText!,
+                          fontSize: sizes?.fontSize12,
+                          fontWeight: FontWeight.w500,
+                          color: widget.chipColor ?? Colors.grey,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
             SizedBox(height: getHeight() * 0.01),
             CustomText(
-              text: restaurantName,
+              text: widget.restaurantName,
               fontSize: sizes?.fontSize14,
               fontWeight: FontWeight.w500,
               color: AppColors.blackColor,
@@ -1293,7 +1317,7 @@ class FavouriteRestaurantCard extends StatelessWidget {
                 SizedBox(width: getWidth() * 0.01),
                 Expanded(
                   child: CustomText(
-                    text: address,
+                    text: widget.address,
                     fontSize: sizes?.fontSize12,
                     fontWeight: FontWeight.w500,
                     lines: 2,
@@ -1301,8 +1325,6 @@ class FavouriteRestaurantCard extends StatelessWidget {
                     color: AppColors.primarySlateColor,
                   ),
                 ),
-                const SizedBox(width: 8),
-                // You can add a distance chip or icon here if needed
               ],
             ),
           ],

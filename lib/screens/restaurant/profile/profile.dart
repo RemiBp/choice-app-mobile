@@ -50,9 +50,7 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    // Initialize controllers
     addressController = TextEditingController();
-    passwordController = TextEditingController();
     websiteController = TextEditingController();
     instagramController = TextEditingController();
     twitterController = TextEditingController();
@@ -61,6 +59,7 @@ class _ProfileState extends State<Profile> {
 
     fullNameController = TextEditingController();
     usernameController = TextEditingController();
+    passwordController = TextEditingController();
     //emailController = TextEditingController();
 
     // Pre-fill email from login
@@ -99,6 +98,7 @@ class _ProfileState extends State<Profile> {
       //  Phone number
       if (producer.phoneNumber != null && producer.phoneNumber!.isNotEmpty) {
         try {
+          // debugPrint("Phone Number====> ${PhoneNumber.parse(producer.phoneNumber!)}");
           provider.setPhoneNumber(PhoneNumber.parse(producer.phoneNumber!));
         } catch (e) {
           debugPrint('Error parsing phone number: $e');
@@ -516,7 +516,7 @@ class _ProfileState extends State<Profile> {
 
 
                     String? profileImageUrl;
-                    
+
                     if (provider.profilePhoto != null) {
                       // User selected a new image - upload it
                       final bytes = await provider.profilePhoto!.readAsBytes();
@@ -554,7 +554,7 @@ class _ProfileState extends State<Profile> {
                       description: descriptionController.text,
                       profileImageUrl: profileImageUrl!,
                     );
-                    
+
                     if (success && context.mounted) {
                       if(widget.isFromSettings) {
                         context.pop();
@@ -596,8 +596,10 @@ class _ProfileState extends State<Profile> {
   }
 
   bool isValidInstagram(String url) {
-    final pattern = RegExp(r'^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._%-]+\/?$');
-    return pattern.hasMatch(url);
+    final pattern = RegExp(
+        r'^(https?:\/\/)?(www\.)?instagram\.com\/([a-zA-Z0-9._](?:(?:[a-zA-Z0-9._]|(?:\.(?!\.))){0,28}(?:[a-zA-Z0-9._])))?\/?$'
+    );
+    return pattern.hasMatch(url.trim());
   }
 
   bool isValidTwitter(String url) {

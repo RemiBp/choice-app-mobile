@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../common/utils.dart';
 import '../../../../models/get_all_events_near_me_response.dart';
+import '../../../../models/near_by_producers_response.dart';
 import '../../../../network/API.dart';
 import '../../../../network/models.dart';
 
@@ -13,11 +14,13 @@ class ExploreViewProvider extends ChangeNotifier {
   ExploreViewProvider({required this.context});
 
   bool isLoading = false;
+  bool isEventsLoading = false;
+  bool isProducersLoading = false;
   List<EventData> events = [];
 
   Future<void> getEventsNearMe() async {
     try {
-      isLoading = true;
+      isEventsLoading = true;
       notifyListeners();
 
       //  Read lat/lng saved from profile
@@ -27,7 +30,7 @@ class ExploreViewProvider extends ChangeNotifier {
       double lat = double.tryParse(latString ?? "") ?? 38.716900;
       double lng = double.tryParse(lngString ?? "") ?? -9.139000;
 
-      final url = "$getEventsNearMeApiUrl?lat=$lat&lng=$lng&radius=5";
+      final url = "$getEventsNearMeApiUrl?lat=$lat&lng=$lng&radius=1000000000000";
 
       debugPrint("📍 Calling GET: $url");
 
@@ -44,13 +47,90 @@ class ExploreViewProvider extends ChangeNotifier {
             .toList();
       }
 
-      isLoading = false;
+      isEventsLoading = false;
       notifyListeners();
     } catch (e) {
       debugPrint("❌ Error fetching events near me: $e");
-      isLoading = false;
+      isEventsLoading = false;
       notifyListeners();
     }
   }
 
+  Future<NearbyProducersResponse?> findNearbyProducers({
+    required double latitude,
+    required double longitude,
+    String? keyword,
+    int? radius,
+    int? page,
+    int? limit,
+    String? producerType,
+  }) async {
+    final body = {
+      "latitude": latitude,
+      "longitude": longitude,
+      "keyword": keyword ?? "",
+      "radius": radius ?? 1000,
+      "page": page ?? 1,
+      "limit": limit ?? 50,
+    };
+
+    if (producerType != null && producerType.isNotEmpty) {
+      body["producerType"] = producerType;
+    }
+
+    final response = await MyApi.callPostApi(
+      url: nearByProducersApiUrl,
+      body: body,
+    );
+
+    if (response != null) {
+      return NearbyProducersResponse.fromJson(response);
+    }
+    return null;
+  }
+
+  List<ProducerItem> nearbyProducers = [];
+
+  Future<void> getNearbyProducers({
+    List<String>? allowedTypes,  // for Surprise Me
+    String? producerType,       // for category-specific fetch
+  }) async {
+    try {
+      isProducersLoading = true;
+      notifyListeners();
+
+      String? typeForApi;
+      if (producerType != null) {
+        typeForApi = producerType.toLowerCase();
+      }
+
+      // Hardcoded lat, long and radius for now
+      final response = await findNearbyProducers(
+        latitude: 48.856600,
+        longitude: 2.352200,
+        radius: 15,
+        keyword: "",
+        producerType: typeForApi, // pass single category if provided
+      );
+      var producers = response?.data?.producers ?? [];
+
+      // If allowedTypes is provided (Surprise Me), filter locally
+      if (allowedTypes != null && allowedTypes.isNotEmpty) {
+        producers = producers
+            .where((p) =>
+        p.type != null &&
+            allowedTypes.contains(p.type!.toLowerCase()))
+            .toList();
+      }
+
+      nearbyProducers = producers;
+
+    } catch (e) {
+      debugPrint("Error fetching nearby producers: $e");
+      nearbyProducers = [];
+    } finally {
+      isProducersLoading = false;
+      notifyListeners();
+    }
+  }
 }

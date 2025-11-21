@@ -19,8 +19,8 @@ import '../../../res/res.dart';
 class GalleryCard extends StatelessWidget {
   final bool? isMainImage;
   final String? imageFile;
-  final Future<void> Function()? onRemoveImage; // ✅ updated type
-  final VoidCallback? onSetMainImage; // ✅ cleaner for sync action
+  final Future<void> Function()? onRemoveImage;
+  final VoidCallback? onSetMainImage;
 
   const GalleryCard({
     super.key,
@@ -99,7 +99,7 @@ class GalleryCard extends StatelessWidget {
               child: GestureDetector(
                 onTap: () async {
                   if (onRemoveImage != null) {
-                    await onRemoveImage!(); // ✅ await async function
+                    await onRemoveImage!(); // await async function
                   }
                 },
                 child: const Icon(Icons.clear, color: AppColors.whiteColor),

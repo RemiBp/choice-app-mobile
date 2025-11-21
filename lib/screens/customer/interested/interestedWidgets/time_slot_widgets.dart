@@ -258,3 +258,93 @@ class MessageField extends StatelessWidget {
     );
   }
 }
+
+class PersonCounterWidget extends StatelessWidget {
+  final int value;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
+
+  const PersonCounterWidget({
+    super.key,
+    required this.value,
+    required this.onIncrement,
+    required this.onDecrement,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.greyBordersColor),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.remove, size: 20),
+            color: AppColors.blackColor,
+            onPressed: value > 1 ? onDecrement : null,
+          ),
+
+          Expanded(
+            child: Center(
+              child: CustomText(
+                text: value.toString(),
+                fontSize: sizes?.fontSize16,
+                color: AppColors.blackColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.add, size: 20),
+            color: AppColors.blackColor,
+            onPressed: onIncrement,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InternalNotesField extends StatelessWidget {
+  final String hintText;
+  final TextEditingController? controller;
+  final Color? backgroundColor;
+  final Color? borderColor;
+
+  const InternalNotesField({
+    super.key,
+    this.controller,
+    this.hintText = "e.g. Please provide 2 baby chair...",
+    this.backgroundColor,
+    this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor ?? AppColors.whiteColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor ?? AppColors.greyBordersColor),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: 3,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: TextStyle(
+            color: AppColors.inputHintColor,
+            fontSize: sizes!.fontSize14,
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(14),
+        ),
+      ),
+    );
+  }
+}
+
+

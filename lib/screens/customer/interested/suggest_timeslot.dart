@@ -135,7 +135,7 @@ class _SuggestTimeSlotScreenState extends State<SuggestTimeSlotScreen> {
 
             SizedBox(height: getHeight() * 0.025),
 
-            /// Date Chips
+            // Date Chips
             SizedBox(
               height: 54,
               child: ListView.separated(

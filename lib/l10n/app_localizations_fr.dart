@@ -22,6 +22,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get userAccountTitle => 'Compte utilisateur';
 
   @override
+  String get provideAReason => 'Veuillez fournir une raison.';
+
+  @override
+  String get somethingWentWrong => 'Quelque chose s\'est mal passé';
+
+  @override
   String get userAccountDescription =>
       'Pour découvrir des restaurants et des activités, et suivre vos prestataires favoris.';
 
@@ -453,6 +459,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidPassword => 'Mot de passe invalide';
 
   @override
+  String get passwordMustBeAtLeast8Chars =>
+      'Le mot de passe doit contenir au moins 8 caractères';
+
+  @override
+  String get passwordCannotContainSpaces =>
+      'Le mot de passe ne peut pas contenir d\'espaces';
+
+  @override
+  String get passwordMustContainUppercase =>
+      'Le mot de passe doit contenir au moins une lettre majuscule (A-Z)';
+
+  @override
+  String get passwordMustContainLowercase =>
+      'Le mot de passe doit contenir au moins une lettre minuscule (a-z)';
+
+  @override
+  String get passwordMustContainNumber =>
+      'Le mot de passe doit contenir au moins un chiffre (0-9)';
+
+  @override
+  String get passwordMustContainSpecialChar =>
+      'Le mot de passe doit contenir au moins un caractère spécial (!@#\\\$%&)';
+
+  @override
   String get interest => 'Intérêt';
 
   @override
@@ -490,6 +520,40 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get browseByCategory => 'Parcourir par catégorie';
+
+  @override
+  String get welcome => 'Bienvenue';
+
+  @override
+  String get sound => 'Son';
+
+  @override
+  String get length => 'Longueur';
+
+  @override
+  String get ratingsByTheme => 'Notes par thème';
+
+  @override
+  String get interestSplitByPriceType =>
+      'Répartition des intérêts par type de prix';
+
+  @override
+  String get weeklyEvolution => 'Évolution Hebdomadaire';
+
+  @override
+  String get criteriaRatings => 'Notes des Critères';
+
+  @override
+  String get cleanliness => 'Propreté';
+
+  @override
+  String get staffExpertise => 'Expertise du Personnel';
+
+  @override
+  String get ambiance => 'Ambiance';
+
+  @override
+  String get numberOfInterests => 'Nombre d\'intérêts';
 
   @override
   String get expiryDate1Placeholder =>
@@ -707,9 +771,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get portions => 'Portions';
 
   @override
-  String get ambiance => 'Ambiance';
-
-  @override
   String get dishesAndMenusConsumed => 'Plats et menus consommés';
 
   @override
@@ -902,9 +963,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get seeFullGallery => 'Voir la galerie complète';
-
-  @override
-  String get welcome => 'Bienvenue';
 
   @override
   String get unblock => 'Débloquer';

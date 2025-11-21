@@ -23,6 +23,7 @@ import '../../../customWidgets/common_app_bar.dart';
 import '../../../customWidgets/custom_button.dart';
 import '../../../res/res.dart';
 import '../../../userRole/role_provider.dart';
+import '../../authentication/auth_provider.dart';
 import '../../onboarding/business_hours/edit_business_hours/edit_operational_hours.dart';
 import '../../onboarding/menu/menu_view.dart';
 
@@ -240,7 +241,10 @@ class _SettingViewState extends State<SettingView> {
                 ProfileOptionButton(
                   title: al.logout,
                   leadingAssetPath: Assets.logoutIcon,
-                  onTap: () {},
+                  onTap: () {
+                    final authProvider = context.read<AuthProvider>();
+                    authProvider.logout(context);
+                  },
                 ),
                 CustomButton(
                   buttonText: al.deleteAccount,

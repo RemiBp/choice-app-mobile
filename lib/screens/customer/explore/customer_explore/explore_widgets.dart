@@ -10,11 +10,13 @@ import 'explore_view.dart';
 class BrowseCategoryWidget extends StatelessWidget {
   final List<String> imagePaths;
   final List<String> labels;
+  final Function(String category)? onCategoryTap; // callback
 
   const BrowseCategoryWidget({
     super.key,
     required this.imagePaths,
     required this.labels,
+    this.onCategoryTap,
   });
 
   @override
@@ -25,36 +27,45 @@ class BrowseCategoryWidget extends StatelessWidget {
         SeeMoreWidget(header: al.browseByCategory),
         SizedBox(height: getHeight() * 0.015),
         SizedBox(
-          height: getHeight() * 0.19, // container height = image + text
+          height: getHeight() * 0.19,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: imagePaths.length,
             itemBuilder: (context, index) {
+              final String label = labels[index]; // single label string
+
               return Padding(
                 padding: EdgeInsets.only(right: getWidth() * 0.04),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        imagePaths[index],
-                        width: getWidth() * 0.28, // ~106px on std screen
-                        height: getWidth() * 0.28,
-                        fit: BoxFit.cover,
+                child: GestureDetector(
+                  onTap: () {
+                    // Send the lowercase category name
+                    if (onCategoryTap != null) {
+                      onCategoryTap!(label.toLowerCase());
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          imagePaths[index],
+                          width: getWidth() * 0.28,
+                          height: getWidth() * 0.28,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: getHeight() * 0.008),
-                    CustomText(
-                      text: labels[index],
-                      fontSize: sizes?.fontSize14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ],
+                      SizedBox(height: getHeight() * 0.008),
+                      CustomText(
+                        text: label,
+                        fontSize: sizes?.fontSize14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           ),
-
         ),
       ],
     );

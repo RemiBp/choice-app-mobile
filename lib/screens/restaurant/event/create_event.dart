@@ -4,6 +4,7 @@ import 'package:choice_app/customWidgets/common_app_bar.dart';
 import 'package:choice_app/customWidgets/custom_text.dart';
 import 'package:choice_app/network/network_provider.dart';
 import 'package:choice_app/screens/restaurant/event/event_provider.dart';
+import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,10 +17,12 @@ import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_button.dart';
 import '../../../customWidgets/custom_textfield.dart';
 import '../../../l18n.dart';
+import '../../../models/event_type_model.dart';
 import '../../../res/res.dart';
 import '../../../res/toasts.dart';
 import '../../../userRole/role_provider.dart';
 import '../../../userRole/user_role.dart';
+import '../../../utilities/timezone_helper.dart';
 
 class CreateEvent extends StatefulWidget {
   const CreateEvent({super.key});
@@ -49,7 +52,6 @@ class _CreateEventState extends State<CreateEvent> {
   List<String> imageUrls = [];
   final ImagePicker _picker = ImagePicker();
 
-  // Function to pick images
   Future<void> _pickImages() async {
     if (images.length >= 5) return;
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -60,14 +62,12 @@ class _CreateEventState extends State<CreateEvent> {
     }
   }
 
-  // Remove image
   void _removeImage(int index) {
     setState(() {
       images.removeAt(index);
     });
   }
 
-  // Date picker
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -80,13 +80,12 @@ class _CreateEventState extends State<CreateEvent> {
     }
   }
 
-  // Time picker
   Future<void> _pickTime(bool isStart) async {
     final picked = await showTimePicker(
       context: context,
       initialTime: isStart
-          ? (_startTime ?? const TimeOfDay(hour: 0, minute: 0)) // default 12 AM
-          :  (_endTime ?? const TimeOfDay(hour: 0, minute: 0)),   //end time stays as it is
+          ? (_startTime ?? const TimeOfDay(hour: 0, minute: 0))
+          : (_endTime ?? const TimeOfDay(hour: 0, minute: 0)),
     );
     if (picked != null) {
       setState(() {
@@ -107,11 +106,10 @@ class _CreateEventState extends State<CreateEvent> {
     );
   }
 
-
   Widget _buildCard({required Widget child}) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-      padding: const EdgeInsets.all(16), // equal spacing on all sides
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -121,7 +119,7 @@ class _CreateEventState extends State<CreateEvent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           child,
-          const SizedBox(height: 4), // ensures bottom spacing matches top
+          const SizedBox(height: 4),
         ],
       ),
     );
@@ -132,6 +130,12 @@ class _CreateEventState extends State<CreateEvent> {
     super.initState();
     networkProvider = Provider.of<NetworkProvider>(context, listen: false);
     networkProvider.context = context;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.read<RoleProvider>().role == UserRole.leisure) {
+        context.read<EventProvider>().getEventTypes();
+      }
+    });
   }
 
   @override
@@ -147,6 +151,7 @@ class _CreateEventState extends State<CreateEvent> {
   @override
   Widget build(BuildContext context) {
     final role = context.read<RoleProvider>().role;
+
     return Scaffold(
       backgroundColor: Color(0xFFF9F9F9),
       appBar: CommonAppBar(title: al.createEvent),
@@ -156,12 +161,12 @@ class _CreateEventState extends State<CreateEvent> {
           key: _formKey,
           child: Column(
             children: [
-              // Event Details
+              // EVENT DETAILS
               _buildCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle(al.eventDetails,),
+                    _buildSectionTitle(al.eventDetails),
                     SizedBox(height: getHeight() * .02),
                     CustomField(
                       textEditingController: _eventNameController,
@@ -171,24 +176,29 @@ class _CreateEventState extends State<CreateEvent> {
                     ),
                     SizedBox(height: getHeight() * .02),
 
-                    // Event Type (Dropdown Field) – only for leisure role
+                    // Event Type only for leisure
                     if (role == UserRole.leisure) ...[
-                      CustomDropdownField(
-                        label: al.eventTypeLabel,
-                        hint: al.eventTypePlaceholder,
-                        items: ["Conference", "Wedding", "Birthday", "Workshop"],
-                        value: _selectedEventType,
-                        borderColor: AppColors.inputHintColor,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedEventType = value;
-                          });
+                      Consumer<EventProvider>(
+                        builder: (context, provider, _) {
+                          final eventTypes = provider.eventTypesList;
+                          final items = eventTypes.map((e) => e.name ?? "").toList();
+
+                          return CustomDropdownField(
+                            label: al.eventTypeLabel,
+                            hint: al.eventTypePlaceholder,
+                            items: items,
+                            value: _selectedEventType,
+                            borderColor: AppColors.inputHintColor,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedEventType = value;
+                              });
+                            },
+                          );
                         },
                       ),
                       SizedBox(height: getHeight() * .02),
                     ],
-
-
 
                     CustomField(
                       textEditingController: _descriptionController,
@@ -201,7 +211,7 @@ class _CreateEventState extends State<CreateEvent> {
                 ),
               ),
 
-              // Event Gallery
+              // EVENT GALLERy
               _buildCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,11 +228,12 @@ class _CreateEventState extends State<CreateEvent> {
                       fontSize: sizes?.fontSize12,
                     ),
                     SizedBox(height: getHeight() * .02),
-                    InkWell(
 
+                    InkWell(
                       onTap: _pickImages,
                       child: DottedBorderContainer(),
                     ),
+
                     SizedBox(height: 12),
                     Wrap(
                       spacing: 10,
@@ -263,13 +274,14 @@ class _CreateEventState extends State<CreateEvent> {
                 ),
               ),
 
-              // Location
+              // LOCATION
               _buildCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle(al.location,),
+                    _buildSectionTitle(al.location),
                     SizedBox(height: getHeight() * .02),
+
                     if (role == UserRole.restaurant) ...[
                       CustomField(
                         textEditingController: _venueController,
@@ -279,6 +291,7 @@ class _CreateEventState extends State<CreateEvent> {
                       ),
                       SizedBox(height: getHeight() * .02),
                     ],
+
                     CustomField(
                       textEditingController: _addressController,
                       borderColor: AppColors.greyBordersColor,
@@ -289,20 +302,23 @@ class _CreateEventState extends State<CreateEvent> {
                 ),
               ),
 
-              // Capacity & Pricing
+              // CAPACITY & PRICING
               _buildCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle(al.capacityPricing,),
+                    _buildSectionTitle(al.capacityPricing),
                     SizedBox(height: getHeight() * .02),
+
                     CustomField(
                       textEditingController: _capacityController,
                       borderColor: AppColors.greyBordersColor,
                       hint: al.maxPersons,
                       label: al.maxCapacity,
                     ),
+
                     SizedBox(height: getHeight() * .02),
+
                     CustomField(
                       textEditingController: _priceController,
                       borderColor: AppColors.greyBordersColor,
@@ -313,34 +329,35 @@ class _CreateEventState extends State<CreateEvent> {
                 ),
               ),
 
-              // Schedule
+              // SCHEDULE
               _buildCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle(al.schedule,),
+                    _buildSectionTitle(al.schedule),
                     SizedBox(height: getHeight() * .02),
+
                     InkWell(
                       onTap: _pickDate,
                       child: AbsorbPointer(
                         child: CustomField(
                           borderColor: AppColors.greyBordersColor,
                           hint: al.selectDate,
-                          label:al.eventDate,
+                          label: al.eventDate,
                           suffixIcon: Icons.calendar_month_rounded,
                           obscure: true,
                           textEditingController: TextEditingController(
-                            text:
-                                _selectedDate == null
-                                    ? ""
-                                    : DateFormat.yMMMMd().format(
-                                      _selectedDate!,
-                                    ),
+                            // FIX: DISPLAY DATE AS yyyy-MM-dd
+                            text: _selectedDate == null
+                                ? ""
+                                : DateFormat("yyyy-MM-dd").format(_selectedDate!),
                           ),
                         ),
                       ),
                     ),
+
                     SizedBox(height: 12),
+
                     Row(
                       children: [
                         Expanded(
@@ -353,8 +370,9 @@ class _CreateEventState extends State<CreateEvent> {
                                 label: al.startTime,
                                 suffixIconSvg: Assets.clockSvg,
                                 textEditingController: TextEditingController(
-                                  text: (_startTime ?? const TimeOfDay(hour: 0, minute: 0)) // fallback
-                                      .format(context),
+                                  text: _startTime == null
+                                      ? ""
+                                      : _startTime!.format(context),
                                 ),
                               ),
                             ),
@@ -362,6 +380,7 @@ class _CreateEventState extends State<CreateEvent> {
                         ),
 
                         SizedBox(width: 12),
+
                         Expanded(
                           child: GestureDetector(
                             onTap: () => _pickTime(false),
@@ -372,8 +391,9 @@ class _CreateEventState extends State<CreateEvent> {
                                 label: al.endTime,
                                 suffixIconSvg: Assets.clockSvg,
                                 textEditingController: TextEditingController(
-                                  text: (_endTime ?? const TimeOfDay(hour: 0, minute: 0)) // fallback
-                                      .format(context),
+                                  text: _endTime == null
+                                      ? ""
+                                      : _endTime!.format(context),
                                 ),
                               ),
                             ),
@@ -385,9 +405,9 @@ class _CreateEventState extends State<CreateEvent> {
                 ),
               ),
 
-              // Action Buttons
+              // BUTTONS
               Padding(
-                padding:  EdgeInsets.symmetric(vertical: getHeight()*.03),
+                padding: EdgeInsets.symmetric(vertical: getHeight() * .03),
                 child: Row(
                   children: [
                     Expanded(
@@ -399,66 +419,144 @@ class _CreateEventState extends State<CreateEvent> {
                         onTap: () {},
                       ),
                     ),
+
                     SizedBox(width: 12),
+
                     Expanded(
                       child: CustomButton(
-                        buttonText: al.publish, onTap: () async {
-                        final eventName = _eventNameController.text.trim();
-                        final description = _descriptionController.text.trim();
-                        final venue = _venueController.text.trim();
-                        final address = _addressController.text.trim();
-                        final capacity = _capacityController.text.trim();
-                        final price = _priceController.text.trim();
+                        buttonText: al.publish,
+                        onTap: () async {
+                          final isLeisure =
+                              context.read<RoleProvider>().role == UserRole.leisure;
+                          final isRestaurant =
+                              context.read<RoleProvider>().role == UserRole.restaurant;
 
-                        if (images.isEmpty) {
-                          Toasts.getErrorToast(
-                              text: al.errorSelectImage);
-                        } else if (eventName.isEmpty) {
-                          Toasts.getErrorToast(
-                              text: al.enterEventName);
-                        } else if (description.isEmpty) {
-                          Toasts.getErrorToast(
-                              text: al.enterEventDescription);
-                        } else if (venue.isEmpty) {
-                          Toasts.getErrorToast(text: al.enterVenue);
-                        } else if (address.isEmpty) {
-                          Toasts.getErrorToast(
-                              text: al.errorEnterAddress);
-                        } else if (capacity.isEmpty) {
-                          Toasts.getErrorToast(
-                              text: al.enterCapacity);
-                        } else if (int.tryParse(capacity) == null) {
-                          Toasts.getErrorToast(
-                              text: al.enterValidCapacityNumber);
-                        } else if (price.isEmpty) {
-                          Toasts.getErrorToast(text: al.enterPrice);
-                        } else if (double.tryParse(price) == null) {
-                          Toasts.getErrorToast(
-                              text: al.enterValidPrice);
-                        } else {
-                          for (var i in images) {
-                            final bytes = await i.readAsBytes();
-                            final fileUrl = await networkProvider.getUrlForFileUpload(bytes);
-                            debugPrint("file url is : $fileUrl");
+                          // Validation
+                          if (images.isEmpty) {
+                            Toasts.getErrorToast(text: al.errorSelectImage);
+                            return;
+                          }
+                          if (_eventNameController.text.trim().isEmpty) {
+                            Toasts.getErrorToast(text: al.enterEventName);
+                            return;
+                          }
+                          if (_descriptionController.text.trim().isEmpty) {
+                            Toasts.getErrorToast(text: al.enterEventDescription);
+                            return;
+                          }
+                          if (isRestaurant && _venueController.text.trim().isEmpty) {
+                            Toasts.getErrorToast(text: al.enterVenue);
+                            return;
+                          }
+                          if (_addressController.text.trim().isEmpty) {
+                            Toasts.getErrorToast(text: al.errorEnterAddress);
+                            return;
+                          }
+                          if (_capacityController.text.trim().isEmpty ||
+                              int.tryParse(_capacityController.text.trim()) == null) {
+                            Toasts.getErrorToast(text: al.enterValidCapacityNumber);
+                            return;
+                          }
+                          if (_priceController.text.trim().isEmpty ||
+                              double.tryParse(_priceController.text.trim()) == null) {
+                            Toasts.getErrorToast(text: al.enterValidPrice);
+                            return;
+                          }
+                          if (isLeisure &&
+                              (_selectedEventType == null ||
+                                  _selectedEventType!.isEmpty)) {
+                            Toasts.getErrorToast(text: "Please select event type");
+                            return;
+                          }
+                          if (_selectedDate == null) {
+                            Toasts.getErrorToast(text: "Please select event date");
+                            return;
+                          }
+                          if (_startTime == null || _endTime == null) {
+                            Toasts.getErrorToast(text: "Please select start and end time");
+                            return;
+                          }
+
+                          // Upload images
+                          imageUrls.clear();
+                          for (var img in images) {
+                            final bytes = await img.readAsBytes();
+                            final fileUrl =
+                            await networkProvider.getUrlForFileUpload(bytes);
                             if (fileUrl != null) {
-                              imageUrls.add(fileUrl);
+                              imageUrls.add(
+                                  NetworkProvider.extractS3Key(fileUrl));
                             }
                           }
-                          context.read<EventProvider>().createEventApi(
-                            eventName: eventName,
-                            description: description,
-                            venue: "Restaurant",
-                            address: address,
-                            capacity: capacity,
-                            price: price,
-                            images: [],
-                            date: "${_selectedDate?.day}-${_selectedDate?.month}-${_selectedDate?.year}",
-                            startTime: "${_startTime?.hour}:${_startTime?.minute}",
-                            endTime: "${_endTime?.hour}:${_endTime?.minute}",
 
+                          if (imageUrls.isEmpty) {
+                            Toasts.getErrorToast(text: "Failed to upload images");
+                            return;
+                          }
+
+                          // Event type ID
+                          final provider = context.read<EventProvider>();
+                          final selectedType = isLeisure
+                              ? provider.eventTypesList.firstWhere(
+                                (e) => e.name == _selectedEventType,
+                            orElse: () => EventTypeModel(
+                              id: -1,
+                              name: '',
+                              createdAt: DateTime.now(),
+                              updatedAt: DateTime.now(),
+                            ),
+                          )
+                              : null;
+
+                          if (isLeisure &&
+                              (selectedType == null || selectedType.id <= 0)) {
+                            Toasts.getErrorToast(text: "Invalid event type");
+                            return;
+                          }
+
+                          // FIX: send date in correct format
+                          final dateStr =
+                          DateFormat("yyyy-MM-dd").format(_selectedDate!);
+
+                          final startTimeStr =
+                              "${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}";
+                          final endTimeStr =
+                              "${_endTime!.hour.toString().padLeft(2, '0')}:${_endTime!.minute.toString().padLeft(2, '0')}";
+
+                          final profileProvider =
+                          context.read<ProfileProvider>();
+                          final producerProfile =
+                              profileProvider.getProducerProfileResponse?.producer;
+
+                          final latitude = double.tryParse(
+                              producerProfile?.latitude ?? "0.0") ??
+                              0.0;
+                          final longitude = double.tryParse(
+                              producerProfile?.longitude ?? "0.0") ??
+                              0.0;
+
+
+                          await context.read<EventProvider>().createEventApi(
+                            eventName: _eventNameController.text.trim(),
+                            description: _descriptionController.text.trim(),
+                            venue: isRestaurant
+                                ? _venueController.text.trim()
+                                : "",
+                            address: _addressController.text.trim(),
+                            capacity: _capacityController.text.trim(),
+                            price: _priceController.text.trim(),
+                            images: imageUrls,
+                            date: dateStr,
+                            startTime: startTimeStr,
+                            endTime: endTimeStr,
+                            eventTypeId:
+                            isLeisure ? selectedType!.id : null,
+                            latitude: latitude,
+                            longitude: longitude,
+                            timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC', // Success: Uses the cached value
                           );
-                        }
-                      },),
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -471,7 +569,7 @@ class _CreateEventState extends State<CreateEvent> {
   }
 }
 
-// Reusable upload container
+// DOTTED IMAGE UPLOAD BOX
 class DottedBorderContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

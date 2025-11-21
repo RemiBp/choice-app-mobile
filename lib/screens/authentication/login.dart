@@ -18,6 +18,7 @@ import '../../res/toasts.dart';
 import '../../userRole/role_provider.dart';
 import '../../userRole/user_role.dart';
 import '../../utilities/validators.dart';
+import 'dart:io' show Platform;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -167,15 +168,22 @@ class _LoginState extends State<Login> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SocialButton(
-                  buttonLabel: al.signupWithApple,
-                  svgString: Assets.appleIcon,
-                  onPress: () {},
-                ),
-                SocialButton(
-                  buttonLabel: al.signupWithGoogle,
-                  svgString: Assets.googleIcon,
-                  onPress: () {},
+                if(Platform.isIOS)...[
+                  Expanded(
+                    child: SocialButton(
+                      buttonLabel: al.signupWithApple,
+                      svgString: Assets.appleIcon,
+                      onPress: () {},
+                    ),
+                  ),
+                  SizedBox(width: 20,),
+                ],
+                Expanded(
+                  child: SocialButton(
+                    buttonLabel: al.signupWithGoogle,
+                    svgString: Assets.googleIcon,
+                    onPress: () {},
+                  ),
                 ),
               ],
             ),

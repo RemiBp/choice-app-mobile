@@ -27,7 +27,7 @@ class _GalleryViewState extends State<GalleryView> {
   final ImagePicker imgPicker = ImagePicker();
   List<XFile> selectedImages = [];
 
-  /// Stores existing gallery images from API as a list of maps { "id": int?, "url": String }
+  // Stores existing gallery images from API as a list of maps { "id": int?, "url": String }
   List<Map<String, dynamic>> galleryImages = [];
 
   bool isLoading = false;
@@ -49,7 +49,7 @@ class _GalleryViewState extends State<GalleryView> {
     });
   }
 
-  /// Fetch gallery images from API
+  // Fetch gallery images from API
   Future<void> _loadGalleryImages() async {
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     final response = await profileProvider.getGalleryImages(context);
@@ -71,7 +71,7 @@ class _GalleryViewState extends State<GalleryView> {
     }
   }
 
-  /// Pick multiple images
+  // Pick multiple images
   Future<void> pickImages() async {
     try {
       final List<XFile> images = await imgPicker.pickMultiImage();
@@ -101,7 +101,7 @@ class _GalleryViewState extends State<GalleryView> {
     }
   }
 
-  /// Delete a gallery image using its ID (API + local state)
+  // Delete a gallery image using its ID (API + local state)
   Future<void> _deleteGalleryImage(int index, int photoId) async {
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     final success = await profileProvider.deleteGalleryImage(photoIds: [photoId]);
@@ -162,7 +162,7 @@ class _GalleryViewState extends State<GalleryView> {
                         );
                       }),
 
-                      // --- Add image button ---
+                      // Add image button
                       AddImageCard(onAddImages: pickImages),
                     ],
                   ),

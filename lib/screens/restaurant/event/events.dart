@@ -54,7 +54,7 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
           fontSize: sizes?.fontSize18,
           fontFamily: Assets.onsetSemiBold,
         ),
-        titleSpacing: 0,
+        //titleSpacing: 0,
       ),
       body: Column(
         children: [

@@ -1,3 +1,4 @@
+import 'package:choice_app/models/get_event_booking_details_response.dart';
 import 'package:choice_app/models/get_user_bookings_response.dart';
 import 'package:choice_app/network/API.dart';
 import 'package:choice_app/network/api_url.dart';
@@ -5,6 +6,10 @@ import 'package:choice_app/res/loader.dart';
 import 'package:choice_app/res/toasts.dart';
 import 'package:flutter/material.dart';
 import 'package:choice_app/network/models.dart';
+
+import '../../l18n.dart';
+import '../../models/get_normal_booking_details_response.dart';
+import '../../userRole/user_role.dart';
 
 enum BookingStatus { scheduled, inProgress, completed, cancelled }
 
@@ -948,50 +953,191 @@ class BookingsProvider extends ChangeNotifier {
     try {
       final body = {"reason": reason};
 
-      debugPrint("📝 cancel booking Body: $body");
+      debugPrint("📝 EVENT cancel Body: $body");
 
       final response = await MyApi.callPutApi(
-        url: '$cancelBookingApiUrl/$bookingId',
+        url: '$userCancelBookingApiUrl/$bookingId',
         body: body,
       );
 
-      if (response.status == 200) {
-        debugPrint("✅ Booking cancelled successfully");
-        Toasts.getSuccessToast(text: 'Booking cancelled successfully');
+      final status = response?['status'] ?? 0;
+      final message = response?['message'] ?? '';
+
+      if (status == 200) {
+        Toasts.getSuccessToast(text: message.isNotEmpty ? message : "Booking cancelled");
         return true;
-      } else {
-        debugPrint("❌ Failed to cancel booking: $response");
-        Toasts.getErrorToast(text: "Failed to cancel booking");
-        return false;
       }
+
+      Toasts.getErrorToast(text: message.isNotEmpty ? message : "Failed to cancel");
+      return false;
+
     } catch (e) {
-      debugPrint("❌ Error in cancel booking: $e");
+      debugPrint("❌ EVENT cancel ERROR: $e");
       Toasts.getErrorToast(text: "Something went wrong");
       return false;
     }
   }
 
+
+  Future<bool> cancelBookingForProducer({
+    required String reason,
+    required int bookingId,
+    required String timeZone,
+  }) async {
+    try {
+      final body = {
+        "cancelReason": reason,
+        "timeZone": timeZone,
+      };
+
+      debugPrint("📝 NON-EVENT cancel Body: $body");
+
+      final response = await MyApi.callPutApi(
+        url: '$producerCancelBookingApiUrl/$bookingId',
+        body: body,
+      );
+
+      // non-event returns { booking: {...} }
+      if (response != null && response['booking'] != null) {
+        Toasts.getSuccessToast(text: "Booking cancelled successfully");
+        return true;
+      }
+
+      Toasts.getErrorToast(text: "Failed to cancel booking");
+      return false;
+
+    } catch (e) {
+      debugPrint("❌ NON-EVENT cancel ERROR: $e");
+      Toasts.getErrorToast(text: al.somethingWentWrong);
+      return false;
+    }
+  }
+
+
+
   Future<bool> checkInBooking({required int bookingId}) async {
     try {
-      debugPrint("📝 cancel booking id: $bookingId");
+      debugPrint("📝 check-in booking id: $bookingId");
 
       final response = await MyApi.callPutApi(
         url: '$checkInBookingApiUrl/$bookingId',
       );
 
-      if (response.status == 200) {
+      if (response == null) {
+        debugPrint("❌ API returned null");
+        Toasts.getErrorToast(text: "Something went wrong");
+        return false;
+      }
+
+      // response is a Map<String, dynamic>
+      final status = response["status"];
+      final message = response["message"];
+
+      if (status == 200) {
         debugPrint("✅ Booking checked-in successfully");
-        Toasts.getSuccessToast(text: 'Booking checked-in successfully');
+        Toasts.getSuccessToast(text: message ?? 'Checked-in successfully');
         return true;
       } else {
-        debugPrint("❌ Failed to check-in booking: $response");
-        Toasts.getErrorToast(text: "Failed to check-in booking");
+        debugPrint("❌ Failed to check-in: $response");
+        Toasts.getErrorToast(text: message ?? "Failed to check-in");
         return false;
       }
     } catch (e) {
-      debugPrint("❌ Error in check-in booking: $e");
+      debugPrint("❌ Exception in check-in booking: $e");
       Toasts.getErrorToast(text: "Something went wrong");
       return false;
     }
   }
+  Future<bool> checkInSimpleBooking({required int bookingId, required String timeZone}) async {
+    try {
+      debugPrint("📝 Check-in simple booking id: $bookingId with timeZone: $timeZone");
+
+      final response = await MyApi.callPutApi(
+        url: '$checkInSimpleBookingApiUrl/$bookingId',
+        body: {
+          "timeZone": timeZone,
+        },
+      );
+
+      if (response.status == 200) {
+        debugPrint("✅ Simple booking checked-in successfully");
+        Toasts.getSuccessToast(text: 'Booking checked-in successfully');
+        return true;
+      } else {
+        debugPrint("❌ Failed to check-in simple booking: $response");
+        Toasts.getErrorToast(text: "Failed to check-in booking");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("❌ Error in check-in simple booking: $e");
+      Toasts.getErrorToast(text: "Something went wrong");
+      return false;
+    }
+  }
+
+  EventBookingDetailsResponse? eventBookingDetails;
+
+  Future<EventBookingDetailsResponse?> fetchEventBookingDetails(
+      BuildContext context,
+      int bookingId,
+      ) async {
+    try {
+      _loader.showLoader(context: context);
+
+      final response = await MyApi.callGetApi(
+        url: "$getEventBookingDetailsApiUrl/$bookingId",
+        modelName: Models.getEventBookingDetailsModel,
+      );
+
+      _loader.hideLoader(context!);
+
+      if (response != null) {
+        eventBookingDetails = response;
+        notifyListeners();
+        return response;
+      } else {
+        Toasts.getErrorToast(text: "Failed to fetch booking details");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching event booking details: $e");
+      _loader.hideLoader(context!);
+      Toasts.getErrorToast(text: "Failed to fetch booking details");
+      return null;
+    }
+  }
+
+  SimpleBookingDetailsResponse? simpleBookingDetails;
+
+  Future<SimpleBookingDetailsResponse?> fetchSimpleBookingDetails(
+      BuildContext context,
+      int bookingId,
+      ) async {
+    try {
+      _loader.showLoader(context: context);
+
+      final response = await MyApi.callGetApi(
+        url: "$getSimpleBookingDetailsApiUrl/$bookingId",
+        modelName: Models.getSimpleBookingDetailsModel,
+        parameters: {"timeZone": "Asia/Karachi"}, // FIXED
+      );
+
+      _loader.hideLoader(context);
+
+      if (response != null) {
+        simpleBookingDetails = response;
+        notifyListeners();
+        return response;
+      } else {
+        Toasts.getErrorToast(text: "Failed to fetch booking details");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching simple booking details: $e");
+      _loader.hideLoader(context);
+      Toasts.getErrorToast(text: "Failed to fetch booking details");
+      return null;
+    }
+  }
+
 }

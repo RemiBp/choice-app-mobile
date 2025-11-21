@@ -3,6 +3,7 @@ import 'package:choice_app/providers/multi_providers.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/languageSelection/language_selection_provider.dart';
+import 'package:choice_app/utilities/timezone_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  TimezoneHelper.initialize();
   await PreferenceUtils.init();
   runApp(MultiProvider(providers: multiProviders, child: const MyApp()));
 }

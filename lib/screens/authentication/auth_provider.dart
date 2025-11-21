@@ -14,6 +14,7 @@ import '../../network/API.dart';
 import '../../network/api_url.dart';
 import '../../network/models.dart';
 import '../../res/loader.dart';
+import '../../res/strings.dart';
 import '../../res/toasts.dart';
 import '../../routes/routes.dart';
 
@@ -120,7 +121,7 @@ class AuthProvider extends ChangeNotifier{
       debugPrint("register response : $signupResponse");
       if (signupResponse?["message"] != null) {
         debugPrint("register response : ${signupResponse?["message"]}");
-        Toasts.getSuccessToast(text: al.registrationSuccessful);
+        // Toasts.getSuccessToast(text: al.registrationSuccessful);
         context?.push(Routes.otpVerificationRoute, extra: {
           "email": email,
           "isResetPassFlow": false,
@@ -206,7 +207,7 @@ class AuthProvider extends ChangeNotifier{
       debugPrint("register response : $signupResponse");
       if (signupResponse?["message"] != null) {
         debugPrint("register response : ${signupResponse?["message"]}");
-        Toasts.getSuccessToast(text: al.registrationSuccessful);
+        // Toasts.getSuccessToast(text: al.registrationSuccessful);
         context?.push(Routes.otpVerificationRoute, extra: {
           "email": email,
           "isResetPassFlow": false,
@@ -297,6 +298,28 @@ class AuthProvider extends ChangeNotifier{
     } catch (err) {
       debugPrint("error during upload docs : $err");
       _loader.hideLoader(context!);
+    }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    try {
+      // Remove only the access token
+      await PreferenceUtils.setString(Strings.token, "");
+
+      debugPrint("✅ Access token removed, user logged out.");
+
+
+      // await PreferenceUtils.setString(Strings.refreshToken, "");
+      // await PreferenceUtils.setString(Strings.email, "");
+      // await PreferenceUtils.setString(Strings.role, "");
+
+      // Navigate to login screen
+      context.go(Routes.authRoute);
+
+      // Notify listeners if any UI depends on auth state
+      //notifyListeners();
+    } catch (e) {
+      debugPrint("❌ Error during logout: $e");
     }
   }
 
