@@ -11,8 +11,12 @@ import '../../../res/toasts.dart';
 import '../../../userRole/role_provider.dart';
 import '../../../userRole/user_role.dart';
 
+enum EventStatus { Active, Draft, Closed }
+
 class EventProvider extends ChangeNotifier{
   GetAllEventsResponse getAllEventsResponse = GetAllEventsResponse();
+  GetAllEventsResponse getDraftEventsResponse = GetAllEventsResponse();
+  GetAllEventsResponse getCompletedEventsResponse = GetAllEventsResponse();
 
   final Loader _loader = Loader();
 
@@ -93,15 +97,17 @@ class EventProvider extends ChangeNotifier{
       getAllEventsResponse = await MyApi.callGetApi(
         url: getAllEventsApiUrl,
         parameters:{
-          "status":"Active"
+          "status":EventStatus.Active.name,
         },
         modelName: Models.eventsModel,
       );
       debugPrint("response is : ${getAllEventsResponse.data?.length}");
       _loader.hideLoader(context!);
+      notifyListeners();
     } catch (err) {
       debugPrint("error while getting all events : $err");
       _loader.hideLoader(context!);
+      notifyListeners();
     }
   }
 
