@@ -60,7 +60,7 @@ class EventCard extends StatelessWidget {
 
                 children: [
                   CustomText(
-                    text: "Wine & Dine Evening",
+                    text: eventsResponse?.title ?? "Unknown Event",
                     fontSize: sizes?.fontSize18,
                     fontFamily: Assets.onsetSemiBold,
                   ),
@@ -71,7 +71,7 @@ class EventCard extends StatelessWidget {
                       Icon(Icons.location_on, color: AppColors.getPrimaryColorFromContext(context), size: 18, ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "Lyon, France",
+                        text: eventsResponse?.location ?? "Unknown Location",
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -89,7 +89,7 @@ class EventCard extends StatelessWidget {
                       ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "June 20, 10:00 PM – 12:00 PM",
+                        text: '${eventsResponse?.date}, ${eventsResponse?.startTime} - ${eventsResponse?.endTime}',
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -106,7 +106,7 @@ class EventCard extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: '\$30.00',
+                              text: '\$${eventsResponse?.pricePerGuest}',
                               style: TextStyle(
                                 color: AppColors.getPrimaryColorFromContext(context),
                                 fontFamily: Assets.onsetSemiBold,
