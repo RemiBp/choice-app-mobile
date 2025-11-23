@@ -10,8 +10,7 @@ import '../../models/get_normal_booking_details_response.dart';
 import '../../res/res.dart';
 import 'bookings_provider.dart';
 import 'bookings_widgets.dart';
-import '../../userRole/role_provider.dart';
-import '../../userRole/user_role.dart';
+
 
 class UserBookingDetails extends StatefulWidget {
   final bool? isCancelled;

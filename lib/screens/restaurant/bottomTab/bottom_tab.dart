@@ -5,7 +5,6 @@ import 'package:choice_app/screens/bookings/bookings_view.dart';
 import 'package:choice_app/screens/customer/home/customer_home.dart';
 import 'package:choice_app/screens/customer/maps/customer_maps/customer_maps_view.dart';
 import 'package:choice_app/screens/leisure/home/leisure_home.dart';
-import 'package:choice_app/screens/leisure/leisure_profile/leisure_profile_view.dart';
 import 'package:choice_app/screens/producer_maps/heatmap.dart';
 import 'package:choice_app/screens/restaurant/dashboard/home_view.dart';
 import 'package:choice_app/screens/restaurant/event/events.dart';
@@ -25,7 +24,6 @@ import '../../../l18n.dart';
 import '../../../res/res.dart';
 import '../../customer/explore/customer_explore/explore_view.dart';
 import '../../customer/profile/customer_profile/customer_profile_view.dart';
-import '../../wellness/wellness_profile/wellness_profile_view.dart';
 
 class RestaurantBottomTab extends StatefulWidget {
   const RestaurantBottomTab({super.key});
@@ -61,7 +59,7 @@ class _RestaurantBottomTabState extends State<RestaurantBottomTab>
     final roleProvider = Provider.of<RoleProvider>(context, listen: false);
     role = roleProvider.role;
     if (role == UserRole.user) {
-      // ---- USER ----
+      // USER
       labels = [al.home, al.map, al.explore, al.bookings, al.profile];
       iconList = [
         Assets.homeIcon,
@@ -84,38 +82,74 @@ class _RestaurantBottomTabState extends State<RestaurantBottomTab>
         BookingsView(),
         CustomerProfileView()
       ];
-    } else {
-      // ---- PRODUCER (restaurant / leisure / wellness) ----
-      labels = [
-        al.home,
-        al.dashboard,
-        al.map,
-        al.events,
-        al.bookings
-      ];
-      iconList = [
-        Assets.homeIcon,
-        Assets.dashboardIcon,
-        Assets.mapIcon, // heatmap icon
-        Assets.eventsIcon,
-        Assets.bookingIcon
-      ];
-      activeIconList = [
-        Assets.homeActiveIcon,
-        Assets.dashboardActiveIcon,
-        Assets.mapIcon, // heatmap active
-        Assets.eventActiveIcon,
-        Assets.bookingActiveIcon
-      ];
-      widgets = [
-        if (role == UserRole.restaurant) RestaurantHome(),
-        if (role == UserRole.leisure) LeisureHome(),
-        if (role == UserRole.wellness) WellnessHome(),
-        HomeView(), // dashboard
-        HeatmapScreen(), // your custom heatmap screen
-        Events(),
-        BookingsView(),
-      ];
+    }
+    else {
+      // PRODUCER (restaurant / leisure / wellness)
+      if (role == UserRole.wellness) {
+        // WELLNESS → NO EVENTS TAB
+        labels = [
+          al.home,
+          al.dashboard,
+          al.map,
+          al.bookings
+        ];
+
+        iconList = [
+          Assets.homeIcon,
+          Assets.dashboardIcon,
+          Assets.mapIcon,
+          Assets.bookingIcon,
+        ];
+
+        activeIconList = [
+          Assets.homeActiveIcon,
+          Assets.dashboardActiveIcon,
+          Assets.mapIcon,
+          Assets.bookingActiveIcon,
+        ];
+
+        widgets = [
+          WellnessHome(),
+          HomeView(),        // dashboard
+          HeatmapScreen(),   // map
+          BookingsView(),
+        ];
+
+      } else {
+        // RESTAURANT & LEISURE → EVENTS VISIBLE
+        labels = [
+          al.home,
+          al.dashboard,
+          al.map,
+          al.events,
+          al.bookings
+        ];
+
+        iconList = [
+          Assets.homeIcon,
+          Assets.dashboardIcon,
+          Assets.mapIcon,
+          Assets.eventsIcon,
+          Assets.bookingIcon,
+        ];
+
+        activeIconList = [
+          Assets.homeActiveIcon,
+          Assets.dashboardActiveIcon,
+          Assets.mapIcon,
+          Assets.eventActiveIcon,
+          Assets.bookingActiveIcon,
+        ];
+
+        widgets = [
+          if (role == UserRole.restaurant) RestaurantHome(),
+          if (role == UserRole.leisure) LeisureHome(),
+          HomeView(),        // dashboard
+          HeatmapScreen(),   // map
+          Events(),          // ONLY restaurant & leisure
+          BookingsView(),
+        ];
+      }
     }
     _fabAnimationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -189,8 +223,11 @@ class _RestaurantBottomTabState extends State<RestaurantBottomTab>
             children: [
               SvgPicture.asset(
                 isActive ? activeIconList[index] : iconList[index],
-                color: isActive
-                    ? AppColors.getPrimaryColorFromContext(context)
+                colorFilter: isActive
+                    ? ColorFilter.mode(
+                    AppColors.getPrimaryColorFromContext(context),
+                    BlendMode.srcIn
+                )
                     : null,
               ),
               const SizedBox(height: 4),

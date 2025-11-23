@@ -39,7 +39,7 @@ class NonEventDetailsScreen extends StatefulWidget {
 class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
   late PageController _pageController;
   int _currentImageIndex = 0;
-  List<int> selectedServiceIndexes = [];
+  //List<int> selectedServiceIndexes = [];
 
   bool get isRestaurant => widget.type.toLowerCase() == "restaurant";
   bool get isWellness => widget.type.toLowerCase() == "wellness";
@@ -296,22 +296,22 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                         const SizedBox(height: 10),
                         ...provider.wellness!.selectedServices.map<Widget>((s) {
                           final serviceName = s["serviceType"]?["name"] ?? "Unknown";
-                          final int idx = provider.wellness!.selectedServices.indexOf(s);
-                          final isSelected = selectedServiceIndexes.contains(idx);
+                          //final int idx = provider.wellness!.selectedServices.indexOf(s);
+                          //final isSelected = selectedServiceIndexes.contains(idx);
                           return Padding(
                             padding: const EdgeInsets.only(left: 20), // optional, for alignment
                             child: WellnessServiceTile(
                               title: serviceName,
-                              isSelected: isSelected,
-                              onTap: () {
-                                setState(() {
-                                  if (isSelected) {
-                                    selectedServiceIndexes.remove(idx);
-                                  } else {
-                                    selectedServiceIndexes.add(idx);
-                                  }
-                                });
-                              },
+                              //isSelected: isSelected,
+                              // onTap: () {
+                              //   setState(() {
+                              //     if (isSelected) {
+                              //       selectedServiceIndexes.remove(idx);
+                              //     } else {
+                              //       selectedServiceIndexes.add(idx);
+                              //     }
+                              //   });
+                              // },
                             ),
                           );
                         }).toList(),
@@ -331,7 +331,6 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
 
 
 
-                  const SizedBox(height: 20),
                   divider(),
 
                   //  ABOUT

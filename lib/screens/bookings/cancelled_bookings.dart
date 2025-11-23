@@ -2,6 +2,7 @@ import 'package:choice_app/customWidgets/no_item_found.dart';
 import 'package:choice_app/models/get_user_bookings_response.dart';
 import 'package:choice_app/screens/bookings/booking_details_user.dart';
 import 'package:choice_app/screens/bookings/bookings_provider.dart';
+import 'package:choice_app/screens/bookings/cancelled_booking_details.dart';
 import 'package:choice_app/screens/bookings/upcoming_bookings.dart';
 import 'package:choice_app/userRole/role_provider.dart';
 import 'package:choice_app/userRole/user_role.dart';
@@ -61,6 +62,7 @@ class _CancelledBookingsState extends State<CancelledBookings> {
                       return BookingCard(
                         name: booking.name,
                         imageUrl: booking.imageUrl,
+                        bookingType: booking.type ?? "Unknown", // for chips
                         date: booking.date,
                         startTime: booking.startTime,
                         endTime: booking.endTime,
@@ -75,9 +77,8 @@ class _CancelledBookingsState extends State<CancelledBookings> {
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (context) => UserBookingDetails(
-                                      bookingId: booking.bookingId!,
-                                      isEvent: booking.isEvent ?? false,
+                                    (context) =>CancelledBookingDetails(
+                                      cancelReason: booking.cancelReason!,
                                     ),
                               ),
                             );
@@ -87,7 +88,9 @@ class _CancelledBookingsState extends State<CancelledBookings> {
                               MaterialPageRoute(
                                 builder:
                                     (context) =>
-                                        BookingDetails(bookingData: booking),
+                                        CancelledBookingDetails(
+                                          cancelReason: booking.cancelReason!,
+                                        ),
                               ),
                             );
                           }
@@ -132,6 +135,8 @@ class _CancelledBookingsState extends State<CancelledBookings> {
           totalPrice: booking?.totalPrice,
           bookingId: booking?.id?.toString(),
           isEvent: true,
+          type: event?.serviceType,
+          cancelReason: booking?.internalNotes ?? "No reason provided",
         ),
       );
     }
@@ -163,6 +168,8 @@ class _CancelledBookingsState extends State<CancelledBookings> {
           totalPrice: null,
           bookingId: booking?.id?.toString(),
           isEvent: false,
+          cancelReason: booking?.cancelReason ?? "No reason provided",
+          type: entry.producer?.type,
         ),
       );
     }

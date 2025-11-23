@@ -21,6 +21,7 @@ import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/common_app_bar.dart';
 import '../../../customWidgets/custom_button.dart';
+import '../../../customWidgets/custom_text.dart';
 import '../../../res/res.dart';
 import '../../../userRole/role_provider.dart';
 import '../../authentication/auth_provider.dart';
@@ -242,13 +243,35 @@ class _SettingViewState extends State<SettingView> {
                   title: al.logout,
                   leadingAssetPath: Assets.logoutIcon,
                   onTap: () {
-                    final authProvider = context.read<AuthProvider>();
-                    authProvider.logout(context);
+                    showConfirmationDialog(
+                      context: context,
+                      title: al.logout,
+                      description: "Are you sure you want to log out?",
+                      confirmText: al.logout,
+                      confirmColor: AppColors.redColor,
+                      onConfirm: () {
+                        context.read<AuthProvider>().logout(context);
+                      },
+                      heightPx: getHeight() * 0.22,
+                    );
                   },
                 ),
                 CustomButton(
                   buttonText: al.deleteAccount,
-                  onTap: () {},
+                  onTap: () {
+                    showConfirmationDialog(
+                      context: context,
+                      title: al.deleteAccount,
+                      description:
+                      "Are you sure you want to delete your account? This action is permanent and cannot be undone.",
+                      confirmText: "Yes, Delete it",
+                      confirmColor: AppColors.redColor,
+                      onConfirm: () {
+                        // Call delete API
+                      },
+                      heightPx: getHeight() * 0.27,
+                    );
+                  },
                   backgroundColor: Colors.transparent,
                   borderColor: AppColors.redColor,
                   textColor: AppColors.redColor,
@@ -265,4 +288,101 @@ class _SettingViewState extends State<SettingView> {
       ),
     );
   }
+  Future<void> showConfirmationDialog({
+    required BuildContext context,
+    required String title,
+    required String description,
+    required String confirmText,
+    required VoidCallback onConfirm,
+    required double heightPx,
+    Color confirmColor = AppColors.redColor,
+  }) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppColors.whiteColor,
+          insetPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: SizedBox(
+            width: getWidth() * 0.88,
+            height: heightPx,    //dynamic height for different flows.
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomText(
+                        text: title,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: Assets.onsetSemiBold,
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Icon(Icons.close, size: 20),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  Expanded(
+                    child: CustomText(
+                      text: description,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: Assets.onsetRegular,
+                      giveLinesAsText: true,
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          buttonText: "Cancel",
+                          onTap: () => Navigator.pop(context),
+                          backgroundColor: Colors.transparent,
+                          borderColor: AppColors.blackColor,
+                          textColor: AppColors.blackColor,
+                          textFontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: CustomButton(
+                          buttonText: confirmText,
+                          onTap: () {
+                            Navigator.pop(context);
+                            onConfirm();
+                          },
+                          backgroundColor: confirmColor,
+                          textColor: AppColors.whiteColor,
+                          textFontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }

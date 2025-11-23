@@ -59,6 +59,7 @@ class _InProgressBookingsState extends State<InProgressBookings> {
                       return BookingCard(
                         name: booking.name,
                         imageUrl: booking.imageUrl,
+                        bookingType: booking.type ?? "Unknown", // for chips
                         date: booking.date,
                         startTime: booking.startTime,
                         endTime: booking.endTime,
@@ -127,6 +128,7 @@ class _InProgressBookingsState extends State<InProgressBookings> {
           totalPrice: booking?.totalPrice,
           bookingId: booking?.id?.toString(),
           isEvent: true,
+          type: event?.serviceType,
         ),
       );
     }
@@ -158,6 +160,7 @@ class _InProgressBookingsState extends State<InProgressBookings> {
           totalPrice: null,
           bookingId: booking?.id?.toString(),
           isEvent: false,
+          type: entry.producer?.type,
         ),
       );
     }
