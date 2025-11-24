@@ -154,15 +154,15 @@ class ProfileProvider extends ChangeNotifier {
       return false;
     }
 
-    if (!hasBusinessName) {
-      debugPrint(
-        "Business name validation failed: too short (${globalBusinessName.trim().length} chars)",
-      );
-      Toasts.getErrorToast(
-        text: al.validBusinessName,
-      );
-      return false;
-    }
+    // if (!hasBusinessName) {
+    //   debugPrint(
+    //     "Business name validation failed: too short (${globalBusinessName.trim().length} chars)",
+    //   );
+    //   Toasts.getErrorToast(
+    //     text: al.validBusinessName,
+    //   );
+    //   return false;
+    // }
 
     // Validate address format if provided
     if (!hasAddress && address.trim().length < 5) {
@@ -263,7 +263,8 @@ class ProfileProvider extends ChangeNotifier {
     required String facebook,
     required String description,
     required String profileImageUrl,
-  }) async {
+  }) async
+  {
     try {
       // Validate form before making API call
       if (!_validateForm(

@@ -44,7 +44,6 @@ class _UserSignupState extends State<UserSignup> {
     super.initState();
     final provider = Provider.of<AuthProvider>(context, listen: false);
     provider.init(context);
-
     // Clear phone number on opening signup
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     profileProvider.setPhoneNumber(null);
