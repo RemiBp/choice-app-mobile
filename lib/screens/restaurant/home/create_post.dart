@@ -136,13 +136,15 @@ class _CreatePostState extends State<CreatePost> {
                                 fontSize: sizes?.fontSize14,
                                 color: HexColor.fromHex("#686A82"),
                               ),
-
                             ],
                           )
                       ),
                     ),
                   ),
-                ), Wrap(
+                ),
+                if (images != null && images.isNotEmpty)
+                  SizedBox(height: getHeight() * .02),
+                Wrap(
                   spacing: 10,
                   runSpacing: 10,
                   children: List.generate(images.length, (index) {
@@ -179,7 +181,6 @@ class _CreatePostState extends State<CreatePost> {
                 ),
               ],
             ),
-
             SizedBox(height: getHeight() * .02),
             CustomField(
               textEditingController: titleController,
@@ -270,7 +271,6 @@ class _CreatePostState extends State<CreatePost> {
                           tags: tags,
                           location: location,
                           images: imageUrls,);
-
                       }
                     },
                   ),
