@@ -1,4 +1,5 @@
 const String baseUrl = "http://choice-app-prod-env.eba-wqrm9be2.eu-west-3.elasticbeanstalk.com";//production url
+const String imageBaseUrl = "https://elasticbeanstalk-us-west-1-841019700848.s3.us-west-1.amazonaws.com/";//image base url
 
 
 const String loginApiUrl = "$baseUrl/api/producer/auth/login";
@@ -86,6 +87,8 @@ const String getProducerBookingSlotsApiUrl = "$baseUrl/api/app/booking/getRestau
 const String updateBookingsApiUrl = "$baseUrl/api/app/booking/updateBooking";
 const String getEventBookingDetailsApiUrl = "$baseUrl/api/producer/booking/booking";
 const String getSimpleBookingDetailsApiUrl = "$baseUrl/api/app/booking/getBooking";
+
+const String deleteEventApiUrl = "$baseUrl/api/producer/event/deleteEvent/";
 
 
 

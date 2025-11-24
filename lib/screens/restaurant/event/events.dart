@@ -82,25 +82,65 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
                           _eventProvider.getAllEventsResponse.data?.length ?? 0,
                       itemBuilder: (context, index) {
                         return EventCard(
+                          isDraft: true,
                           eventsResponse:
                               _eventProvider.getAllEventsResponse.data?[index],
+                          onDelete: () {
+                            _eventProvider.deleteEvent(
+                              eventId:
+                                  _eventProvider
+                                      .getAllEventsResponse
+                                      .data?[index]
+                                      .id ??
+                                  -1,
+                              isActiveEvent: true,
+                            );
+                          },
                         );
                       },
                     )
                     : buildEmptyState(),
-
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard(isDraft: true);
-                  },
-                ),
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard();
-                  },
-                ),
+                (_eventProvider.getDraftEventsResponse.data?.isNotEmpty ??
+                        false)
+                    ? ListView.builder(
+                      itemCount:
+                          _eventProvider.getDraftEventsResponse.data?.length,
+                      itemBuilder: (context, index) {
+                        return EventCard(
+                          isDraft: true,
+                          eventsResponse:
+                              _eventProvider
+                                  .getDraftEventsResponse
+                                  .data?[index],
+                          onDelete: () {
+                            _eventProvider.deleteEvent(
+                              eventId:
+                              _eventProvider
+                                  .getDraftEventsResponse
+                                  .data?[index]
+                                  .id ??
+                                  -1,
+                              isActiveEvent: false,
+                            );
+                          },
+                        );
+                      },
+                    )
+                    : buildEmptyState(),
+                (_eventProvider.getCompletedEventsResponse.data?.isNotEmpty ??
+                        false)
+                    ? ListView.builder(
+                      itemCount: 3,
+                      itemBuilder: (context, index) {
+                        return EventCard(
+                          eventsResponse:
+                              _eventProvider
+                                  .getCompletedEventsResponse
+                                  .data?[index],
+                        );
+                      },
+                    )
+                    : buildEmptyState(),
               ],
             ),
           ),

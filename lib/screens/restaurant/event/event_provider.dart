@@ -13,7 +13,7 @@ import '../../../userRole/user_role.dart';
 
 enum EventStatus { Active, Draft, Closed }
 
-class EventProvider extends ChangeNotifier{
+class EventProvider extends ChangeNotifier {
   GetAllEventsResponse getAllEventsResponse = GetAllEventsResponse();
   GetAllEventsResponse getDraftEventsResponse = GetAllEventsResponse();
   GetAllEventsResponse getCompletedEventsResponse = GetAllEventsResponse();
@@ -24,7 +24,9 @@ class EventProvider extends ChangeNotifier{
 
   init(context) {
     this.context = context;
-  getAllEvents();
+    getAllEvents();
+    getDraftEvents();
+    getCompletedEvents();
   }
 
   Future<void> createEventApi({
@@ -48,7 +50,8 @@ class EventProvider extends ChangeNotifier{
 
       final roleProvider = context!.read<RoleProvider>();
 
-      String serviceType = roleProvider.role == UserRole.restaurant ? "Restaurant" : "Leisure";
+      String serviceType =
+          roleProvider.role == UserRole.restaurant ? "Restaurant" : "Leisure";
 
       final body = {
         "title": eventName,
@@ -96,9 +99,7 @@ class EventProvider extends ChangeNotifier{
       _loader.showLoader(context: context);
       getAllEventsResponse = await MyApi.callGetApi(
         url: getAllEventsApiUrl,
-        parameters:{
-          "status":EventStatus.Active.name,
-        },
+        parameters: {"status": EventStatus.Active.name},
         modelName: Models.eventsModel,
       );
       debugPrint("response is : ${getAllEventsResponse.data?.length}");
@@ -108,6 +109,63 @@ class EventProvider extends ChangeNotifier{
       debugPrint("error while getting all events : $err");
       _loader.hideLoader(context!);
       notifyListeners();
+    }
+  }
+
+  Future<void> getDraftEvents() async {
+    try {
+      _loader.showLoader(context: context);
+      getDraftEventsResponse = await MyApi.callGetApi(
+        url: getAllEventsApiUrl,
+        parameters: {"status": EventStatus.Draft.name},
+        modelName: Models.eventsModel,
+      );
+      debugPrint("response is : ${getDraftEventsResponse.data?.length}");
+      _loader.hideLoader(context!);
+      notifyListeners();
+    } catch (err) {
+      debugPrint("error while getting draft events : $err");
+      _loader.hideLoader(context!);
+      notifyListeners();
+    }
+  }
+
+  Future<void> getCompletedEvents() async {
+    try {
+      _loader.showLoader(context: context);
+      getCompletedEventsResponse = await MyApi.callGetApi(
+        url: getAllEventsApiUrl,
+        parameters: {"status": EventStatus.Closed.name},
+        modelName: Models.eventsModel,
+      );
+      debugPrint("response is : ${getCompletedEventsResponse.data?.length}");
+      _loader.hideLoader(context!);
+      notifyListeners();
+    } catch (err) {
+      debugPrint("error while getting completed events : $err");
+      _loader.hideLoader(context!);
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteEvent({required int eventId, required bool isActiveEvent}) async {
+    try {
+      _loader.showLoader(context: context);
+      await MyApi.callDeleteApi(
+        url: '$deleteEventApiUrl$eventId',
+      );
+      _loader.hideLoader(context!);
+      Navigator.pop(context!);
+      Toasts.getSuccessToast(text: 'Event deleted successfully');
+      if(isActiveEvent) {
+        getAllEvents();
+      } else {
+        getDraftEvents();
+      }
+    } catch (err) {
+      debugPrint("error in deleting event : $err");
+      _loader.hideLoader(context!);
+      Toasts.getErrorToast(text: err.toString());
     }
   }
 
@@ -121,15 +179,14 @@ class EventProvider extends ChangeNotifier{
       );
 
       if (response != null) {
-        eventTypesList = response.data
-            .map<EventTypeModel>((e) => EventTypeModel.fromJson(e.toJson()))
-            .toList();
+        eventTypesList =
+            response.data
+                .map<EventTypeModel>((e) => EventTypeModel.fromJson(e.toJson()))
+                .toList();
         notifyListeners();
       }
     } catch (err) {
       debugPrint("Error fetching event types: $err");
     }
   }
-
-
 }
