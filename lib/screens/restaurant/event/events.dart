@@ -22,18 +22,14 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   EventProvider _eventProvider = EventProvider();
 
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _eventProvider = Provider.of<EventProvider>(context, listen: false);
       _eventProvider.init(context);
     });
-
-
-
   }
 
   @override
@@ -50,7 +46,7 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
         title: CustomText(
-          text:al.events,
+          text: al.events,
           fontSize: sizes?.fontSize18,
           fontFamily: Assets.onsetSemiBold,
         ),
@@ -60,18 +56,18 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
         children: [
           TabBar(
             controller: _tabController,
-            indicatorColor:AppColors.getPrimaryColorFromContext(context),
+            indicatorColor: AppColors.getPrimaryColorFromContext(context),
             indicatorSize: TabBarIndicatorSize.tab,
-            labelColor:AppColors.getPrimaryColorFromContext(context),
+            labelColor: AppColors.getPrimaryColorFromContext(context),
             unselectedLabelColor: Colors.grey,
             labelStyle: TextStyle(
               fontSize: sizes?.fontSize14,
               fontFamily: Assets.onsetMedium,
             ),
             tabs: [
-              Tab(text: al.statusActive,),
-              Tab(text: al.statusDraft,),
-              Tab(text: al.statusCompleted,),
+              Tab(text: al.statusActive),
+              Tab(text: al.statusDraft),
+              Tab(text: al.statusCompleted),
             ],
           ),
 
@@ -80,27 +76,71 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
             child: TabBarView(
               controller: _tabController,
               children: [
-                ListView.builder(
-                  itemCount: _eventProvider.getAllEventsResponse.data?.length??0,
-                  itemBuilder: (context, index) {
-                    return EventCard(
-                      eventsResponse: _eventProvider.getAllEventsResponse.data?[index],
-                    );
-                  },
-                ),
-
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard(isDraft: true);
-                  },
-                ),
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard();
-                  },
-                ),
+                (_eventProvider.getAllEventsResponse.data?.isNotEmpty ?? false)
+                    ? ListView.builder(
+                      itemCount:
+                          _eventProvider.getAllEventsResponse.data?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        return EventCard(
+                          isDraft: true,
+                          eventsResponse:
+                              _eventProvider.getAllEventsResponse.data?[index],
+                          onDelete: () {
+                            _eventProvider.deleteEvent(
+                              eventId:
+                                  _eventProvider
+                                      .getAllEventsResponse
+                                      .data?[index]
+                                      .id ??
+                                  -1,
+                              isActiveEvent: true,
+                            );
+                          },
+                        );
+                      },
+                    )
+                    : buildEmptyState(),
+                (_eventProvider.getDraftEventsResponse.data?.isNotEmpty ??
+                        false)
+                    ? ListView.builder(
+                      itemCount:
+                          _eventProvider.getDraftEventsResponse.data?.length,
+                      itemBuilder: (context, index) {
+                        return EventCard(
+                          isDraft: true,
+                          eventsResponse:
+                              _eventProvider
+                                  .getDraftEventsResponse
+                                  .data?[index],
+                          onDelete: () {
+                            _eventProvider.deleteEvent(
+                              eventId:
+                              _eventProvider
+                                  .getDraftEventsResponse
+                                  .data?[index]
+                                  .id ??
+                                  -1,
+                              isActiveEvent: false,
+                            );
+                          },
+                        );
+                      },
+                    )
+                    : buildEmptyState(),
+                (_eventProvider.getCompletedEventsResponse.data?.isNotEmpty ??
+                        false)
+                    ? ListView.builder(
+                      itemCount: 3,
+                      itemBuilder: (context, index) {
+                        return EventCard(
+                          eventsResponse:
+                              _eventProvider
+                                  .getCompletedEventsResponse
+                                  .data?[index],
+                        );
+                      },
+                    )
+                    : buildEmptyState(),
               ],
             ),
           ),

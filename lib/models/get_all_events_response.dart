@@ -42,40 +42,41 @@ class Data {
   List<String>? eventImages;
   String? status;
   String? slug;
-  String? leisureId;
+  int? leisureId;
   int? eventTypeId;
   bool? isActive;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
   Producer? producer;
-  String? leisure;
+  Leisure? leisure;
   EventType? eventType;
 
-  Data(
-      {this.id,
-        this.title,
-        this.description,
-        this.date,
-        this.startTime,
-        this.endTime,
-        this.venueName,
-        this.location,
-        this.serviceType,
-        this.pricePerGuest,
-        this.maxCapacity,
-        this.eventImages,
-        this.status,
-        this.slug,
-        this.leisureId,
-        this.eventTypeId,
-        this.isActive,
-        this.isDeleted,
-        this.createdAt,
-        this.updatedAt,
-        this.producer,
-        this.leisure,
-        this.eventType});
+  Data({
+    this.id,
+    this.title,
+    this.description,
+    this.date,
+    this.startTime,
+    this.endTime,
+    this.venueName,
+    this.location,
+    this.serviceType,
+    this.pricePerGuest,
+    this.maxCapacity,
+    this.eventImages,
+    this.status,
+    this.slug,
+    this.leisureId,
+    this.eventTypeId,
+    this.isActive,
+    this.isDeleted,
+    this.createdAt,
+    this.updatedAt,
+    this.producer,
+    this.leisure,
+    this.eventType,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -98,13 +99,14 @@ class Data {
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    producer = json['producer'] != null
-        ?  Producer.fromJson(json['producer'])
-        : null;
-    leisure = json['leisure'];
-    eventType = json['eventType'] != null
-        ?  EventType.fromJson(json['eventType'])
-        : null;
+    producer =
+        json['producer'] != null ? Producer.fromJson(json['producer']) : null;
+    leisure =
+        json['leisure'] != null ? Leisure.fromJson(json['leisure']) : null;
+    eventType =
+        json['eventType'] != null
+            ? EventType.fromJson(json['eventType'])
+            : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -132,7 +134,9 @@ class Data {
     if (producer != null) {
       data['producer'] = producer!.toJson();
     }
-    data['leisure'] = leisure;
+    if(leisure != null) {
+      data['leisure'] = leisure!.toJson();
+    }
     if (eventType != null) {
       data['eventType'] = eventType!.toJson();
     }
@@ -152,7 +156,7 @@ class Producer {
   String? placeId;
   String? latitude;
   String? longitude;
-  String? locationPoint;
+  LocationPoint? locationPoint;
   String? rating;
   String? phoneNumber;
   String? website;
@@ -170,35 +174,36 @@ class Producer {
   String? createdAt;
   String? updatedAt;
 
-  Producer(
-      {this.id,
-        this.userId,
-        this.name,
-        this.address,
-        this.city,
-        this.country,
-        this.details,
-        this.mapsUrl,
-        this.placeId,
-        this.latitude,
-        this.longitude,
-        this.locationPoint,
-        this.rating,
-        this.phoneNumber,
-        this.website,
-        this.totalSeats,
-        this.noOfTables,
-        this.maxPartySize,
-        this.type,
-        this.status,
-        this.isActive,
-        this.isDeleted,
-        this.document1,
-        this.document2,
-        this.document1Expiry,
-        this.document2Expiry,
-        this.createdAt,
-        this.updatedAt});
+  Producer({
+    this.id,
+    this.userId,
+    this.name,
+    this.address,
+    this.city,
+    this.country,
+    this.details,
+    this.mapsUrl,
+    this.placeId,
+    this.latitude,
+    this.longitude,
+    this.locationPoint,
+    this.rating,
+    this.phoneNumber,
+    this.website,
+    this.totalSeats,
+    this.noOfTables,
+    this.maxPartySize,
+    this.type,
+    this.status,
+    this.isActive,
+    this.isDeleted,
+    this.document1,
+    this.document2,
+    this.document1Expiry,
+    this.document2Expiry,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Producer.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -212,7 +217,10 @@ class Producer {
     placeId = json['placeId'];
     latitude = json['latitude'];
     longitude = json['longitude'];
-    locationPoint = json['locationPoint'];
+    locationPoint =
+        json['locationPoint'] != null
+            ? LocationPoint.fromJson(json['locationPoint'])
+            : null;
     rating = json['rating'];
     phoneNumber = json['phoneNumber'];
     website = json['website'];
@@ -244,7 +252,7 @@ class Producer {
     data['placeId'] = placeId;
     data['latitude'] = latitude;
     data['longitude'] = longitude;
-    data['locationPoint'] = locationPoint;
+    data['locationPoint'] = locationPoint?.toJson();
     data['rating'] = rating;
     data['phoneNumber'] = phoneNumber;
     data['website'] = website;
@@ -272,8 +280,13 @@ class EventType {
   String? createdAt;
   String? updatedAt;
 
-  EventType(
-      {this.id, this.name, this.criteria, this.createdAt, this.updatedAt});
+  EventType({
+    this.id,
+    this.name,
+    this.criteria,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   EventType.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -288,6 +301,102 @@ class EventType {
     data['id'] = id;
     data['name'] = name;
     data['criteria'] = criteria;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    return data;
+  }
+}
+
+class LocationPoint {
+  String? type;
+  List<double>? coordinates;
+
+  LocationPoint({this.type, this.coordinates});
+
+  LocationPoint.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    if (json['coordinates'] != null) {
+      coordinates = <double>[];
+      json['coordinates'].forEach((v) {
+        coordinates!.add((v as num).toDouble());
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['type'] = type;
+    if (coordinates != null) {
+      data['coordinates'] = coordinates;
+    }
+    return data;
+  }
+}
+
+class Leisure {
+  int? id;
+  int? producerId;
+  String? stageDirection;
+  String? actorPerformance;
+  String? textQuality;
+  String? scenography;
+  String? overall;
+  String? aiStageDirection;
+  String? aiActorPerformance;
+  String? aiTextQuality;
+  String? aiScenography;
+  String? aiOverall;
+  String? createdAt;
+  String? updatedAt;
+
+  Leisure({
+    this.id,
+    this.producerId,
+    this.stageDirection,
+    this.actorPerformance,
+    this.textQuality,
+    this.scenography,
+    this.overall,
+    this.aiStageDirection,
+    this.aiActorPerformance,
+    this.aiTextQuality,
+    this.aiScenography,
+    this.aiOverall,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  Leisure.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    producerId = json['producerId'];
+    stageDirection = json['stageDirection'];
+    actorPerformance = json['actorPerformance'];
+    textQuality = json['textQuality'];
+    scenography = json['scenography'];
+    overall = json['overall'];
+    aiStageDirection = json['ai_stageDirection'];
+    aiActorPerformance = json['ai_actorPerformance'];
+    aiTextQuality = json['ai_textQuality'];
+    aiScenography = json['ai_scenography'];
+    aiOverall = json['ai_overall'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['producerId'] = producerId;
+    data['stageDirection'] = stageDirection;
+    data['actorPerformance'] = actorPerformance;
+    data['textQuality'] = textQuality;
+    data['scenography'] = scenography;
+    data['overall'] = overall;
+    data['ai_stageDirection'] = aiStageDirection;
+    data['ai_actorPerformance'] = aiActorPerformance;
+    data['ai_textQuality'] = aiTextQuality;
+    data['ai_scenography'] = aiScenography;
+    data['ai_overall'] = aiOverall;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     return data;
