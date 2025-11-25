@@ -70,7 +70,7 @@ class _CustomerHomeState extends State<CustomerHome> {
                 padding: EdgeInsets.only(
                     top: getHeight()*.01
                 ),
-                itemCount: 2,
+                itemCount: 0,
                 itemBuilder: (context, index) {
                   return PostCard(index: index);
                 },

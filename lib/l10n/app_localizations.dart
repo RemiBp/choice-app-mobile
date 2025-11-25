@@ -2282,6 +2282,18 @@ abstract class AppLocalizations {
   /// **'January'**
   String get january;
 
+  /// No description provided for @otpResentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP resent successfully'**
+  String get otpResentSuccess;
+
+  /// No description provided for @selectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Time'**
+  String get selectTime;
+
   /// No description provided for @february.
   ///
   /// In en, this message translates to:
@@ -3421,12 +3433,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected'**
   String get selected;
-
-  /// No description provided for @selectTime.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Time'**
-  String get selectTime;
 
   /// No description provided for @suggestATimeSlot.
   ///
