@@ -23,9 +23,13 @@ import '../../../res/toasts.dart';
 import '../../../userRole/role_provider.dart';
 import '../../../userRole/user_role.dart';
 import '../../../utilities/timezone_helper.dart';
+import 'package:choice_app/models/get_all_events_response.dart';
 
 class CreateEvent extends StatefulWidget {
-  const CreateEvent({super.key});
+  const CreateEvent({super.key, this.event, this.isEdit = false});
+
+  final Data? event;
+  final bool isEdit;
 
   @override
   _CreateEventState createState() => _CreateEventState();
@@ -53,7 +57,7 @@ class _CreateEventState extends State<CreateEvent> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImages() async {
-    if (images.length >= 5) return;
+    if (images.length + imageUrls.length >= 5) return;
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
@@ -65,6 +69,12 @@ class _CreateEventState extends State<CreateEvent> {
   void _removeImage(int index) {
     setState(() {
       images.removeAt(index);
+    });
+  }
+
+  void _removeExistingImage(int index) {
+    setState(() {
+      imageUrls.removeAt(index);
     });
   }
 
@@ -133,7 +143,76 @@ class _CreateEventState extends State<CreateEvent> {
       if (context.read<RoleProvider>().role == UserRole.leisure) {
         context.read<EventProvider>().getEventTypes();
       }
+      
+      // Populate fields if in edit mode
+      if (widget.isEdit && widget.event != null) {
+        _populateFieldsForEdit();
+      }
     });
+  }
+
+  void _populateFieldsForEdit() {
+    final event = widget.event!;
+    
+    // Populate text fields
+    _eventNameController.text = event.title ?? '';
+    _descriptionController.text = event.description ?? '';
+    _venueController.text = event.venueName ?? '';
+    _addressController.text = event.location ?? '';
+    _capacityController.text = event.maxCapacity?.toString() ?? '';
+    _priceController.text = event.pricePerGuest ?? '';
+    
+    // Populate event type for leisure
+    if (event.eventType != null) {
+      _selectedEventType = event.eventType!.name;
+    }
+    
+    // Populate date
+    if (event.date != null) {
+      try {
+        _selectedDate = DateFormat("yyyy-MM-dd").parse(event.date!);
+      } catch (e) {
+        // Handle parsing error
+      }
+    }
+    
+    // Populate start and end times
+    if (event.startTime != null) {
+      try {
+        final parts = event.startTime!.split(':');
+        if (parts.length >= 2) {
+          _startTime = TimeOfDay(
+            hour: int.parse(parts[0]),
+            minute: int.parse(parts[1]),
+          );
+        }
+      } catch (e) {
+        // Handle parsing error
+      }
+    }
+    
+    if (event.endTime != null) {
+      try {
+        final parts = event.endTime!.split(':');
+        if (parts.length >= 2) {
+          _endTime = TimeOfDay(
+            hour: int.parse(parts[0]),
+            minute: int.parse(parts[1]),
+          );
+        }
+      } catch (e) {
+        // Handle parsing error
+      }
+    }
+    
+    // Populate existing images
+    if (event.eventImages != null && event.eventImages!.isNotEmpty) {
+      setState(() {
+        imageUrls.addAll(event.eventImages!);
+      });
+    }
+    
+    setState(() {});
   }
 
   @override
@@ -152,7 +231,7 @@ class _CreateEventState extends State<CreateEvent> {
 
     return Scaffold(
       backgroundColor: Color(0xFFF9F9F9),
-      appBar: CommonAppBar(title: al.createEvent),
+      appBar: CommonAppBar(title: widget.isEdit ? "Edit Event" : al.createEvent),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -234,37 +313,80 @@ class _CreateEventState extends State<CreateEvent> {
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: List.generate(images.length, (index) {
-                        return Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                File(images[index].path),
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
+                      children: [
+                        // Display existing images (already uploaded)
+                        ...List.generate(imageUrls.length, (index) {
+                          return Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  imageUrls[index],
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 100,
+                                      height: 100,
+                                      color: Colors.grey[300],
+                                      child: Icon(Icons.error),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: InkWell(
-                                onTap: () => _removeImage(index),
-                                child: CircleAvatar(
-                                  radius: getHeight() * .018,
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    Icons.close,
-                                    size: getHeight() * .022,
-                                    color: Colors.black,
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: InkWell(
+                                  onTap: () => _removeExistingImage(index),
+                                  child: CircleAvatar(
+                                    radius: getHeight() * .018,
+                                    backgroundColor: Colors.white,
+                                    child: Icon(
+                                      Icons.close,
+                                      size: getHeight() * .022,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        );
-                      }),
+                            ],
+                          );
+                        }),
+                        // Display newly selected images
+                        ...List.generate(images.length, (index) {
+                          return Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(images[index].path),
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: InkWell(
+                                  onTap: () => _removeImage(index),
+                                  child: CircleAvatar(
+                                    radius: getHeight() * .018,
+                                    backgroundColor: Colors.white,
+                                    child: Icon(
+                                      Icons.close,
+                                      size: getHeight() * .022,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                      ],
                     ),
                   ],
                 ),
@@ -439,7 +561,7 @@ class _CreateEventState extends State<CreateEvent> {
                               UserRole.restaurant;
 
                           // Validation
-                          if (images.isEmpty) {
+                          if (images.isEmpty && imageUrls.isEmpty) {
                             Toasts.getErrorToast(text: al.errorSelectImage);
                             return;
                           }
@@ -497,20 +619,20 @@ class _CreateEventState extends State<CreateEvent> {
                             return;
                           }
 
-                          // Upload images
-                          imageUrls.clear();
+                          // Upload new images (keep existing imageUrls intact)
+                          List<String> newImageUrls = List.from(imageUrls);
                           for (var img in images) {
                             final bytes = await img.readAsBytes();
                             final fileUrl = await networkProvider
                                 .getUrlForFileUpload(bytes);
                             if (fileUrl != null) {
-                              imageUrls.add(
+                              newImageUrls.add(
                                 NetworkProvider.extractS3Key(fileUrl),
                               );
                             }
                           }
 
-                          if (imageUrls.isEmpty) {
+                          if (newImageUrls.isEmpty) {
                             Toasts.getErrorToast(
                               text: "Failed to upload images",
                             );
@@ -567,33 +689,59 @@ class _CreateEventState extends State<CreateEvent> {
                               ) ??
                               0.0;
                           final eventProvider = context.read<EventProvider>();
-                          eventProvider
-                              .createEventApi(
-                                eventName: _eventNameController.text.trim(),
-                                description: _descriptionController.text.trim(),
-                                venue:
-                                    isRestaurant
-                                        ? _venueController.text.trim()
-                                        : "",
-                                address: _addressController.text.trim(),
-                                capacity: _capacityController.text.trim(),
-                                price: _priceController.text.trim(),
-                                images: imageUrls,
-                                date: dateStr,
-                                startTime: startTimeStr,
-                                endTime: endTimeStr,
-                                eventTypeId:
-                                    isLeisure ? selectedType!.id : null,
-                                latitude: latitude,
-                                longitude: longitude,
-                                timeZone:
-                                    TimezoneHelper.cachedTimeZone ??
-                                    'UTC', // Success: Uses the cached value
-                              )
-                              .whenComplete(() {
-                                Navigator.pop(context);
-                                eventProvider.getAllEvents();
-                              });
+                          
+                          // Call appropriate API based on edit mode
+                          if (widget.isEdit && widget.event != null) {
+                            await eventProvider.updateEventApi(
+                              eventId: widget.event!.id!,
+                              eventName: _eventNameController.text.trim(),
+                              description: _descriptionController.text.trim(),
+                              venue:
+                                  isRestaurant
+                                      ? _venueController.text.trim()
+                                      : "",
+                              address: _addressController.text.trim(),
+                              capacity: _capacityController.text.trim(),
+                              price: _priceController.text.trim(),
+                              images: newImageUrls,
+                              date: dateStr,
+                              startTime: startTimeStr,
+                              endTime: endTimeStr,
+                              eventTypeId:
+                                  isLeisure ? selectedType!.id : null,
+                              latitude: latitude,
+                              longitude: longitude,
+                              timeZone:
+                                  TimezoneHelper.cachedTimeZone ??
+                                  'UTC',
+                            );
+                          } else {
+                            await eventProvider.createEventApi(
+                              eventName: _eventNameController.text.trim(),
+                              description: _descriptionController.text.trim(),
+                              venue:
+                                  isRestaurant
+                                      ? _venueController.text.trim()
+                                      : "",
+                              address: _addressController.text.trim(),
+                              capacity: _capacityController.text.trim(),
+                              price: _priceController.text.trim(),
+                              images: newImageUrls,
+                              date: dateStr,
+                              startTime: startTimeStr,
+                              endTime: endTimeStr,
+                              eventTypeId:
+                                  isLeisure ? selectedType!.id : null,
+                              latitude: latitude,
+                              longitude: longitude,
+                              timeZone:
+                                  TimezoneHelper.cachedTimeZone ??
+                                  'UTC', // Success: Uses the cached value
+                            );
+                          }
+                          
+                          Navigator.pop(context);
+                          eventProvider.getAllEvents();
                         },
                       ),
                     ),

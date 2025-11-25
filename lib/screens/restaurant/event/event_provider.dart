@@ -94,11 +94,77 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateEventApi({
+    required int eventId,
+    required String eventName,
+    required String description,
+    required String venue,
+    required String address,
+    required String capacity,
+    required String price,
+    required String date,
+    required String startTime,
+    required String endTime,
+    required List<String> images,
+    int? eventTypeId, // only used for leisure
+    double? latitude,
+    double? longitude,
+    String? timeZone,
+  }) async {
+    try {
+      _loader.showLoader(context: context);
+
+      final roleProvider = context!.read<RoleProvider>();
+
+      String serviceType =
+          roleProvider.role == UserRole.restaurant ? "Restaurant" : "Leisure";
+
+      final body = {
+        "title": eventName,
+        "description": description,
+        "serviceType": serviceType,
+        "location": address,
+        "pricePerGuest": double.tryParse(price) ?? 0,
+        "maxCapacity": int.tryParse(capacity) ?? 0,
+        "status": "Active",
+        "date": date,
+        "startTime": startTime,
+        "endTime": endTime,
+        "eventImages": images,
+        "latitude": latitude ?? "0.0", // fallback if null
+        "longitude": longitude ?? "0.0",
+        "timeZone": timeZone ?? "Asia/Karachi", // fallback timezone
+      };
+
+      if (serviceType == "Restaurant") {
+        body["venueName"] = venue;
+      } else if (serviceType == "Leisure" && eventTypeId != null) {
+        body["eventTypeId"] = eventTypeId;
+      }
+
+      debugPrint("body for create post is : $body");
+
+      final response = await MyApi.callPutApi(
+        url: '$updateEventApiUrl$eventId',
+        body: body,
+      );
+
+      _loader.hideLoader(context!);
+
+      if (response?["message"] != null) {
+        Toasts.getSuccessToast(text: response?["message"]);
+      }
+    } catch (err) {
+      _loader.hideLoader(context!);
+      debugPrint("error while updating event is : $err");
+    }
+  }
+
   Future<void> getAllEvents() async {
     try {
       _loader.showLoader(context: context);
       getAllEventsResponse = await MyApi.callGetApi(
-        url: getAllEventsApiUrl,
+        url: getMyEventsApiUrl,
         parameters: {"status": EventStatus.Active.name},
         modelName: Models.eventsModel,
       );
@@ -116,7 +182,7 @@ class EventProvider extends ChangeNotifier {
     try {
       _loader.showLoader(context: context);
       getDraftEventsResponse = await MyApi.callGetApi(
-        url: getAllEventsApiUrl,
+        url: getMyEventsApiUrl,
         parameters: {"status": EventStatus.Draft.name},
         modelName: Models.eventsModel,
       );
@@ -134,7 +200,7 @@ class EventProvider extends ChangeNotifier {
     try {
       _loader.showLoader(context: context);
       getCompletedEventsResponse = await MyApi.callGetApi(
-        url: getAllEventsApiUrl,
+        url: getMyEventsApiUrl,
         parameters: {"status": EventStatus.Closed.name},
         modelName: Models.eventsModel,
       );

@@ -7,9 +7,12 @@ import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../l18n.dart';
 import '../../../../res/res.dart';
+import 'package:choice_app/models/get_all_events_response.dart';
 
 class EventInfoSection extends StatelessWidget {
-  const EventInfoSection({super.key});
+  const EventInfoSection({super.key, this.event});
+
+  final Data? event;
 
   @override
   Widget build(BuildContext context) {
@@ -33,25 +36,25 @@ class EventInfoSection extends StatelessWidget {
           ),
           SizedBox(height: 8),
           CustomText(
-            text: "Wine & Dine Evening",
+            text: event?.title ?? "Unknown",
             fontSize: sizes?.fontSize20,
             fontFamily: Assets.onsetSemiBold,
           ),
           SizedBox(height: 12),
           IconTextRow(
-            text: "Monday, June 28, 2025",
+            text: event?.date ?? "Unknown Date",
             svgString: Assets.calenderCircleSvg,
-            subText: "08:00 PM - 11:00 PM",
+            subText: "${event?.startTime} - ${event?.endTime}",
           ),
           SizedBox(height: getHeight() * .02),
           IconTextRow(
-            text: "Gustave Eiffel, Paris, France",
+            text: event?.location ?? "Unknown Location",
             svgString: Assets.locationCircleSvg,
-            subText: " Av. Gustave Eiffel, 75007 Paris, France",
+            subText: event?.location ?? "Unknown Location",
           ),
           SizedBox(height: getHeight() * .02),
           IconTextRow(
-            text: "\$30.00/per person",
+            text: "\$${event?.pricePerGuest}/per person",
             svgString: Assets.ticketCircleSvg,
             subText: al.ticketPrice,
           ),

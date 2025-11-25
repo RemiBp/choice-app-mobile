@@ -91,6 +91,8 @@ const String getEventBookingDetailsApiUrl = "$baseUrl/api/producer/booking/booki
 const String getSimpleBookingDetailsApiUrl = "$baseUrl/api/app/booking/getBooking";
 
 const String deleteEventApiUrl = "$baseUrl/api/producer/event/deleteEvent/";
+const String updateEventApiUrl = "$baseUrl/api/producer/event/updateEvent/";
+const String getMyEventsApiUrl = "$baseUrl/api/producer/event/getMyEvents";
 
 
 

@@ -207,7 +207,12 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/restaurant_create_events',
-      builder: (context, state) => const CreateEvent(),
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>?;
+        final isEdit = args?['isEdit'] as bool? ?? false;
+        final eventData = args?['eventData'];
+        return CreateEvent(isEdit: isEdit, event: eventData);
+      },
     ),
     GoRoute(
       path: '/restaurant_event_details',
