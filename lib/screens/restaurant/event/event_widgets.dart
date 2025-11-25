@@ -20,11 +20,13 @@ class EventCard extends StatelessWidget {
     this.isDraft = false,
     this.eventsResponse,
     this.onDelete,
+    this.onEdit,
   });
 
   final bool isDraft;
   final Data? eventsResponse;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class EventCard extends StatelessWidget {
       onTap: () {
         context.push(
           Routes.restaurantEventDetailsRoute,
-          extra: {"isDraft": isDraft},
+          extra: {"isDraft": isDraft, "eventData": eventsResponse},
         );
       },
       child: Container(
@@ -221,7 +223,15 @@ class EventCard extends StatelessWidget {
                         child: CustomButton(
                           height: getHeight() * .055,
                           buttonText: al.edit,
-                          onTap: () {},
+                          onTap: () {
+                            context.push(
+                              Routes.restaurantCreateEventRoute,
+                              extra: {
+                                "isEdit": true,
+                                "eventData": eventsResponse,
+                              },
+                            );
+                          },
                         ),
                       ),
                     ],

@@ -1,6 +1,10 @@
+import 'package:choice_app/network/api_url.dart';
+import 'package:choice_app/routes/routes.dart';
+import 'package:choice_app/screens/restaurant/event/event_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
@@ -11,6 +15,7 @@ import '../../../res/res.dart';
 import '../../customer/explore/participants/participants_screen.dart';
 import 'eventWidgets/delete_event.dart';
 import 'eventWidgets/event_info.dart';
+import 'package:choice_app/models/get_all_events_response.dart';
 
 class EventDetails extends StatelessWidget {
   const EventDetails({super.key,});
@@ -19,6 +24,12 @@ class EventDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
     final isDraft = extra?["isDraft"]??false;
+    final Data? event = extra?["eventData"] as Data?;
+
+    final eventImage = (event?.eventImages != null && event!.eventImages!.isNotEmpty)
+        ? imageBaseUrl + event.eventImages!.first
+        : "https://i.pinimg.com/originals/49/7e/e8/497ee84d017ffca00fd23bf78d3ebe39.jpg";
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -32,7 +43,7 @@ class EventDetails extends StatelessWidget {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: NetworkImage(
-                        "https://i.pinimg.com/originals/49/7e/e8/497ee84d017ffca00fd23bf78d3ebe39.jpg",
+                        eventImage,
                       ),
                       fit: BoxFit.cover,
                     ),
@@ -71,7 +82,7 @@ class EventDetails extends StatelessWidget {
                 ),
               ],
             ),
-            EventInfoSection(),
+            EventInfoSection(event: event),
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: getWidth() * .05,
@@ -158,7 +169,7 @@ class EventDetails extends StatelessWidget {
                   ),
                   SizedBox(height: getHeight() * .02),
                   ReadMoreText(
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nisi viverra mauris sagittis dis. Sed quis enim nulla arcu turpis in.",
+                    event?.description ?? "Unknown Description",
                     trimMode: TrimMode.Line,
                     trimLines: 2,
                     colorClickableText: Colors.pink,
@@ -195,7 +206,7 @@ class EventDetails extends StatelessWidget {
                       SizedBox(width: getWidth() * 0.01), // horizontal gap
                       Expanded(
                         child: CustomText(
-                          text: "Av. Gustave Eiffel, 75007 Paris, France",
+                          text: event?.location ?? "Unknown Location",
                           fontSize: sizes?.fontSize12,
                         ),
                       ),
@@ -246,7 +257,15 @@ class EventDetails extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (context) {
-                            return DeleteEventDialog();
+                            return DeleteEventDialog(
+                              onDelete: () {
+                                final eventProvider = Provider.of<EventProvider>(context, listen: false);
+                                eventProvider.deleteEvent(
+                                  eventId: event?.id ?? -1,
+                                  isActiveEvent: false,
+                                );
+                              },
+                            );
                           },
                         );
                       },
@@ -257,7 +276,15 @@ class EventDetails extends StatelessWidget {
                     child: CustomButton(
                       height: getHeight() * .055,
                       buttonText: al.edit,
-                      onTap: () {},
+                      onTap: () {
+                        context.push(
+                          Routes.restaurantCreateEventRoute,
+                          extra: {
+                            "isEdit": true,
+                            "eventData": event,
+                          },
+                        );
+                      },
                     ),
                   ),
                 ],
