@@ -1,4 +1,5 @@
 import 'package:choice_app/common/utils.dart';
+import 'package:choice_app/models/get_producer_posts_by_id_response.dart';
 import 'package:choice_app/models/producer_posts_response.dart';
 import 'package:choice_app/network/API.dart';
 import 'package:choice_app/network/api_url.dart';
@@ -15,6 +16,8 @@ class  ChoiceProvider  extends ChangeNotifier{
   final Loader _loader = Loader();
   ProducerPostsResponse postsResponse = ProducerPostsResponse();
   BuildContext? context;
+  GetProducerPostsByIdResponse? selectedPost;
+
   init(context){
     this.context = context;
   }
@@ -23,7 +26,7 @@ class  ChoiceProvider  extends ChangeNotifier{
 Future<void> createChoiceApi({
     required String title,
     required String description,
-    required String tags,
+    required List<String> tags,
     required String location,
     required String type,
     required List<String> images,
@@ -38,8 +41,7 @@ Future<void> createChoiceApi({
         "status": "public",
         "description": description,
         "link": "https://yourrestaurant.com/sunday-brunch",
-        "tags": [tags
-        ],
+        "tags": tags,
         "coverImage": images[0],
         "imageUrls":images,
         "publishDate":"2025-08-21T11:00:00.000Z",
@@ -74,8 +76,8 @@ Future<void> createChoiceApi({
           url: getProducerPostsApiUrl,
           modelName: Models.producerPostsModel
       );
-      debugPrint("rest posts response is : ${postsResponse.status
-      }");
+      debugPrint("rest posts response is : ${postsResponse.status}");
+      debugPrint("rest posts response is : ${postsResponse.data?.length??0}");
       _loader.hideLoader(context!);
       notifyListeners();
     }catch(err){
@@ -85,5 +87,33 @@ Future<void> createChoiceApi({
     notifyListeners();
   }
 
+  Future<void> getProducerPostById(int postId) async {
+    try {
+      _loader.showLoader(context: context);
 
- }
+      final response = await MyApi.callGetApi(
+        url: '$getProducerPostsByIdApiUrl/$postId',
+        modelName: Models.getProducerPostsByIdModel,
+      );
+
+      _loader.hideLoader(context!);
+
+      if (response != null && response['data'] != null) {
+        selectedPost = GetProducerPostsByIdResponse.fromJson(response['data']);
+        notifyListeners();
+        debugPrint("Fetched post: ${selectedPost!.description}");
+      } else {
+        Toasts.getErrorToast(
+          text: response?['message'] ?? "Failed to fetch post",
+        );
+      }
+    } catch (e) {
+      _loader.hideLoader(context!);
+      debugPrint("Error fetching post by ID: $e");
+      Toasts.getErrorToast(text: "Something went wrong");
+    }
+  }
+
+
+
+}

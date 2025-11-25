@@ -264,11 +264,16 @@ class _CreatePostState extends State<CreatePost> {
                         final role = context
                             .read<RoleProvider>()
                             .role;
+                        final tagsList = tagsController.text
+                            .split(',')
+                            .map((e) => e.trim())
+                            .where((e) => e.isNotEmpty)
+                            .toList();
 
                         choiceProvider.createChoiceApi(title: title,
                           type: role.name,
                           description: description,
-                          tags: tags,
+                          tags: tagsList,
                           location: location,
                           images: imageUrls,);
                       }

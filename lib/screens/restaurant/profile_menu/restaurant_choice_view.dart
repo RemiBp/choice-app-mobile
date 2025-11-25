@@ -52,7 +52,7 @@ class _RestaurantChoiceViewState extends State<RestaurantChoiceView> {
               }
             }
           },
-          child: PostCard(),
+          child: PostCard(index: index,),
         );
       },
     );

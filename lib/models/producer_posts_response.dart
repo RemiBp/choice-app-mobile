@@ -46,6 +46,7 @@ class Data {
   String? deletedAt;
   bool? isDeleted;
   List<Images>? images;
+  List<PostTags>? postTags;
 
   Data(
       {this.id,
@@ -65,7 +66,8 @@ class Data {
         this.updatedAt,
         this.deletedAt,
         this.isDeleted,
-        this.images});
+        this.images,
+        this.postTags});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -89,6 +91,12 @@ class Data {
       images = <Images>[];
       json['images'].forEach((v) {
         images!.add(new Images.fromJson(v));
+      });
+    }
+    if (json['postTags'] != null) {
+      postTags = <PostTags>[];
+      json['postTags'].forEach((v) {
+        postTags!.add(PostTags.fromJson(v));
       });
     }
   }
@@ -115,9 +123,97 @@ class Data {
     if (images != null) {
       data['images'] = images!.map((v) => v.toJson()).toList();
     }
+    if (postTags != null) {
+      data['postTags'] = postTags!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }
+
+class PostTags {
+  int? id;
+  int? userId;
+  int? postId;
+  int? tagId;
+  String? createdAt;
+  String? updatedAt;
+  String? deletedAt;
+  bool? isDeleted;
+  Tag? tag;
+
+  PostTags({
+    this.id,
+    this.userId,
+    this.postId,
+    this.tagId,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+    this.isDeleted,
+    this.tag,
+  });
+
+  PostTags.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    userId = json['userId'];
+    postId = json['postId'];
+    tagId = json['tagId'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    deletedAt = json['deletedAt'];
+    isDeleted = json['isDeleted'];
+
+    tag = json['tag'] != null ? Tag.fromJson(json['tag']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['userId'] = userId;
+    data['postId'] = postId;
+    data['tagId'] = tagId;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['deletedAt'] = deletedAt;
+    data['isDeleted'] = isDeleted;
+
+    if (tag != null) {
+      data['tag'] = tag!.toJson();
+    }
+    return data;
+  }
+}
+class Tag {
+  int? id;
+  String? name;
+  String? createdAt;
+  String? updatedAt;
+
+  Tag({
+    this.id,
+    this.name,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  Tag.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    return data;
+  }
+}
+
+
 
 class Images {
   int? id;

@@ -39,6 +39,7 @@ const String getProducerGalleryApiUrl = "$baseUrl/api/producer/profile/getGaller
 const String getProducerDocumentApiUrl = "$baseUrl/api/producer/auth/getProducerDocuments";
 const String submitProducerDocumentApiUrl = "$baseUrl/api/producer/auth/submitDocuments";
 const String getProducerPostsApiUrl = "$baseUrl/api/producer/post/getPostsByProducer";
+const String getProducerPostsByIdApiUrl = "$baseUrl/api/producer/post/getProducerPostById";
 const String deleteGalleryImagesApiUrl = "$baseUrl/api/producer/profile/deleteGalleryImages";
 const String getEventsNearMeApiUrl = "$baseUrl/api/producer/event/getAllEvents";
 const String getEventsTypeApiUrl = "$baseUrl/api/producer/event/getEventTypes";
@@ -66,6 +67,7 @@ const String saveDocumentApiUrl = "$baseUrl/api/producer/auth/saveDocument";
 const String updatePasswordApiUrl = "$baseUrl/api/producer/profile/updatePassword";
 const String deleteProducerDocumentApiUrl = "$baseUrl/api/producer/auth/deleteDocument";
 const String updateProducerDocumentApiUrl = "$baseUrl/api/producer/auth/updateDocuments";
+
 
 const String setSlotDurationApiUrl = "$baseUrl/api/producer/profile/setSlotDuration";
 const String getProducerSlotsApiUrl = "$baseUrl/api/producer/profile/getProducerSlots";

@@ -62,6 +62,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                 imageUrl: booking.imageUrl,
                 bookingType: booking.type ?? "Unknown", // for chipsdate: booking.date,
                 startTime: booking.startTime,
+                date: booking.date,
                 endTime: booking.endTime,
                 guests: booking.guests,
                 totalPrice: booking.totalPrice,

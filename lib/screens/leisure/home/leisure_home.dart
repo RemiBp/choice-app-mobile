@@ -96,8 +96,10 @@ class _LeisureHomeState extends State<LeisureHome> {
                 hint: al.searchUserPlaceholder,
                 prefixIconSvg: Assets.searchIcon,
               ),
+              SizedBox(height: getHeight() * .02),
               Expanded(
-                child:_choiceProvider.postsResponse.data?.isNotEmpty == true? ListView.builder(
+                child:_choiceProvider.postsResponse.data?.isNotEmpty == true?
+                ListView.builder(
                   padding: EdgeInsets.only(
                       top: getHeight()*.01
                   ),

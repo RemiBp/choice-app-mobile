@@ -26,7 +26,7 @@ class SimpleBookingData {
   final double latitude;
   final double longitude;
   final int guestCount;
-  final String internalNotes;
+  final String specialRequest;
 
   final RestaurantWrapper? restaurant;
 
@@ -39,7 +39,7 @@ class SimpleBookingData {
     required this.slotEndTime,
     required this.bookingDate,
     required this.status,
-    required this.internalNotes,
+    required this.specialRequest,
     required this.location,
     required this.customerName,
     required this.reviewAdded,
@@ -58,7 +58,7 @@ class SimpleBookingData {
       slotEndTime: json["slotEndTime"] ?? "",
       bookingDate: json["bookingDate"] ?? "",
       status: json["status"] ?? "",
-      internalNotes: json["internalNotes"] ?? "",
+      specialRequest: json["specialRequest"] ?? "",
       location: json["location"] ?? "",
       customerName: json["customerName"] ?? "",
       reviewAdded: json["reviewAdded"] ?? false,

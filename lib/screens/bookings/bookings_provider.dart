@@ -9,7 +9,6 @@ import 'package:choice_app/network/models.dart';
 
 import '../../l18n.dart';
 import '../../models/get_normal_booking_details_response.dart';
-import '../../userRole/user_role.dart';
 
 enum BookingStatus { scheduled, inProgress, completed, cancelled }
 
@@ -1139,5 +1138,45 @@ class BookingsProvider extends ChangeNotifier {
       return null;
     }
   }
+
+  Future<bool> updateBooking({
+    required int bookingId,
+    required int slotId,
+    required int guestCount,
+    required String date,
+    required String specialRequest,
+    required String timeZone,
+  }) async {
+    try {
+      final body = {
+        "slotId": slotId,
+        "guestCount": guestCount,
+        "specialRequest": specialRequest,
+        "date": date,
+        "timeZone": timeZone,
+      };
+
+      debugPrint("📝 UPDATE Booking Body: $body");
+
+      final response = await MyApi.callPutApi(
+        url: '$updateBookingsApiUrl/$bookingId',
+        body: body,
+      );
+
+      if (response != null && response['booking'] != null) {
+        Toasts.getSuccessToast(text: "Booking updated successfully");
+        return true;
+      }
+
+      Toasts.getErrorToast(text: "Failed to update booking");
+      return false;
+
+    } catch (e) {
+      debugPrint("❌ Update Booking Error: $e");
+      Toasts.getErrorToast(text: "Something went wrong");
+      return false;
+    }
+  }
+
 
 }

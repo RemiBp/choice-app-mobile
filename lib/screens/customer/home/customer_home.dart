@@ -72,7 +72,7 @@ class _CustomerHomeState extends State<CustomerHome> {
                 ),
                 itemCount: 2,
                 itemBuilder: (context, index) {
-                  return PostCard();
+                  return PostCard(index: index);
                 },
               ),
             ),

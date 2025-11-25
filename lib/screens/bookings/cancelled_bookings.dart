@@ -1,6 +1,5 @@
 import 'package:choice_app/customWidgets/no_item_found.dart';
 import 'package:choice_app/models/get_user_bookings_response.dart';
-import 'package:choice_app/screens/bookings/booking_details_user.dart';
 import 'package:choice_app/screens/bookings/bookings_provider.dart';
 import 'package:choice_app/screens/bookings/cancelled_booking_details.dart';
 import 'package:choice_app/screens/bookings/upcoming_bookings.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'booking_details.dart';
 import 'bookings_widgets.dart';
 
 class CancelledBookings extends StatefulWidget {
