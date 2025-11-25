@@ -94,7 +94,8 @@
     "staffExpertise": "Expertise du Personnel",
     "ambiance": "Ambiance",
       "numberOfInterests": "Nombre d'intérêts",
-    
+       "otpResentSuccess": "OTP renvoyé avec succès",
+    "selectTime": "Sélectionner l'heure",
 
   "reclaimAccount": "Récupérez votre compte",
   "retrieveAccess": "Récupérez l'accès à votre profil existant",

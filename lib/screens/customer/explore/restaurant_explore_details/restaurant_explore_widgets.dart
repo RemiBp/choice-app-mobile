@@ -98,12 +98,12 @@ class IconTextWidget extends StatelessWidget {
     super.key,
     required this.text,
     required this.icon,
-    required this.subText,
+    this.subText,
     this.color
   });
 
   final String text;
-  final String subText;
+  final String? subText;
   final String icon;
   final Color? color;
 
@@ -126,7 +126,7 @@ class IconTextWidget extends StatelessWidget {
                 fontSize: sizes?.fontSize14,
                 fontFamily: Assets.onsetMedium,
               ),
-              CustomText(text: subText, fontSize: sizes?.fontSize12),
+              // CustomText(text: subText, fontSize: sizes?.fontSize12),
             ],
           ),
         ],

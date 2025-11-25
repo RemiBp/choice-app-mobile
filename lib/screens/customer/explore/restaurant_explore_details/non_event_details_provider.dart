@@ -11,7 +11,6 @@ class NonEventDetailsProvider extends ChangeNotifier {
   Wellness? wellness;
   Stats? stats;
   Socials? socials;
-
   List<Photo> photos = [];
   List<MenuCategory> menu = [];
   List<BusinessHour> businessHours = [];

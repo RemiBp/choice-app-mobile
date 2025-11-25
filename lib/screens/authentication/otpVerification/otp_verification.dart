@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:choice_app/res/toasts.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/authentication/otpVerification/otp_provider.dart';
@@ -24,22 +26,52 @@ class OtpVerification extends StatefulWidget {
 
 class _OtpVerificationState extends State<OtpVerification> {
   String otp = "";
-
+  Timer? _timer;
+  late ValueNotifier<int> _countdown;
+  // late ValueNotifier<bool> _canResend;
 
   @override
   void initState() {
     super.initState();
+    _countdown = ValueNotifier(0);
     final provider = Provider.of<OtpProvider>(context, listen: false);
     provider.init(context);
+    _startTimer();
   }
+
+  void _startTimer() {
+    _countdown.value = 60;
+    // _canResend.value = false;
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (_countdown.value == 0) {
+        timer.cancel();
+        // _canResend.value = true;
+      } else {
+        _countdown.value--;
+      }
+    });
+  }
+
+
+  String _formatTime(int seconds) {
+    return '${(seconds ~/ 60).toString().padLeft(2, '0')}:${(seconds % 60).toString().padLeft(2, '0')}';
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _countdown.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final extra = GoRouterState
-        .of(context)
-        .extra as Map<String, dynamic>?;
+    final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
     final email = extra?["email"] ?? "nil";
     final isResetPassFlow = extra?["isResetPassFlow"] ?? true;
     final provider = context.read<OtpProvider>();
+    debugPrint("Called");
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: Padding(
@@ -87,7 +119,6 @@ class _OtpVerificationState extends State<OtpVerification> {
                   border: Border.all(color: AppColors.greyBordersColor),
                   borderRadius: BorderRadius.circular(15),
                 ),
-
               ),
               preFilledWidget: CustomText(
                 text: "-",
@@ -107,37 +138,58 @@ class _OtpVerificationState extends State<OtpVerification> {
               onCompleted: (pin) => print(pin),
             ),
             SizedBox(height: getHeight() * .03),
-            Text.rich(
-              TextSpan(
-                text: "${al.didNotReceiveCode} ",
-                style: TextStyle(
-                  fontSize: sizes?.fontSize16,
-                  fontFamily: Assets.onsetRegular,
-                ),
-                children: [
+
+            ValueListenableBuilder(
+              valueListenable: _countdown,
+              builder: (BuildContext context, value, Widget? child) {
+                return Text.rich(
                   TextSpan(
-                    text: al.resendCode,
-                    style: TextStyle(color: AppColors.getPrimaryColorFromContext(context)),
-                      recognizer: TapGestureRecognizer
-                        ()
-                        ..onTap = () {
-                          provider.resendOtp(
-                              email: email, isResetPassFlow: isResetPassFlow);
-                        }),
-                ],
-              ),
+                    text:
+                    value==0
+                        ? "${al.didNotReceiveCode} "
+                        : "Resend code in ${_formatTime(value)}\n",
+                    style: TextStyle(
+                      fontSize: sizes?.fontSize16,
+                      fontFamily: Assets.onsetRegular,
+                    ),
+                    children:
+                    value==0
+                        ? [
+                      TextSpan(
+                        text: al.resendCode,
+                        style: TextStyle(
+                          color:
+                          AppColors.getPrimaryColorFromContext(
+                            context,
+                          ),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer:
+                        TapGestureRecognizer()
+                          ..onTap = () {
+                            provider.resendOtp(email: email, isResetPassFlow: isResetPassFlow);
+                            _startTimer();
+                            // Toasts.getSuccessToast(text: al.otpResentSuccess);
+                          },
+                      ),
+                    ]
+                        : [],
+                  ),
+                  textAlign: TextAlign.start,
+                );
+              },
             ),
+
             SizedBox(height: getHeight() * .03),
             CustomButton(
               buttonText: al.verifyButton,
               onTap: () {
-
                 //context.push(Routes.uploadReclaimDocsRoute);
                 if (otp.length < 6) {
                   Toasts.getErrorToast(text: al.enterOtpPlaceholder);
                   return;
                 }
-                if(isResetPassFlow){
+                if (isResetPassFlow) {
                   provider.verifyFgOtp(
                     email: email,
                     otp: otp,

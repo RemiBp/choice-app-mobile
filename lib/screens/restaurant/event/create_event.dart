@@ -83,9 +83,10 @@ class _CreateEventState extends State<CreateEvent> {
   Future<void> _pickTime(bool isStart) async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: isStart
-          ? (_startTime ?? const TimeOfDay(hour: 0, minute: 0))
-          : (_endTime ?? const TimeOfDay(hour: 0, minute: 0)),
+      initialTime:
+          isStart
+              ? (_startTime ?? const TimeOfDay(hour: 0, minute: 0))
+              : (_endTime ?? const TimeOfDay(hour: 0, minute: 0)),
     );
     if (picked != null) {
       setState(() {
@@ -117,10 +118,7 @@ class _CreateEventState extends State<CreateEvent> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          child,
-          const SizedBox(height: 4),
-        ],
+        children: [child, const SizedBox(height: 4)],
       ),
     );
   }
@@ -181,7 +179,8 @@ class _CreateEventState extends State<CreateEvent> {
                       Consumer<EventProvider>(
                         builder: (context, provider, _) {
                           final eventTypes = provider.eventTypesList;
-                          final items = eventTypes.map((e) => e.name ?? "").toList();
+                          final items =
+                              eventTypes.map((e) => e.name ?? "").toList();
 
                           return CustomDropdownField(
                             label: al.eventTypeLabel,
@@ -229,10 +228,7 @@ class _CreateEventState extends State<CreateEvent> {
                     ),
                     SizedBox(height: getHeight() * .02),
 
-                    InkWell(
-                      onTap: _pickImages,
-                      child: DottedBorderContainer(),
-                    ),
+                    InkWell(onTap: _pickImages, child: DottedBorderContainer()),
 
                     SizedBox(height: 12),
                     Wrap(
@@ -348,9 +344,12 @@ class _CreateEventState extends State<CreateEvent> {
                           obscure: true,
                           textEditingController: TextEditingController(
                             // FIX: DISPLAY DATE AS yyyy-MM-dd
-                            text: _selectedDate == null
-                                ? ""
-                                : DateFormat("yyyy-MM-dd").format(_selectedDate!),
+                            text:
+                                _selectedDate == null
+                                    ? ""
+                                    : DateFormat(
+                                      "yyyy-MM-dd",
+                                    ).format(_selectedDate!),
                           ),
                         ),
                       ),
@@ -365,14 +364,17 @@ class _CreateEventState extends State<CreateEvent> {
                             onTap: () => _pickTime(true),
                             child: AbsorbPointer(
                               child: CustomField(
+                                obscure: true,
                                 borderColor: AppColors.greyBordersColor,
-                                hint: "",
+                                hint: al.selectTime,
                                 label: al.startTime,
-                                suffixIconSvg: Assets.clockSvg,
+                                suffixIcon: Icons.schedule,
+                                // suffixIconSvg: Assets.clockSvg,
                                 textEditingController: TextEditingController(
-                                  text: _startTime == null
-                                      ? ""
-                                      : _startTime!.format(context),
+                                  text:
+                                      _startTime == null
+                                          ? ""
+                                          : _startTime!.format(context),
                                 ),
                               ),
                             ),
@@ -386,14 +388,17 @@ class _CreateEventState extends State<CreateEvent> {
                             onTap: () => _pickTime(false),
                             child: AbsorbPointer(
                               child: CustomField(
+                                obscure: true,
                                 borderColor: AppColors.greyBordersColor,
-                                hint: "",
+                                hint: al.selectTime,
                                 label: al.endTime,
-                                suffixIconSvg: Assets.clockSvg,
+                                suffixIcon: Icons.schedule,
+                                // suffixIconSvg: Assets.clockSvg,
                                 textEditingController: TextEditingController(
-                                  text: _endTime == null
-                                      ? ""
-                                      : _endTime!.format(context),
+                                  text:
+                                      _endTime == null
+                                          ? ""
+                                          : _endTime!.format(context),
                                 ),
                               ),
                             ),
@@ -427,9 +432,11 @@ class _CreateEventState extends State<CreateEvent> {
                         buttonText: al.publish,
                         onTap: () async {
                           final isLeisure =
-                              context.read<RoleProvider>().role == UserRole.leisure;
+                              context.read<RoleProvider>().role ==
+                              UserRole.leisure;
                           final isRestaurant =
-                              context.read<RoleProvider>().role == UserRole.restaurant;
+                              context.read<RoleProvider>().role ==
+                              UserRole.restaurant;
 
                           // Validation
                           if (images.isEmpty) {
@@ -441,10 +448,13 @@ class _CreateEventState extends State<CreateEvent> {
                             return;
                           }
                           if (_descriptionController.text.trim().isEmpty) {
-                            Toasts.getErrorToast(text: al.enterEventDescription);
+                            Toasts.getErrorToast(
+                              text: al.enterEventDescription,
+                            );
                             return;
                           }
-                          if (isRestaurant && _venueController.text.trim().isEmpty) {
+                          if (isRestaurant &&
+                              _venueController.text.trim().isEmpty) {
                             Toasts.getErrorToast(text: al.enterVenue);
                             return;
                           }
@@ -453,27 +463,37 @@ class _CreateEventState extends State<CreateEvent> {
                             return;
                           }
                           if (_capacityController.text.trim().isEmpty ||
-                              int.tryParse(_capacityController.text.trim()) == null) {
-                            Toasts.getErrorToast(text: al.enterValidCapacityNumber);
+                              int.tryParse(_capacityController.text.trim()) ==
+                                  null) {
+                            Toasts.getErrorToast(
+                              text: al.enterValidCapacityNumber,
+                            );
                             return;
                           }
                           if (_priceController.text.trim().isEmpty ||
-                              double.tryParse(_priceController.text.trim()) == null) {
+                              double.tryParse(_priceController.text.trim()) ==
+                                  null) {
                             Toasts.getErrorToast(text: al.enterValidPrice);
                             return;
                           }
                           if (isLeisure &&
                               (_selectedEventType == null ||
                                   _selectedEventType!.isEmpty)) {
-                            Toasts.getErrorToast(text: "Please select event type");
+                            Toasts.getErrorToast(
+                              text: "Please select event type",
+                            );
                             return;
                           }
                           if (_selectedDate == null) {
-                            Toasts.getErrorToast(text: "Please select event date");
+                            Toasts.getErrorToast(
+                              text: "Please select event date",
+                            );
                             return;
                           }
                           if (_startTime == null || _endTime == null) {
-                            Toasts.getErrorToast(text: "Please select start and end time");
+                            Toasts.getErrorToast(
+                              text: "Please select start and end time",
+                            );
                             return;
                           }
 
@@ -481,32 +501,37 @@ class _CreateEventState extends State<CreateEvent> {
                           imageUrls.clear();
                           for (var img in images) {
                             final bytes = await img.readAsBytes();
-                            final fileUrl =
-                            await networkProvider.getUrlForFileUpload(bytes);
+                            final fileUrl = await networkProvider
+                                .getUrlForFileUpload(bytes);
                             if (fileUrl != null) {
                               imageUrls.add(
-                                  NetworkProvider.extractS3Key(fileUrl));
+                                NetworkProvider.extractS3Key(fileUrl),
+                              );
                             }
                           }
 
                           if (imageUrls.isEmpty) {
-                            Toasts.getErrorToast(text: "Failed to upload images");
+                            Toasts.getErrorToast(
+                              text: "Failed to upload images",
+                            );
                             return;
                           }
 
                           // Event type ID
                           final provider = context.read<EventProvider>();
-                          final selectedType = isLeisure
-                              ? provider.eventTypesList.firstWhere(
-                                (e) => e.name == _selectedEventType,
-                            orElse: () => EventTypeModel(
-                              id: -1,
-                              name: '',
-                              createdAt: DateTime.now(),
-                              updatedAt: DateTime.now(),
-                            ),
-                          )
-                              : null;
+                          final selectedType =
+                              isLeisure
+                                  ? provider.eventTypesList.firstWhere(
+                                    (e) => e.name == _selectedEventType,
+                                    orElse:
+                                        () => EventTypeModel(
+                                          id: -1,
+                                          name: '',
+                                          createdAt: DateTime.now(),
+                                          updatedAt: DateTime.now(),
+                                        ),
+                                  )
+                                  : null;
 
                           if (isLeisure &&
                               (selectedType == null || selectedType.id <= 0)) {
@@ -515,8 +540,9 @@ class _CreateEventState extends State<CreateEvent> {
                           }
 
                           // FIX: send date in correct format
-                          final dateStr =
-                          DateFormat("yyyy-MM-dd").format(_selectedDate!);
+                          final dateStr = DateFormat(
+                            "yyyy-MM-dd",
+                          ).format(_selectedDate!);
 
                           final startTimeStr =
                               "${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}";
@@ -524,37 +550,50 @@ class _CreateEventState extends State<CreateEvent> {
                               "${_endTime!.hour.toString().padLeft(2, '0')}:${_endTime!.minute.toString().padLeft(2, '0')}";
 
                           final profileProvider =
-                          context.read<ProfileProvider>();
+                              context.read<ProfileProvider>();
                           final producerProfile =
-                              profileProvider.getProducerProfileResponse?.producer;
+                              profileProvider
+                                  .getProducerProfileResponse
+                                  ?.producer;
 
-                          final latitude = double.tryParse(
-                              producerProfile?.latitude ?? "0.0") ??
+                          final latitude =
+                              double.tryParse(
+                                producerProfile?.latitude ?? "0.0",
+                              ) ??
                               0.0;
-                          final longitude = double.tryParse(
-                              producerProfile?.longitude ?? "0.0") ??
+                          final longitude =
+                              double.tryParse(
+                                producerProfile?.longitude ?? "0.0",
+                              ) ??
                               0.0;
-
-
-                          await context.read<EventProvider>().createEventApi(
-                            eventName: _eventNameController.text.trim(),
-                            description: _descriptionController.text.trim(),
-                            venue: isRestaurant
-                                ? _venueController.text.trim()
-                                : "",
-                            address: _addressController.text.trim(),
-                            capacity: _capacityController.text.trim(),
-                            price: _priceController.text.trim(),
-                            images: imageUrls,
-                            date: dateStr,
-                            startTime: startTimeStr,
-                            endTime: endTimeStr,
-                            eventTypeId:
-                            isLeisure ? selectedType!.id : null,
-                            latitude: latitude,
-                            longitude: longitude,
-                            timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC', // Success: Uses the cached value
-                          );
+                          final eventProvider = context.read<EventProvider>();
+                          eventProvider
+                              .createEventApi(
+                                eventName: _eventNameController.text.trim(),
+                                description: _descriptionController.text.trim(),
+                                venue:
+                                    isRestaurant
+                                        ? _venueController.text.trim()
+                                        : "",
+                                address: _addressController.text.trim(),
+                                capacity: _capacityController.text.trim(),
+                                price: _priceController.text.trim(),
+                                images: imageUrls,
+                                date: dateStr,
+                                startTime: startTimeStr,
+                                endTime: endTimeStr,
+                                eventTypeId:
+                                    isLeisure ? selectedType!.id : null,
+                                latitude: latitude,
+                                longitude: longitude,
+                                timeZone:
+                                    TimezoneHelper.cachedTimeZone ??
+                                    'UTC', // Success: Uses the cached value
+                              )
+                              .whenComplete(() {
+                                Navigator.pop(context);
+                                eventProvider.getAllEvents();
+                              });
                         },
                       ),
                     ),
