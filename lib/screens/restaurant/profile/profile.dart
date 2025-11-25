@@ -230,13 +230,13 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             SizedBox(height: getHeight() * .02),
-            CustomText(
-              text: "Lorem ipsum dolor sit amet consectetur.",
-              fontSize: sizes?.fontSize16,
-              color: AppColors.primarySlateColor,
-              giveLinesAsText: true,
-            ),
-            SizedBox(height: getHeight() * .02),
+            // CustomText(
+            //   text: "Lorem ipsum dolor sit amet consectetur.",
+            //   fontSize: sizes?.fontSize16,
+            //   color: AppColors.primarySlateColor,
+            //   giveLinesAsText: true,
+            // ),
+            // SizedBox(height: getHeight() * .02),
 
             // --- Profile Image ---
             Stack(

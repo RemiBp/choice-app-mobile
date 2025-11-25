@@ -1,3 +1,4 @@
+import 'package:choice_app/screens/bookings/bookings_provider.dart';
 import 'package:choice_app/screens/customer/explore/book_now/create_booking_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -216,6 +217,7 @@ class _BookProducerViewState extends State<BookProducerView> {
 
                       final formattedDate =
                           "$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
+                      debugPrint("Modify Producer user id: ${currentProducerId}");
 
                       if (currentProducerId.isNotEmpty) {
                         await context
@@ -322,30 +324,54 @@ class _BookProducerViewState extends State<BookProducerView> {
                     "$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
 
                 if (widget.isModify) {
-                  Toasts.getSuccessToast(
-                    text: "Modify API not integrated yet!",
+                  final bookingIdString = widget.bookingData?.bookingId;
+                  final bookingId = int.tryParse(bookingIdString.toString());
+
+                  if (bookingId == null) {
+                    Toasts.getErrorToast(text: "Invalid booking ID");
+                    return;
+                  }
+
+                  final success = await context.read<BookingsProvider>().updateBooking(
+                    bookingId: bookingId,
+                    slotId: slot.id,
+                    guestCount: persons,
+                    date: formattedDate,
+                    specialRequest: messageController.text,
+                    timeZone: "Asia/Karachi",
                   );
-                  Navigator.pop(context);
-                } else {
-                  final success = await context
-                      .read<CreateBookingProvider>()
-                      .createNonEventBooking(
-                        restaurantId: int.parse(currentProducerId),
-                        slotId: slot.id,
-                        date: formattedDate,
-                        guestCount: persons,
-                        specialRequest: messageController.text,
-                      );
+
                   if (success) {
-                    Toasts.getSuccessToast(text: "Reservation created!");
-                    debugPrint("Replacement");
+                    Toasts.getSuccessToast(text: "Reservation updated!");
 
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => BookingsView()),
-                      (route) => route.isFirst,
+                          (route) => route.isFirst,
                     );
                   }
+
+                  return;
+                }
+
+                //CREATE BOOKING FLOW
+
+                final success = await context.read<CreateBookingProvider>().createNonEventBooking(
+                  restaurantId: int.parse(currentProducerId),
+                  slotId: slot.id,
+                  date: formattedDate,
+                  guestCount: persons,
+                  specialRequest: messageController.text,
+                );
+
+                if (success) {
+                  Toasts.getSuccessToast(text: "Reservation created!");
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => BookingsView()),
+                        (route) => route.isFirst,
+                  );
                 }
               },
               backgroundColor: AppColors.userPrimaryColor,

@@ -94,9 +94,9 @@ static String get website {
     return _prefsInstance?.getString(Strings.email) ?? "";
   }
 
-  static String get phone {
-    return _prefsInstance?.getString(Strings.phoneNumber) ?? "";
-  }
+  // static String get phone {
+  //   return _prefsInstance?.getString(Strings.phoneNumber) ?? "";
+  // }
 
   static String get location {
     return _prefsInstance?.getString(Strings.cityName) ?? "";
@@ -132,7 +132,7 @@ static String get website {
     await PreferenceUtils.setString(Strings.facebook, authResponse.user?.businessProfile?.facebook??"");
     await PreferenceUtils.setString(Strings.description, authResponse.user?.businessProfile?.description??"");
     await PreferenceUtils.setString(Strings.instagram, authResponse.user?.businessProfile?.instagram??"");
-    await PreferenceUtils.setString(Strings.phoneNumber, authResponse.user?.businessProfile?.phoneNumber??"");
+    // await PreferenceUtils.setString(Strings.phoneNumber, authResponse.user?.businessProfile?.phoneNumber??"");
   }
 
 

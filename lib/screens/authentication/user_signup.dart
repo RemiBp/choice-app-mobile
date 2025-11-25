@@ -44,7 +44,6 @@ class _UserSignupState extends State<UserSignup> {
     super.initState();
     final provider = Provider.of<AuthProvider>(context, listen: false);
     provider.init(context);
-
     // Clear phone number on opening signup
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     profileProvider.setPhoneNumber(null);
@@ -135,6 +134,7 @@ class _UserSignupState extends State<UserSignup> {
                 borderColor: AppColors.greyBordersColor,
                 hint: al.emailPlaceholder,
                 label: al.emailLabel,
+                textInputType: TextInputType.emailAddress,
                 inputFormatters: [AllowOnlyAlphabetUnderscore()],
               ),
               SizedBox(height: getHeight() * .015),
@@ -195,6 +195,9 @@ class _UserSignupState extends State<UserSignup> {
               Consumer<AuthProvider>(
                 builder: (context, state, child) {
                   return CustomField(
+                    validate: (value) {
+                      return validatePassword(value ?? "");
+                    },
                     textEditingController: passwordController,
                     borderColor: AppColors.greyBordersColor,
                     hint: al.passwordLabel,
@@ -356,6 +359,14 @@ class _UserSignupState extends State<UserSignup> {
       return;
     }
 
+    if (email.isEmpty) {
+      Toasts.getErrorToast(text: al.emailMissing);
+      return;
+    } else if (email.validateEmail() == false) {
+      Toasts.getErrorToast(text: al.invalidEmail);
+      return;
+    }
+
     // Validate phone number
     if (!_formKey.currentState!.validate()) {
       if (phoneNumber == null || !_phoneController.value!.isValid()) {
@@ -365,71 +376,75 @@ class _UserSignupState extends State<UserSignup> {
     }
 
     // Validate email
-    if (email.isEmpty) {
-      Toasts.getErrorToast(text: al.emailMissing);
-      return;
-    } else if (email.validateEmail() == false) {
-      Toasts.getErrorToast(text: al.invalidEmail);
-      return;
-    }
+
 
     // Validate password
-    if (password.isEmpty) {
-      Toasts.getErrorToast(text: al.passwordMissing);
-      return;
-    }
+    // if (password.isEmpty) {
+    //   Toasts.getErrorToast(text: al.passwordMissing);
+    //   return;
+    // }
+    //
+    // final passwordError = validatePassword(password);
+    // if (passwordError != null) {
+    //   Toasts.getErrorToast(text: passwordError);
+    //   return;
+    // }
 
-    final passwordError = validatePassword(password);
-    if (passwordError != null) {
-      Toasts.getErrorToast(text: passwordError);
-      return;
-    }
-
-    // All validations passed
     final cleanedPhone = phoneNumber?.international.replaceAll(RegExp(r'\D'), '');
-    context.read<AuthProvider>().registerUser(
-      fullName: fullName,
-      userName: userName,
-      phone: cleanedPhone ?? "nil",
-      email: email,
-      role: context.read<RoleProvider>().role.name,
-      password: password,
-    );
+    // final authProvider = context.read<AuthProvider>();
+
+    if (_formKey.currentState!.validate()) {
+      // Check agreement before proceeding
+      // if (!authProvider.agreed) {
+      //   Toasts.getErrorToast(text: "Please agree to the terms and conditions");
+      //   return;
+      // }
+      // If agreement is checked, proceed with registration
+      context.read<AuthProvider>().registerUser(
+        fullName: fullName,
+        userName: userName,
+        phone: cleanedPhone ?? "nil",
+        email: email,
+        role: context.read<RoleProvider>().role.name,
+        password: password,
+      );
+    }
+
   }
 
   String? validatePassword(String password) {
     if (password.length < 8) {
-      Toasts.getErrorToast(text: al.passwordMustBeAtLeast8Chars);
+      // Toasts.getErrorToast(text: al.passwordMustBeAtLeast8Chars);
       return al.passwordMustBeAtLeast8Chars;
     }
 
     if (password.contains(' ')) {
-      Toasts.getErrorToast(text: al.passwordCannotContainSpaces);
+      // Toasts.getErrorToast(text: al.passwordCannotContainSpaces);
       return al.passwordCannotContainSpaces;
     }
 
     if (!RegExp(r'[A-Z]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainUppercase);
+      // Toasts.getErrorToast(text: al.passwordMustContainUppercase);
       return al.passwordMustContainUppercase;
     }
 
     if (!RegExp(r'[a-z]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainLowercase);
+      // Toasts.getErrorToast(text: al.passwordMustContainLowercase);
       return al.passwordMustContainLowercase;
     }
 
     if (!RegExp(r'[0-9]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainNumber);
+      // Toasts.getErrorToast(text: al.passwordMustContainNumber);
       return al.passwordMustContainNumber;
     }
 
     if (!RegExp(r'[!@#$%&]').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordMustContainSpecialChar);
+      // Toasts.getErrorToast(text: al.passwordMustContainSpecialChar);
       return al.passwordMustContainSpecialChar;
     }
 
     if (!RegExp(r'^[a-zA-Z0-9!@#$%&]+$').hasMatch(password)) {
-      Toasts.getErrorToast(text: al.passwordInvalidCharacters);
+      // Toasts.getErrorToast(text: al.passwordInvalidCharacters);
       return al.passwordInvalidCharacters;
     }
 

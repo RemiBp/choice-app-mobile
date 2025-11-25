@@ -198,7 +198,7 @@ class _UserBookingDetailsState extends State<UserBookingDetails> {
         SizedBox(height: getHeight() * 0.01),
 
         CustomText(
-          text: booking.internalNotes ?? "No Internal Notes Added",
+          text: booking.specialRequest ?? "No Internal Notes Added",
           giveLinesAsText: true,
           fontSize: sizes?.fontSize14,
           color: AppColors.primarySlateColor,

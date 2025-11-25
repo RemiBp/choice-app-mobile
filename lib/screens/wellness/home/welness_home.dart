@@ -4,7 +4,6 @@ import 'package:choice_app/customWidgets/custom_text.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/customer/home/home_widgets.dart';
-import 'package:choice_app/screens/wellness/wellness_profile/wellness_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -96,8 +95,10 @@ class _WellnessHomeState extends State<WellnessHome> {
                 hint: al.searchUserPlaceholder,
                 prefixIconSvg: Assets.searchIcon,
               ),
+              SizedBox(height: getHeight() * .02),
               Expanded(
-                child:_choiceProvider.postsResponse.data?.isNotEmpty == true? ListView.builder(
+                child:_choiceProvider.postsResponse.data?.isNotEmpty == true?
+                ListView.builder(
                   padding: EdgeInsets.only(
                       top: getHeight()*.01
                   ),

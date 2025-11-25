@@ -1140,6 +1140,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get january => 'January';
 
   @override
+  String get otpResentSuccess => 'OTP resent successfully';
+
+  @override
+  String get selectTime => 'Select Time';
+
+  @override
   String get february => 'February';
 
   @override
@@ -1717,9 +1723,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selected => 'Selected';
-
-  @override
-  String get selectTime => 'Select Time';
 
   @override
   String get suggestATimeSlot => 'Suggest a Time Slot';

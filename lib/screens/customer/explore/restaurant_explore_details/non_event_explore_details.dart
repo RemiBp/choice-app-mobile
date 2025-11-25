@@ -239,7 +239,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                   // ADDRESS / ICON
                   IconTextWidget(
                     text: producer.address ?? "No address provided",
-                    subText: producer.address ?? "",
+                    // subText: producer.address ?? "",
                     icon: Assets.restaurantLocationIcon,
                     color: AppColors.getPrimaryColorFromContext(context),
                   ),

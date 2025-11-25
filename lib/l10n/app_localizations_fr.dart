@@ -1172,6 +1172,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get january => 'Janvier';
 
   @override
+  String get otpResentSuccess => 'OTP renvoyé avec succès';
+
+  @override
+  String get selectTime => 'Sélectionner l’heure';
+
+  @override
   String get february => 'Février';
 
   @override
@@ -1757,9 +1763,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get selected => 'Sélectionné';
-
-  @override
-  String get selectTime => 'Sélectionner l’heure';
 
   @override
   String get suggestATimeSlot => 'Suggérer un créneau horaire';

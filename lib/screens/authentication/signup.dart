@@ -259,6 +259,8 @@ class _SignupState extends State<Signup> {
     var businessName = businessNameController.text.toString().trim();
 
     final nameRegex = RegExp(r"^[a-zA-Z0-9\s\-,.&']+$");
+    // final authProvider = context.read<AuthProvider>();
+
 
     if (businessName.isEmpty) {
       Toasts.getErrorToast(text: al.businessNameMissing);
@@ -270,6 +272,12 @@ class _SignupState extends State<Signup> {
       Toasts.getErrorToast(text: al.invalidEmail);
     } else {
       if(_formKey.currentState!.validate()){
+        // Check agreement before proceeding
+        // if (!authProvider.agreed) {
+        //   Toasts.getErrorToast(text: "Please agree to the terms and conditions");
+        //   return;
+        // }
+        // If agreement is checked, proceed with registration
         context.read<AuthProvider>().register(
           businessName: businessName,
           email: email,
