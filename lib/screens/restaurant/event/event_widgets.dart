@@ -1,4 +1,5 @@
 import 'package:choice_app/models/get_all_events_response.dart';
+import 'package:choice_app/network/api_url.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/restaurant/event/eventWidgets/delete_event.dart';
@@ -14,13 +15,27 @@ import '../../../l18n.dart';
 import 'event_provider.dart';
 
 class EventCard extends StatelessWidget {
-  const EventCard({super.key, this.isDraft = false,  this.eventsResponse});
+  const EventCard({
+    super.key,
+    this.isDraft = false,
+    this.eventsResponse,
+    this.onDelete,
+  });
 
   final bool isDraft;
   final Data? eventsResponse;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
+    final areEventImagesMissing =
+        eventsResponse?.eventImages == null ||
+        (eventsResponse?.eventImages?.isEmpty ?? true);
+    // if (!areEventImagesMissing) {
+    //   debugPrint(
+    //     '-=> Event Card Image: ${imageBaseUrl + (eventsResponse?.eventImages?.first ?? "")}',
+    //   );
+    // }
     return InkWell(
       onTap: () {
         context.push(
@@ -42,12 +57,17 @@ class EventCard extends StatelessWidget {
             // Event image
             Container(
               height: getHeight() * .23,
-              width: double.infinity,
+              width: MediaQuery.sizeOf(context).width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 image: DecorationImage(
-                  image: NetworkImage(
-                   eventsResponse?.eventImages?.first??"" ),
+                  image:
+                      areEventImagesMissing
+                          ? AssetImage(Assets.restaurantImage)
+                          : NetworkImage(
+                            imageBaseUrl +
+                                (eventsResponse?.eventImages?.first ?? ""),
+                          ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -60,7 +80,7 @@ class EventCard extends StatelessWidget {
 
                 children: [
                   CustomText(
-                    text: "Wine & Dine Evening",
+                    text: eventsResponse?.title ?? "Unknown Event",
                     fontSize: sizes?.fontSize18,
                     fontFamily: Assets.onsetSemiBold,
                   ),
@@ -68,10 +88,14 @@ class EventCard extends StatelessWidget {
 
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: AppColors.getPrimaryColorFromContext(context), size: 18, ),
+                      Icon(
+                        Icons.location_on,
+                        color: AppColors.getPrimaryColorFromContext(context),
+                        size: 18,
+                      ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "Lyon, France",
+                        text: eventsResponse?.location ?? "Unknown Location",
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -89,7 +113,8 @@ class EventCard extends StatelessWidget {
                       ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "June 20, 10:00 PM – 12:00 PM",
+                        text:
+                            '${eventsResponse?.date}, ${eventsResponse?.startTime} - ${eventsResponse?.endTime}',
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -106,9 +131,11 @@ class EventCard extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: '\$30.00',
+                              text: '\$${eventsResponse?.pricePerGuest}',
                               style: TextStyle(
-                                color: AppColors.getPrimaryColorFromContext(context),
+                                color: AppColors.getPrimaryColorFromContext(
+                                  context,
+                                ),
                                 fontFamily: Assets.onsetSemiBold,
                                 fontSize: sizes?.fontSize16,
                               ),
@@ -183,7 +210,7 @@ class EventCard extends StatelessWidget {
                             showDialog(
                               context: context,
                               builder: (context) {
-                                return DeleteEventDialog();
+                                return DeleteEventDialog(onDelete: onDelete);
                               },
                             );
                           },
@@ -193,7 +220,7 @@ class EventCard extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           height: getHeight() * .055,
-                          buttonText:al.edit,
+                          buttonText: al.edit,
                           onTap: () {},
                         ),
                       ),

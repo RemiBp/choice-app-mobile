@@ -9,7 +9,9 @@ import '../../../../res/res.dart';
 
 
 class DeleteEventDialog extends StatelessWidget {
-  const DeleteEventDialog({super.key});
+  const DeleteEventDialog({super.key, this.onDelete});
+
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +75,7 @@ class DeleteEventDialog extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       // Your delete logic here
-                      Navigator.of(context).pop();
+                      onDelete?.call();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFFF5A5F),
