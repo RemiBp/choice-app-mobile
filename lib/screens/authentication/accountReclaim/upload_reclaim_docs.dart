@@ -182,7 +182,7 @@ class _UploadReclaimDocsState extends State<UploadReclaimDocs> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // ⏳ Show progress if uploading
+                          //  Show progress if uploading
                           if (provider.isUploading && provider.uploadProgress < 1) ...[
                             CircleAvatar(
                               backgroundColor: HexColor.fromHex("#FEF5E7"),
@@ -204,7 +204,7 @@ class _UploadReclaimDocsState extends State<UploadReclaimDocs> {
                             ),
                           ]
 
-                          // ✅ Show file info only AFTER upload finishes
+                          //  Show file info only AFTER upload finishes
                           else if (provider.selectedFile != null &&
                               provider.uploadProgress >= 1) ...[
                             CircleAvatar(
@@ -224,7 +224,7 @@ class _UploadReclaimDocsState extends State<UploadReclaimDocs> {
                             ),
                           ]
 
-                          // 🧾 Default: before file selection
+                          //  Default: before file selection
                           else ...[
                               CircleAvatar(
                                 backgroundColor: HexColor.fromHex("#FEF5E7"),

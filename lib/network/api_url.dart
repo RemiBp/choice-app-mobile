@@ -94,5 +94,7 @@ const String deleteEventApiUrl = "$baseUrl/api/producer/event/deleteEvent/";
 const String updateEventApiUrl = "$baseUrl/api/producer/event/updateEvent/";
 const String getMyEventsApiUrl = "$baseUrl/api/producer/event/getMyEvents";
 
+const String getProducerHeatmapApiUrl = "$baseUrl/api/producer/maps/getProducerHeatmap/{id}";
+
 
 

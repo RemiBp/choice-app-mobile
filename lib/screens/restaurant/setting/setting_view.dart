@@ -27,6 +27,7 @@ import '../../../userRole/role_provider.dart';
 import '../../authentication/auth_provider.dart';
 import '../../onboarding/business_hours/edit_business_hours/edit_operational_hours.dart';
 import '../../onboarding/menu/menu_view.dart';
+import '../profile/profile_provider.dart';
 
 class SettingView extends StatefulWidget {
   const SettingView({super.key});
@@ -266,8 +267,26 @@ class _SettingViewState extends State<SettingView> {
                       "Are you sure you want to delete your account? This action is permanent and cannot be undone.",
                       confirmText: "Yes, Delete it",
                       confirmColor: AppColors.redColor,
-                      onConfirm: () {
-                        // Call delete API
+                      onConfirm: () async {
+                        final profileProvider = context.read<ProfileProvider>();
+                        final role = context.read<RoleProvider>().role;
+
+                        bool success = false;
+
+                        if (role == UserRole.user) {
+                          success = await profileProvider.deleteUserAccount(context: context);
+                        } else {
+                          success = await profileProvider.deleteProducerAccount(context: context);
+                        }
+
+                        if (success) {
+                          try {
+                            context.read<AuthProvider>().logout(context);
+                          } catch (e) {
+                            debugPrint("Logout failed: $e");
+                          }
+                        }
+
                       },
                       heightPx: getHeight() * 0.27,
                     );
