@@ -262,7 +262,6 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
               restaurant?.userName ??
               '';
       final customerName = customer?.fullName ?? booking?.customerName ?? '';
-
       bookings.add(
         BookingCardData(
           name: isUser

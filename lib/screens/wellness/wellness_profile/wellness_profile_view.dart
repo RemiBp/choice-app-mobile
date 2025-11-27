@@ -1,4 +1,6 @@
+import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_text.dart';
@@ -17,7 +19,8 @@ class WellnessProfileView extends StatefulWidget {
   State<WellnessProfileView> createState() => _WellnessProfileViewState();
 }
 
-class _WellnessProfileViewState extends State<WellnessProfileView> with SingleTickerProviderStateMixin{
+class _WellnessProfileViewState extends State<WellnessProfileView>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedTabIndex = 0;
 
@@ -27,7 +30,8 @@ class _WellnessProfileViewState extends State<WellnessProfileView> with SingleTi
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       if (!mounted) return;
-      if (_tabController.indexIsChanging || _tabController.index != _selectedTabIndex) {
+      if (_tabController.indexIsChanging ||
+          _tabController.index != _selectedTabIndex) {
         setState(() {
           _selectedTabIndex = _tabController.index;
         });
@@ -53,13 +57,12 @@ class _WellnessProfileViewState extends State<WellnessProfileView> with SingleTi
         : Colors.grey;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: ProfileMenuAppBar(
-        onSwitchAccount: (){
+        onSwitchAccount: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -78,19 +81,38 @@ class _WellnessProfileViewState extends State<WellnessProfileView> with SingleTi
       body: Column(
         children: [
           SizedBox(height: getHeight() * 0.02),
-          RestaurantProfileHeader(),
+
+          Selector<ProfileProvider, String>(
+            selector:
+                (context, provider) =>
+                    provider.getProducerProfileResponse?.producer?.name ?? "",
+            builder: (context, userName, _) {
+              return RestaurantProfileHeader(userName: userName,);
+            },
+          ),
           // CustomerProfileHeader(),
           SizedBox(height: getHeight() * 0.01),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: CustomText(
-              text: 'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
-              textOverflow: TextOverflow.ellipsis,
-              fontSize: sizes?.fontSize16,
-              color: AppColors.primarySlateColor,
-              fontWeight: FontWeight.w400,
-              giveLinesAsText: true,
-            ),
+          Selector<ProfileProvider, String>(
+            selector:
+                (context, provider) =>
+                    provider
+                        .getProducerProfileResponse
+                        ?.businessProfile
+                        ?.description ??
+                    "",
+            builder: (context, description, _) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: CustomText(
+                  text:description,
+                  textOverflow: TextOverflow.ellipsis,
+                  fontSize: sizes?.fontSize16,
+                  color: AppColors.primarySlateColor,
+                  fontWeight: FontWeight.w400,
+                  giveLinesAsText: true,
+                ),
+              );
+            },
           ),
           SizedBox(height: getHeight() * 0.01),
           Container(
@@ -132,7 +154,7 @@ class _WellnessProfileViewState extends State<WellnessProfileView> with SingleTi
             child: TabBarView(
               controller: _tabController,
               children: const [
-                RestaurantChoiceView(enableOnTap: true,),
+                RestaurantChoiceView(enableOnTap: true),
                 RestaurantPostsView(),
                 WellnessAboutView(),
                 // RestaurantAboutView(),
