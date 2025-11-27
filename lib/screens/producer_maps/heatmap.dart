@@ -24,6 +24,9 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
 
   GoogleMapController? _mapController;
 
+  Map<String, dynamic>? _selectedPoint;
+  Offset? _selectedPointPosition;
+
   final List<String> timeFilters = [
     al.allDay,
     al.morning,
@@ -60,6 +63,19 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
       await heatmapProvider.fetchProducerHeatmapFromProfile();
     });
   }
+  void _showTooltip(Map<String, dynamic> data, Offset position) {
+    setState(() {
+      _selectedPoint = data;
+      _selectedPointPosition = position;
+    });
+  }
+
+  void _hideTooltip() {
+    setState(() {
+      _selectedPoint = null;
+      _selectedPointPosition = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,15 +86,46 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
       appBar: _buildAppBar(),
       body: Column(
         children: [
-          const Divider(color: Color(0xFFE0E0E0), thickness: 1, height: 1),
+          const Divider(color: AppColors.greyBordersColor, thickness: 1, height: 1),
           Expanded(
             child: Stack(
               children: [
-                // GOOGLE MAP WITH HEATMAP
+                // GOOGLE MAP
                 Positioned.fill(
                   child: _buildGoogleMap(heatmapProvider),
                 ),
+
+                // HEATMAP OVERLAY - allows taps to pass through to map
+                if (_mapController != null && heatmapProvider.heatmapCoordinates.isNotEmpty)
+                  Positioned.fill(
+                    child: HeatmapOverlay(
+                      key: ValueKey('${_currentZoom}_${heatmapProvider.heatmapCoordinates.length}'),
+                      controller: _mapController!,
+                      zoom: _currentZoom,
+                      points: heatmapProvider.heatmapCoordinates,
+                      onPointTapped: (data, position) {
+                        _showTooltip(data, position);
+                      },
+                    ),
+                  ),
+
+                // ZOOM BUTTONS
                 _buildZoomButtons(),
+
+                // TOOLTIP - positioned directly, not as a full-screen overlay
+                if (_selectedPoint != null && _selectedPointPosition != null)
+                  Positioned(
+                    left: (_selectedPointPosition!.dx - 80).clamp(10.0, MediaQuery.of(context).size.width - 170),
+                    top: (_selectedPointPosition!.dy - 60).clamp(10.0, MediaQuery.of(context).size.height - 100),
+                    child: GestureDetector(
+                      onTap: () {}, // Absorb taps on tooltip itself
+                      child: HeatmapTooltip(
+                        position: _selectedPointPosition!,
+                        userCount: _selectedPoint!["count"] ?? 0,
+                        onDismiss: _hideTooltip,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -145,41 +192,40 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
     );
   }
 
-  // GOOGLE MAP + HEATMAP
+// GOOGLE MAP + HEATMAP
   Widget _buildGoogleMap(ProducerHeatmapProvider provider) {
-    return Stack(
-      children: [
-        GoogleMap(
-          initialCameraPosition: const CameraPosition(
-            target: LatLng(25.1264, 62.3225),  // Gwadar center
-            zoom: 17,                          // closer zoom so heatmap is visible
-          ),
-          onMapCreated: (controller) => _mapController = controller,
-          onCameraMove: (position) {
-            _currentZoom = position.zoom;
-          },
-
-          onCameraIdle: () {
-            setState(() {});     // map finished moving
-          },
-          myLocationButtonEnabled: false,
-          zoomControlsEnabled: false,
-        ),
-
-        // HEATMAP OVERLAY
-        if (_mapController != null && provider.heatmapCoordinates.isNotEmpty)
-          Positioned.fill(
-            child: HeatmapOverlay(
-              key: ValueKey(_currentZoom), // Rebuild on zoom change
-              controller: _mapController!,
-              zoom: _currentZoom,
-              points: provider.heatmapCoordinates,
-            ),
-          ),
-      ],
+    return GoogleMap(
+      initialCameraPosition: const CameraPosition(
+        target: LatLng(31.5204, 74.3587),  // Lahore center
+        zoom: 17,                          // closer zoom so heatmap is visible
+      ),
+      onMapCreated: (controller) {
+        _mapController = controller;
+        // Trigger initial render after a short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) setState(() {});
+        });
+      },
+      onCameraMove: (position) {
+        _currentZoom = position.zoom;
+        // Hide tooltip when map moves
+        if (_selectedPoint != null) {
+          _hideTooltip();
+        }
+      },
+      onCameraIdle: () {
+        setState(() {});     // map finished moving
+      },
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      onTap: (latLng) {
+        // Hide tooltip when tapping on map
+        if (_selectedPoint != null) {
+          _hideTooltip();
+        }
+      },
     );
   }
-
   // ZOOM BUTTONS
   Widget _buildZoomButtons() {
     return Positioned(

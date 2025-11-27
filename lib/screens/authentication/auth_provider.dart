@@ -235,7 +235,12 @@ class AuthProvider extends ChangeNotifier{
         "password": password,
         "deviceId": ""
       };
+
       debugPrint("body is : ---------->$body");
+
+      if (roleProvider?.role != UserRole.user) {
+        body["requiredRole"] = roleProvider!.role.roleValue;
+      }
       authResponse = await MyApi.callPostApi(
         url:roleProvider?.role == UserRole.user?userLoginApiUrl: loginApiUrl,
         myHeaders: headers,

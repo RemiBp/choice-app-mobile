@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import '../../appColors/colors.dart';
+import '../../customWidgets/custom_text.dart';
+import '../../res/res.dart';
 import '../../utilities/heatmap_painter.dart';
 
 class HeatmapOverlay extends StatefulWidget {
   final GoogleMapController controller;
   final double zoom;
   final List<Map<String, dynamic>> points;
+  final Function(Map<String, dynamic> data, Offset position)? onPointTapped;
 
   const HeatmapOverlay({
     super.key,
     required this.controller,
     required this.zoom,
     required this.points,
+    this.onPointTapped,
   });
 
   @override
@@ -21,26 +26,31 @@ class HeatmapOverlay extends StatefulWidget {
 
 class _HeatmapOverlayState extends State<HeatmapOverlay> {
   List<Offset> screenPoints = [];
+  HeatmapPainter? _painter;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _computeScreenPoints();
+    });
+  }
 
   @override
   void didUpdateWidget(HeatmapOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _computeScreenPoints();
+    if (oldWidget.zoom != widget.zoom || oldWidget.points != widget.points) {
+      _computeScreenPoints();
+    }
   }
 
   Future<void> _computeScreenPoints() async {
     final newPoints = <Offset>[];
-
     for (var p in widget.points) {
       final screenCoord = await widget.controller
           .getScreenCoordinate(LatLng(p["lat"], p["lng"]));
-
-      newPoints.add(Offset(
-        screenCoord.x.toDouble(),
-        screenCoord.y.toDouble(),
-      ));
+      newPoints.add(Offset(screenCoord.x.toDouble(), screenCoord.y.toDouble()));
     }
-
     if (mounted) {
       setState(() => screenPoints = newPoints);
     }
@@ -50,14 +60,141 @@ class _HeatmapOverlayState extends State<HeatmapOverlay> {
   Widget build(BuildContext context) {
     if (screenPoints.isEmpty) return const SizedBox.shrink();
 
-    return IgnorePointer(
+    _painter = HeatmapPainter(
+      points: screenPoints,
+      rawData: widget.points,
+      zoom: widget.zoom,
+    );
+
+    return _CustomHitTestWidget(
+      painter: _painter!,
+      onTap: (position, index) {
+        if (widget.onPointTapped != null && index < widget.points.length) {
+          widget.onPointTapped!(widget.points[index], screenPoints[index]);
+        }
+      },
       child: CustomPaint(
-        painter: HeatmapPainter(
-          points: screenPoints,
-          rawData: widget.points,
-          zoom: widget.zoom,
-        ),
+        painter: _painter,
         child: Container(),
+      ),
+    );
+  }
+}
+
+// Custom widget that only accepts hits on heatmap bubbles
+class _CustomHitTestWidget extends SingleChildRenderObjectWidget {
+  final HeatmapPainter painter;
+  final Function(Offset position, int index) onTap;
+
+  const _CustomHitTestWidget({
+    required this.painter,
+    required this.onTap,
+    required Widget child,
+  }) : super(child: child);
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _RenderCustomHitTest(painter: painter, onTap: onTap);
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderCustomHitTest renderObject) {
+    renderObject
+      ..painter = painter
+      ..onTap = onTap;
+  }
+}
+
+class _RenderCustomHitTest extends RenderProxyBox {
+  HeatmapPainter painter;
+  Function(Offset position, int index) onTap;
+
+  _RenderCustomHitTest({
+    required this.painter,
+    required this.onTap,
+  });
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    // Check if tap is on a bubble
+    final index = painter.findTappedPoint(position);
+    if (index != null) {
+      // Hit detected on bubble
+      if (result.addWithPaintOffset(
+        offset: Offset.zero,
+        position: position,
+        hitTest: (result, transformed) {
+          result.add(BoxHitTestEntry(this, transformed));
+          return true;
+        },
+      )) {
+        // Trigger tap callback
+        onTap(position, index);
+        return true;
+      }
+    }
+
+    // No hit on bubble - let the gesture pass through to map
+    return false;
+  }
+
+  @override
+  void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
+    // Only handle tap events
+    if (event is PointerDownEvent) {
+      final index = painter.findTappedPoint(event.localPosition);
+      if (index != null) {
+        onTap(event.localPosition, index);
+      }
+    }
+  }
+}
+
+class HeatmapTooltip extends StatelessWidget {
+  final Offset position;
+  final int userCount;
+  final VoidCallback onDismiss;
+
+  const HeatmapTooltip({
+    super.key,
+    required this.position,
+    required this.userCount,
+    required this.onDismiss,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: getWidth() * 0.04,
+        vertical: getHeight() * 0.012,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomText(
+            text: '$userCount user${userCount == 1 ? '' : 's'} in this area',
+            fontSize: getWidth() * 0.032,
+            color: AppColors.blackColor,
+            fontWeight: FontWeight.w500,
+          ),
+          SizedBox(width: getWidth() * 0.02),
+          GestureDetector(
+            onTap: onDismiss,
+            child: Icon(Icons.close, size: 16, color: Colors.grey[600]),
+          ),
+        ],
       ),
     );
   }

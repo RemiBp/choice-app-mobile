@@ -147,11 +147,16 @@ class ProducerHeatmapProvider with ChangeNotifier {
 
   List<GetProducerHeatmapResponse> _dummyHeatmapData() {
     return [
-      GetProducerHeatmapResponse(lat: 25.1260, lng: 62.3220, count: 5, users: []),
-      GetProducerHeatmapResponse(lat: 25.1265, lng: 62.3225, count: 10, users: []),
-      GetProducerHeatmapResponse(lat: 25.1270, lng: 62.3230, count: 20, users: []),
-      GetProducerHeatmapResponse(lat: 25.1275, lng: 62.3235, count: 8, users: []),
-      GetProducerHeatmapResponse(lat: 25.1280, lng: 62.3240, count: 15, users: []),
+      GetProducerHeatmapResponse(lat: 31.5200, lng: 74.3580, count: 5, users: []),
+      GetProducerHeatmapResponse(lat: 31.5205, lng: 74.3585, count: 10, users: []),
+      GetProducerHeatmapResponse(lat: 31.5210, lng: 74.3590, count: 20, users: []),
+      GetProducerHeatmapResponse(lat: 31.5215, lng: 74.3595, count: 8, users: []),
+      GetProducerHeatmapResponse(lat: 31.5220, lng: 74.3600, count: 15, users: []),
+
+      // Additional points for better heatmap spread
+      GetProducerHeatmapResponse(lat: 31.5195, lng: 74.3575, count: 12, users: []),
+      GetProducerHeatmapResponse(lat: 31.5225, lng: 74.3605, count: 18, users: []),
+      GetProducerHeatmapResponse(lat: 31.5198, lng: 74.3592, count: 7, users: []),
     ];
   }
 
