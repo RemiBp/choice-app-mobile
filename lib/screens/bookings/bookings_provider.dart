@@ -1058,15 +1058,16 @@ class BookingsProvider extends ChangeNotifier {
         },
       );
 
-      if (response.status == 200) {
-        debugPrint("✅ Simple booking checked-in successfully");
+      if (response != null && response['status'] == 200) {
+        final booking = response['data']?['booking']; // optional if you want booking
+        debugPrint("✅ Simple booking checked-in successfully | Booking: $booking");
         Toasts.getSuccessToast(text: 'Booking checked-in successfully');
         return true;
-      } else {
-        debugPrint("❌ Failed to check-in simple booking: $response");
-        Toasts.getErrorToast(text: "Failed to check-in booking");
-        return false;
       }
+
+      Toasts.getErrorToast(text: "Failed to check-in booking");
+      return false;
+
     } catch (e) {
       debugPrint("❌ Error in check-in simple booking: $e");
       Toasts.getErrorToast(text: "Something went wrong");
