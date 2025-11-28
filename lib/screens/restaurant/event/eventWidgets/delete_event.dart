@@ -43,7 +43,7 @@ class DeleteEventDialog extends StatelessWidget {
             SizedBox(height: 16),
 
             CustomText(
-              text: al.deleteEventConfirmation,
+              text: "This action will permanently remove the event",
               fontSize: sizes?.fontSize16,
               color: HexColor.fromHex("#4F516D"),
               giveLinesAsText: true,

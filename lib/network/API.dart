@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -545,15 +547,23 @@ class MyApi {
         
         switch (response.statusCode) {
           case 200:
-            dynamic modelObj =
-                await Models.getModelObject(modelName, response.data);
-            // if (modelObj.code == 1) {
-            //   return modelObj;
-            // } else {
-            //   Toasts.getErrorToast(text: modelObj.message);
-            // }
-            // return null;
-            return modelObj;
+            if (modelName != null) {
+              dynamic modelObj = await Models.getModelObject(modelName, response.data);
+              return modelObj;
+            } else {
+              // If no modelName provided, just return the raw response as Map
+              if (response.data is Map) {
+                return response.data;
+              } else if (response.data is String) {
+                try {
+                  return jsonDecode(response.data);
+                } catch (_) {
+                  return {'message': response.data};
+                }
+              } else {
+                return {'message': 'Unknown response format'};
+              }
+            }
 
           default:
             debugPrint("DELETE API Error - Status Code: ${response.statusCode}");

@@ -8,8 +8,10 @@ import '../../../../customWidgets/custom_text.dart';
 import '../../../../res/res.dart';
 import '../../customWidgets/custom_textfield.dart';
 import '../../l18n.dart';
+import '../../res/toasts.dart';
 import '../../utilities/extensions.dart';
 import '../customer/interested/interestedWidgets/time_slot_widgets.dart';
+import '../restaurant/profile/profile_provider.dart';
 import 'offer_provider.dart';
 
 class OfferTemplateBottomSheet extends StatefulWidget {
@@ -524,21 +526,85 @@ class TargetedNotificationBottomSheet extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           buttonText: al.next,
-                          onTap: () {
-                            Navigator.pop(context);
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (_) => TargetedNotificationPreviewSheet(
-                                data: TargetedNotificationData(
-                                  title: title.text,
-                                  message: msg.text,
-                                  reduction: reduction.text,
+                            onTap: () async {
+                              final t = title.text.trim();
+                              final m = msg.text.trim();
+
+                              final discount = int.tryParse(reduction.text.trim());
+                              final minutes = int.tryParse(validate.text.replaceAll('min', '').trim());
+                              final recipients = int.tryParse(users.text.replaceAll('persons','').trim());
+                              final radius = int.tryParse(distance.text.replaceAll('m', '').trim());
+
+                              // ✅ VALIDATIONS + TOAST
+                              if (t.isEmpty) {
+                                Toasts.getErrorToast(text: "Offer title is required");
+                                return;
+                              }
+                              if (m.isEmpty) {
+                                Toasts.getErrorToast(text: "Offer message is required");
+                                return;
+                              }
+                              if (discount == null || discount <= 0 || discount > 100) {
+                                Toasts.getErrorToast(text: "Discount must be between 1–100%");
+                                return;
+                              }
+                              if (minutes == null || minutes < 30) {
+                                Toasts.getErrorToast(text: "Validity must be at least 30 minutes");
+                                return;
+                              }
+                              if (recipients == null || recipients <= 0) {
+                                Toasts.getErrorToast(text: "Users must be greater than 0");
+                                return;
+                              }
+                              if (radius == null || radius < 100) {
+                                Toasts.getErrorToast(text: "Distance must be at least 100m");
+                                return;
+                              }
+
+                              // GET PRODUCER ID
+                              final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+                              final profile = await profileProvider.getProducerProfile();
+                              final producerId = profile?.producer?.id;
+                              final producerLong = profile?.producer?.longitude;
+                              final producerLat = profile?.producer?.latitude;
+
+                              if (producerId == null) {
+                                Toasts.getErrorToast(text: "Unable to fetch producer ID");
+                                return;
+                              }
+                              if (producerLong == null) {
+                                Toasts.getErrorToast(text: "Unable to fetch producer longitude");
+                                return;
+                              }
+                              if (producerLat == null) {
+                                Toasts.getErrorToast(text: "Unable to fetch producer latitude");
+                                return;
+                              }
+
+                              //  All checks passed, send to preview
+                              final data = TargetedNotificationData(
+                                title: t,
+                                message: m,
+                                reduction: discount,
+                                validityMinutes: minutes,
+                                maxRecipients: recipients,
+                                radiusMeters: radius,
+                              );
+
+                              Navigator.pop(context);
+
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (_) => TargetedNotificationPreviewSheet(
+                                  data: data,
+                                  producerId: producerId,
+                                  producerLong: producerLong,
+                                  producerLat: producerLat,
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
                           backgroundColor:
                           AppColors.getPrimaryColorFromContext(context),
                           borderColor:
@@ -561,19 +627,34 @@ class TargetedNotificationBottomSheet extends StatelessWidget {
 class TargetedNotificationData {
   final String title;
   final String message;
-  final String reduction;
+  final int reduction;
+  final int validityMinutes;
+  final int maxRecipients;
+  final int radiusMeters;
 
   TargetedNotificationData({
     required this.title,
     required this.message,
     required this.reduction,
+    required this.validityMinutes,
+    required this.maxRecipients,
+    required this.radiusMeters,
   });
 }
 
 
 class TargetedNotificationPreviewSheet extends StatefulWidget {
   final TargetedNotificationData data;
-  const TargetedNotificationPreviewSheet({super.key, required this.data});
+  final int producerId;
+  final String producerLong;
+  final String producerLat;
+  const TargetedNotificationPreviewSheet({
+    super.key,
+    required this.data,
+    required this.producerId,
+    required this.producerLat,
+    required this.producerLong
+  });
 
   @override
   State<TargetedNotificationPreviewSheet> createState() =>
@@ -825,19 +906,34 @@ class _TargetedNotificationPreviewSheetState
                     Expanded(
                       child: CustomButton(
                         buttonText: al.sendNow,
-                        onTap: () {
-                          if (saveTemplate) {
-                            final template = Template(
+                          onTap: () async {
+                            final provider = context.read<TemplateProvider>();
+                            double? lat = double.tryParse(widget.producerLat.replaceAll(',', '.'));
+                            double? long = double.tryParse(widget.producerLong.replaceAll(',', '.'));
+                            if (lat == null || long == null) {
+                              Toasts.getErrorToast(text: "Invalid producer location");
+                              return;
+                            }
+
+                            bool success = await provider.sendProducerOffer(
+                              context: context,
+                              producerId: widget.producerId,
                               title: widget.data.title,
                               message: widget.data.message,
-                              reduction: widget.data.reduction,
+                              discountPercent: widget.data.reduction,
+                              validityMinutes: widget.data.validityMinutes,
+                              maxRecipients: widget.data.maxRecipients,
+                              radiusMeters: widget.data.radiusMeters,
+                              saveAsTemplate: saveTemplate, // checkbox value
+                              latitude: lat,
+                              longitude: long,
                             );
-                            context
-                                .read<TemplateProvider>()
-                                .addTemplate(template);
-                          }
-                          Navigator.pop(context);
-                        },
+
+                            //  Success navigation + toast already handled inside provider
+                            if (success) {
+                              Navigator.pop(context);
+                            }
+                          },
                         backgroundColor:
                         AppColors.getPrimaryColorFromContext(context),
                         borderColor:

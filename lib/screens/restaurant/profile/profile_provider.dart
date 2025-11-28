@@ -910,7 +910,10 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<GetProducerProfileResponse?> getProducerProfile() async {
     try {
-      _loader.showLoader(context: context);
+      // Only show loader if context is available
+      if (context != null) {
+        _loader.showLoader(context: context!);
+      }
 
       final response = await MyApi.callGetApi(
         url: getProducerProfileApiUrl,
@@ -919,24 +922,33 @@ class ProfileProvider extends ChangeNotifier {
 
       debugPrint("Get producer profile response: $response");
 
-      _loader.hideLoader(context!);
+      // Only hide loader if context is available
+      if (context != null) {
+        _loader.hideLoader(context!);
+      }
 
       if (response != null) {
         getProducerProfileResponse = response;
         notifyListeners();
         return response;
       } else {
-        Toasts.getErrorToast(text: al.failedToFetchProducerProfile);
+        if (context != null) {
+          Toasts.getErrorToast(text: al.failedToFetchProducerProfile);
+        }
         return null;
       }
     } catch (err) {
       debugPrint("Error getting producer profile: $err");
-      _loader.hideLoader(context!);
-      Toasts.getErrorToast(text: al.failedToFetchProducerProfile);
+
+      // Only hide loader if context is available
+      if (context != null) {
+        _loader.hideLoader(context!);
+        Toasts.getErrorToast(text: al.failedToFetchProducerProfile);
+      }
+
       return null;
     }
   }
-
   Future<GetProducerOperationalHoursResponse?> getProducerOperationalHours() async {
     try {
       _loader.showLoader(context: context);
@@ -1107,6 +1119,59 @@ class ProfileProvider extends ChangeNotifier {
       debugPrint("Error deleting gallery image: $e");
       if (context != null) _loader.hideLoader(context!);
       Toasts.getErrorToast(text: "Something went wrong while deleting image");
+      return false;
+    }
+  }
+
+  Future<bool> deleteUserAccount({required BuildContext context}) async {
+    try {
+      _loader.showLoader(context: context);
+
+      final response = await MyApi.callDeleteApi(
+        url: deleteUserAccountApiUrl,
+        modelName: null,
+      );
+
+      _loader.hideLoader(context!);
+
+      final message = (response != null && response['message'] != null)
+          ? response['message'].toString()
+          : "User account deleted successfully";
+
+      Toasts.getSuccessToast(text: message);
+      return true;
+
+    } catch (e) {
+      _loader.hideLoader(context!);
+      debugPrint("Error deleting user account: $e");
+      Toasts.getErrorToast(text: "Something went wrong while deleting user account");
+      return false;
+    }
+  }
+
+  // Delete Producer Account
+  Future<bool> deleteProducerAccount({required BuildContext context}) async {
+    try {
+      _loader.showLoader(context: context);
+
+      final response = await MyApi.callDeleteApi(
+        url: deleteProducerAccountApiUrl,
+        modelName: null,
+      );
+
+      _loader.hideLoader(context);
+
+      final message = (response != null && response['message'] != null)
+          ? response['message'].toString()
+          : "Producer account deleted successfully";
+
+      Toasts.getSuccessToast(text: message);
+      return true;
+
+    } catch (e) {
+      _loader.hideLoader(context);
+      debugPrint("Error deleting producer account: $e");
+      Toasts.getErrorToast(text: "Something went wrong while deleting producer account");
       return false;
     }
   }

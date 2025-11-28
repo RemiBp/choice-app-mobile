@@ -76,6 +76,7 @@ class Models {
   static const String getEventBookingDetailsModel = "GET_EVENT_BOOKING_DETAILS_MODEL";
   static const String getSimpleBookingDetailsModel = "GET_NORMAL_BOOKING_DETAILS_MODEL";
   static const String getProducerPostsByIdModel = "GET_PRODUCER_POSTS_BY_ID_MODEL";
+  static const String getProducerHeatmapModel = "GET_PRODUCER_HEATMAP_MODEL";
 
 
 
