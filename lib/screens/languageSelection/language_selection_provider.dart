@@ -8,6 +8,11 @@ import '../../res/strings.dart';
 class LanguageSelectionProvider extends ChangeNotifier{
   String selectedLocal = '';
 
+  LanguageSelectionProvider(){
+    debugPrint("Constructor Called");
+   getLocale();
+  }
+
   Future<void> selectLocale(String locale) async {
     debugPrint("selectedLocal : $locale");
     await PreferenceUtils.setString(
@@ -34,7 +39,10 @@ class LanguageSelectionProvider extends ChangeNotifier{
   }
 
   Future<void> changeLocale(String locale) async {
+    debugPrint('Selected Local $selectedLocal');
     selectedLocal = locale;
+    debugPrint('Selected Local $selectedLocal');
+
     await PreferenceUtils.setString(Strings.selectedLocale, locale);
     notifyListeners();
   }

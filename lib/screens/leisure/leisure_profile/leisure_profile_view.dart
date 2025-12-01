@@ -1,3 +1,4 @@
+import 'package:choice_app/res/strings.dart';
 import 'package:choice_app/userRole/user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import '../../../customWidgets/custom_text.dart';
 import '../../../l18n.dart';
 import '../../../res/res.dart';
 import '../../../userRole/role_provider.dart';
+import '../../restaurant/profile/profile_provider.dart';
 import '../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../../restaurant/profile_menu/restaurant_about/restaurant_about_view.dart';
 import '../../restaurant/profile_menu/restaurant_choice_view.dart';
@@ -82,19 +84,31 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
       body: Column(
         children: [
           SizedBox(height: getHeight() * 0.02),
-           RestaurantProfileHeader(),
+
+          Selector<ProfileProvider, String>(
+              selector: (context, provider) => provider.getProducerProfileResponse?.producer?.name ?? "",
+              builder: (context, userName, _) {
+                return RestaurantProfileHeader(userName: userName);
+              }
+          ),
           // CustomerProfileHeader(),
           SizedBox(height: getHeight() * 0.01),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: CustomText(
-              text: 'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
-              textOverflow: TextOverflow.ellipsis,
-              fontSize: sizes?.fontSize16,
-              color: AppColors.primarySlateColor,
-              fontWeight: FontWeight.w400,
-              giveLinesAsText: true,
-            ),
+
+          Selector<ProfileProvider , String>(
+              selector: (context, provider) => provider.getProducerProfileResponse?.businessProfile?.description??"",
+              builder: (context ,description, _) {
+                return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: CustomText(
+                  text: description,
+                  textOverflow: TextOverflow.ellipsis,
+                  fontSize: sizes?.fontSize16,
+                  color: AppColors.primarySlateColor,
+                  fontWeight: FontWeight.w400,
+                  giveLinesAsText: true,
+                ),
+              );
+            }
           ),
           SizedBox(height: getHeight() * 0.01),
           Container(
