@@ -27,38 +27,59 @@ class HeatmapOverlay extends StatefulWidget {
 class _HeatmapOverlayState extends State<HeatmapOverlay> {
   List<Offset> screenPoints = [];
   HeatmapPainter? _painter;
+  bool _isComputing = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _computeScreenPoints();
-    });
+    _computeScreenPoints();
   }
 
   @override
   void didUpdateWidget(HeatmapOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.zoom != widget.zoom || oldWidget.points != widget.points) {
+    // CRITICAL FIX: Recalculate on ANY change
+    if (oldWidget.zoom != widget.zoom ||
+        oldWidget.points != widget.points ||
+        oldWidget.controller != widget.controller) {
       _computeScreenPoints();
     }
   }
 
   Future<void> _computeScreenPoints() async {
-    final newPoints = <Offset>[];
-    for (var p in widget.points) {
-      final screenCoord = await widget.controller
-          .getScreenCoordinate(LatLng(p["lat"], p["lng"]));
-      newPoints.add(Offset(screenCoord.x.toDouble(), screenCoord.y.toDouble()));
-    }
-    if (mounted) {
-      setState(() => screenPoints = newPoints);
+    // Prevent multiple simultaneous computations
+    if (_isComputing) return;
+    _isComputing = true;
+
+    try {
+      final newPoints = <Offset>[];
+
+      // Batch process all points
+      for (var p in widget.points) {
+        try {
+          final screenCoord = await widget.controller
+              .getScreenCoordinate(LatLng(p["lat"], p["lng"]));
+          newPoints.add(Offset(screenCoord.x.toDouble(), screenCoord.y.toDouble()));
+        } catch (e) {
+          debugPrint("Error converting coordinates: $e");
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          screenPoints = newPoints;
+        });
+      }
+    } finally {
+      _isComputing = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (screenPoints.isEmpty) return const SizedBox.shrink();
+    if (screenPoints.isEmpty || screenPoints.length != widget.points.length) {
+      return const SizedBox.shrink();
+    }
 
     _painter = HeatmapPainter(
       points: screenPoints,
@@ -80,7 +101,6 @@ class _HeatmapOverlayState extends State<HeatmapOverlay> {
     );
   }
 }
-
 // Custom widget that only accepts hits on heatmap bubbles
 class _CustomHitTestWidget extends SingleChildRenderObjectWidget {
   final HeatmapPainter painter;
@@ -116,10 +136,8 @@ class _RenderCustomHitTest extends RenderProxyBox {
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    // Check if tap is on a bubble
     final index = painter.findTappedPoint(position);
     if (index != null) {
-      // Hit detected on bubble
       if (result.addWithPaintOffset(
         offset: Offset.zero,
         position: position,
@@ -128,19 +146,15 @@ class _RenderCustomHitTest extends RenderProxyBox {
           return true;
         },
       )) {
-        // Trigger tap callback
         onTap(position, index);
         return true;
       }
     }
-
-    // No hit on bubble - let the gesture pass through to map
     return false;
   }
 
   @override
   void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
-    // Only handle tap events
     if (event is PointerDownEvent) {
       final index = painter.findTappedPoint(event.localPosition);
       if (index != null) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:choice_app/screens/producer_maps/producer_heatmap_provider.dart';
 import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +103,8 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
                 if (_mapController != null && heatmapProvider.heatmapCoordinates.isNotEmpty)
                   Positioned.fill(
                     child: HeatmapOverlay(
-                      key: ValueKey('${_currentZoom}_${heatmapProvider.heatmapCoordinates.length}'),
+                      // CRITICAL: Use unique key that changes with zoom
+                      key: ValueKey('heatmap_$_currentZoom'),
                       controller: _mapController!,
                       zoom: _currentZoom,
                       points: heatmapProvider.heatmapCoordinates,
@@ -196,6 +199,7 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
 
 // GOOGLE MAP + HEATMAP
   Widget _buildGoogleMap(ProducerHeatmapProvider provider) {
+    Timer? _zoomDebounce;
     return GoogleMap(
       initialCameraPosition: const CameraPosition(
         target: LatLng(31.5204, 74.3587),  // Lahore center
@@ -211,6 +215,11 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
       onCameraMove: (position) {
         _currentZoom = position.zoom;
         // Hide tooltip when map moves
+        _zoomDebounce?.cancel();
+        _zoomDebounce = Timer(const Duration(milliseconds: 50), () {
+          if (mounted) setState(() {});
+        });
+
         if (_selectedPoint != null) {
           _hideTooltip();
         }

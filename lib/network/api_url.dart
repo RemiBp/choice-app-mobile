@@ -98,5 +98,5 @@ const String getProducerHeatmapApiUrl = "$baseUrl/api/producer/maps/getProducerH
 const String createProducerOfferApiUrl = "$baseUrl/api/producer/maps/createProducerOffer";
 const String getOfferTemplatesApiUrl = "$baseUrl/api/producer/maps/getOfferTemplates";
 const String editProducerOfferApiUrl = "$baseUrl/api/producer/maps/updateProducerOffer";
-
+const String getUserLiveOfferApiUrl = "$baseUrl/api/producer/maps/getUserLiveOffers";
 
