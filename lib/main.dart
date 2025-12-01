@@ -40,14 +40,14 @@ class _MyAppState extends State<MyApp> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
-    final provider = Provider.of<LanguageSelectionProvider>(context);
-    provider.getLocale();
-    return Consumer(builder: (context, state, child){
+    return Consumer<LanguageSelectionProvider>(
+        builder: (context, state, child){
+          debugPrint("Consumer Called");
       return MaterialApp.router(
-        key: ValueKey(provider.hashCode),
+        key: UniqueKey(),
         title: 'Choice App',
         builder:BotToastInit(),
-        locale: Locale(provider.selectedLocal),
+        locale: Locale(state.selectedLocal),
         routerConfig: router,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
