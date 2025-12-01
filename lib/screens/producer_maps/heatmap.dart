@@ -7,7 +7,9 @@ import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../res/res.dart';
 import '../../l18n.dart';
+import '../../res/toasts.dart';
 import 'heatmap_widgets.dart';
+import 'offer_provider.dart';
 import 'offer_widgets.dart';
 
 class HeatmapScreen extends StatefulWidget {
@@ -273,13 +275,27 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
         fontWeight: FontWeight.w600,
         fontSize: getWidth() * 0.035,
       ),
-      onPressed: () {
-        showModalBottomSheet(
+      onPressed: () async{
+        final profileProvider = context.read<ProfileProvider>();
+        final profile = await profileProvider.getProducerProfile();
+        final producerId = profile?.producer?.id;
+
+        if (producerId == null) {
+          Toasts.getErrorToast(text: "Unable to fetch producer ID");
+          return;
+        }
+
+        final templateProvider = context.read<TemplateProvider>();
+        templateProvider.clearTemplates();
+        await templateProvider.getProducerOfferTemplates(context: context, producerId: producerId);
+
+        final selected = await showModalBottomSheet<Template>(
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           builder: (_) => const OfferTemplateBottomSheet(),
         );
+
       },
     );
   }

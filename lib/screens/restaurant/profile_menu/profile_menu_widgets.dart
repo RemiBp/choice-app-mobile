@@ -588,7 +588,7 @@ class SwitchAccountBottomSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: al.createNewProfile,
+                        text: al.switchAccount,
                         fontSize: sizes?.fontSize14,
                         fontWeight: FontWeight.w500,
                         color: AppColors.blackColor,
