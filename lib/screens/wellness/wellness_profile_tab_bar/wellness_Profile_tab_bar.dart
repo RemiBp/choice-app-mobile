@@ -1,5 +1,6 @@
 import 'package:choice_app/screens/wellness/wellness_about/wellness_about_view.dart';
 import 'package:flutter/material.dart';
+
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_button.dart';
@@ -20,8 +21,8 @@ class WellnessProfileTabBar extends StatefulWidget {
   State<WellnessProfileTabBar> createState() => _WellnessProfileTabBarState();
 }
 
-class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with SingleTickerProviderStateMixin{
-
+class _WellnessProfileTabBarState extends State<WellnessProfileTabBar>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedTabIndex = 0;
 
@@ -31,7 +32,8 @@ class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with Sing
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       if (!mounted) return;
-      if (_tabController.indexIsChanging || _tabController.index != _selectedTabIndex) {
+      if (_tabController.indexIsChanging ||
+          _tabController.index != _selectedTabIndex) {
         setState(() {
           _selectedTabIndex = _tabController.index;
         });
@@ -57,13 +59,12 @@ class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with Sing
         : Colors.grey;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: ProfileMenuAppBar(
-        onSwitchAccount: (){
+        onSwitchAccount: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -87,7 +88,8 @@ class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with Sing
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: CustomText(
-              text: 'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
+              text:
+                  'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
               textOverflow: TextOverflow.ellipsis,
               fontSize: sizes?.fontSize16,
               color: AppColors.primarySlateColor,
@@ -96,15 +98,16 @@ class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with Sing
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding, vertical: getHeight() * 0.02),
+            padding: EdgeInsets.symmetric(
+              horizontal: sizes!.pagePadding,
+              vertical: getHeight() * 0.02,
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: CardButton(
                     buttonText: al.follow,
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                     textColor: Colors.white,
                     textFontWeight: FontWeight.w700,
                   ),
@@ -197,7 +200,7 @@ class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with Sing
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children:  [
+              children: [
                 RestaurantChoiceView(),
                 RestaurantPostsView(),
                 ListView.builder(

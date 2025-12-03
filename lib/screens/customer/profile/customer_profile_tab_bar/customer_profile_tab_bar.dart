@@ -3,13 +3,13 @@ import 'package:choice_app/screens/restaurant/profile_menu/profile_menu_widgets.
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_choice_view.dart';
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_posts_view.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_button.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../l18n.dart';
 import '../../../../res/res.dart';
-import '../../../restaurant/profile_menu/chat_view.dart';
 
 class CustomerProfileTabBar extends StatefulWidget {
   const CustomerProfileTabBar({super.key});
@@ -18,7 +18,8 @@ class CustomerProfileTabBar extends StatefulWidget {
   State<CustomerProfileTabBar> createState() => _CustomerProfileTabBarState();
 }
 
-class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with SingleTickerProviderStateMixin{
+class _CustomerProfileTabBarState extends State<CustomerProfileTabBar>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedTabIndex = 0;
 
@@ -27,7 +28,8 @@ class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with Sing
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      if (_tabController.indexIsChanging || _tabController.index != _selectedTabIndex) {
+      if (_tabController.indexIsChanging ||
+          _tabController.index != _selectedTabIndex) {
         setState(() {
           _selectedTabIndex = _tabController.index;
         });
@@ -58,7 +60,7 @@ class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with Sing
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: ProfileMenuDetailAppBar(
-        onSwitchAccount: (){
+        onSwitchAccount: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -67,7 +69,7 @@ class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with Sing
             },
           );
         },
-        onBlock: (){
+        onBlock: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -94,7 +96,8 @@ class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with Sing
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: CustomText(
-              text: 'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
+              text:
+                  'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
               textOverflow: TextOverflow.ellipsis,
               fontSize: sizes?.fontSize16,
               color: AppColors.primarySlateColor,
@@ -103,15 +106,16 @@ class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with Sing
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding, vertical: getHeight() * 0.02),
+            padding: EdgeInsets.symmetric(
+              horizontal: sizes!.pagePadding,
+              vertical: getHeight() * 0.02,
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: CardButton(
                     buttonText: al.follow,
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                     textColor: Colors.white,
                     textFontWeight: FontWeight.w700,
                   ),
@@ -166,10 +170,7 @@ class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with Sing
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [
-                RestaurantChoiceView(),
-                RestaurantPostsView(),
-              ],
+              children: const [RestaurantChoiceView(), RestaurantPostsView()],
             ),
           ),
         ],

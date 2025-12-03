@@ -3,6 +3,7 @@ import 'package:choice_app/screens/restaurant/profile_menu/restaurant_about/rest
 import 'package:choice_app/userRole/user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_button.dart';
@@ -23,7 +24,8 @@ class LeisureProfileTabBar extends StatefulWidget {
   State<LeisureProfileTabBar> createState() => _LeisureProfileTabBarState();
 }
 
-class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with SingleTickerProviderStateMixin{
+class _LeisureProfileTabBarState extends State<LeisureProfileTabBar>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedTabIndex = 0;
 
@@ -32,7 +34,8 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
-      if (_tabController.indexIsChanging || _tabController.index != _selectedTabIndex) {
+      if (_tabController.indexIsChanging ||
+          _tabController.index != _selectedTabIndex) {
         setState(() {
           _selectedTabIndex = _tabController.index;
         });
@@ -64,7 +67,7 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: ProfileMenuDetailAppBar(
-        onSwitchAccount: (){
+        onSwitchAccount: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -73,7 +76,7 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
             },
           );
         },
-        onBlock: (){
+        onBlock: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -100,7 +103,8 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: CustomText(
-              text: 'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
+              text:
+                  'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
               textOverflow: TextOverflow.ellipsis,
               fontSize: sizes?.fontSize16,
               color: AppColors.primarySlateColor,
@@ -109,15 +113,16 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding, vertical: getHeight() * 0.02),
+            padding: EdgeInsets.symmetric(
+              horizontal: sizes!.pagePadding,
+              vertical: getHeight() * 0.02,
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: CardButton(
                     buttonText: al.follow,
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                     textColor: Colors.white,
                     textFontWeight: FontWeight.w700,
                   ),
@@ -199,8 +204,8 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children:  [
-                RestaurantChoiceView(enableOnTap: true,),
+              children: [
+                RestaurantChoiceView(enableOnTap: true),
                 RestaurantPostsView(),
                 ListView.builder(
                   itemCount: 3,
@@ -208,7 +213,9 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
                     return EventCard();
                   },
                 ),
-                role == UserRole.restaurant? RestaurantAboutView():LeisureAboutView(),
+                role == UserRole.restaurant
+                    ? RestaurantAboutView()
+                    : LeisureAboutView(),
               ],
             ),
           ),

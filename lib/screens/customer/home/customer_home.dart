@@ -3,6 +3,7 @@ import 'package:choice_app/customWidgets/custom_button.dart';
 import 'package:choice_app/customWidgets/custom_text.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
+import 'package:choice_app/screens/customer/chat/user_chat/user_chat_view.dart';
 import 'package:choice_app/screens/customer/home/home_widgets.dart';
 import 'package:choice_app/screens/restaurant/home/choice_provider.dart';
 import 'package:flutter/material.dart';
@@ -155,7 +156,15 @@ class _CustomerHomeState extends State<CustomerHome> {
                 const Spacer(),
                 CustomIconButton(svgString: Assets.mapIcon),
                 SizedBox(width: getWidth() * .02),
-                CustomIconButton(svgString: Assets.chatIcon),
+                CustomIconButton(
+                  svgString: Assets.chatIcon,
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const UserChatView()),
+                    );
+                  },
+                ),
                 SizedBox(width: getWidth() * .02),
                 CustomIconButton(svgString: Assets.notificationIcon),
               ],
