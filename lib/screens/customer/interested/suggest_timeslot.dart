@@ -167,17 +167,24 @@ class _SuggestTimeSlotScreenState extends State<SuggestTimeSlotScreen> {
             SizedBox(height: getHeight() * 0.02),
 
             // Time Chips
-            Wrap(
-              spacing: 17,
-              runSpacing: 12,
-              children: List.generate(timeSlots.length, (index) {
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3, // Number of items per row
+                crossAxisSpacing: 12, // Horizontal spacing
+                mainAxisSpacing: 12, // Vertical spacing
+                childAspectRatio: 2.5, // Width/Height ratio
+              ),
+              itemCount: timeSlots.length,
+              itemBuilder: (context, index) {
                 final isSelected = selectedTimeIndex == index;
                 return TimeChip(
                   label: timeSlots[index],
                   isSelected: isSelected,
                   onTap: () => setState(() => selectedTimeIndex = index),
                 );
-              }),
+              },
             ),
 
             SizedBox(height: getHeight() * 0.04),

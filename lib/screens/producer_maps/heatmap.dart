@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:choice_app/screens/producer_maps/producer_heatmap_provider.dart';
 import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +9,9 @@ import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../res/res.dart';
 import '../../l18n.dart';
+import '../../res/toasts.dart';
 import 'heatmap_widgets.dart';
+import 'offer_provider.dart';
 import 'offer_widgets.dart';
 
 class HeatmapScreen extends StatefulWidget {
@@ -99,7 +103,8 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
                 if (_mapController != null && heatmapProvider.heatmapCoordinates.isNotEmpty)
                   Positioned.fill(
                     child: HeatmapOverlay(
-                      key: ValueKey('${_currentZoom}_${heatmapProvider.heatmapCoordinates.length}'),
+                      // CRITICAL: Use unique key that changes with zoom
+                      key: ValueKey('heatmap_$_currentZoom'),
                       controller: _mapController!,
                       zoom: _currentZoom,
                       points: heatmapProvider.heatmapCoordinates,
@@ -194,6 +199,7 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
 
 // GOOGLE MAP + HEATMAP
   Widget _buildGoogleMap(ProducerHeatmapProvider provider) {
+    Timer? _zoomDebounce;
     return GoogleMap(
       initialCameraPosition: const CameraPosition(
         target: LatLng(31.5204, 74.3587),  // Lahore center
@@ -209,6 +215,11 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
       onCameraMove: (position) {
         _currentZoom = position.zoom;
         // Hide tooltip when map moves
+        _zoomDebounce?.cancel();
+        _zoomDebounce = Timer(const Duration(milliseconds: 50), () {
+          if (mounted) setState(() {});
+        });
+
         if (_selectedPoint != null) {
           _hideTooltip();
         }
@@ -273,13 +284,27 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
         fontWeight: FontWeight.w600,
         fontSize: getWidth() * 0.035,
       ),
-      onPressed: () {
-        showModalBottomSheet(
+      onPressed: () async{
+        final profileProvider = context.read<ProfileProvider>();
+        final profile = await profileProvider.getProducerProfile();
+        final producerId = profile?.producer?.id;
+
+        if (producerId == null) {
+          Toasts.getErrorToast(text: "Unable to fetch producer ID");
+          return;
+        }
+
+        final templateProvider = context.read<TemplateProvider>();
+        templateProvider.clearTemplates();
+        await templateProvider.getProducerOfferTemplates(context: context, producerId: producerId);
+
+        final selected = await showModalBottomSheet<Template>(
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           builder: (_) => const OfferTemplateBottomSheet(),
         );
+
       },
     );
   }

@@ -49,101 +49,114 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
     return Column(
       children: [
         Expanded(
-          child: bookingItems.isEmpty
-              ? NoItemFound()
-              : ListView.builder(
-            padding: const EdgeInsets.only(bottom: 16),
-            itemCount: bookingItems.length,
-            itemBuilder: (context, index) {
-              final booking = bookingItems[index];
+          child:
+              bookingItems.isEmpty
+                  ? NoItemFound()
+                  : ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    itemCount: bookingItems.length,
+                    itemBuilder: (context, index) {
+                      final booking = bookingItems[index];
 
-              return BookingCard(
-                name: booking.name,
-                imageUrl: booking.imageUrl,
-                bookingType: booking.type ?? "Unknown", // for chipsdate: booking.date,
-                startTime: booking.startTime,
-                date: booking.date,
-                endTime: booking.endTime,
-                guests: booking.guests,
-                totalPrice: booking.totalPrice,
-                isEvent: booking.isEvent,
-                bookingId: booking.bookingId,
-                address: booking.address,
-                buttonText: booking.buttonText,
-                onDetails: ({bool isFromModifyButton = false}) {
-                  if (role == UserRole.user) {
-                    if (isFromModifyButton) {
-                      // Only modify button should reach here
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BookProducerView(
-                            bookingData: booking,
-                            isModify: true, ),
-                          ),
-                        );
-                      return;
-                    }
-                      // Card tap → always go to UserBookingDetails
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserBookingDetails(
-                            bookingId: booking.bookingId!,
-                            isEvent: booking.isEvent ?? false,
+                      return BookingCard(
+                        name: booking.name,
+                        imageUrl: booking.imageUrl,
+                        bookingType:
+                            booking.type ??
+                            "Unknown", // for chipsdate: booking.date,
+                        startTime: booking.startTime,
+                        date: booking.date,
+                        endTime: booking.endTime,
+                        guests: booking.guests,
+                        totalPrice: booking.totalPrice,
+                        isEvent: booking.isEvent,
+                        bookingId: booking.bookingId,
+                        address: booking.address,
+                        buttonText: booking.buttonText,
+                        onDetails: ({bool isFromModifyButton = false}) {
+                          if (role == UserRole.user) {
+                            if (isFromModifyButton) {
+                              // Only modify button should reach here
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => BookProducerView(
+                                        bookingData: booking,
+                                        isModify: true,
+                                      ),
+                                ),
+                              );
+                              return;
+                            }
+                            // Card tap → always go to UserBookingDetails
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => UserBookingDetails(
+                                      bookingId: booking.bookingId!,
+                                      isEvent: booking.isEvent ?? false,
+                                    ),
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        BookingDetails(bookingData: booking),
+                              ),
+                            );
+                          }
+                        },
+                        onCheckIn: () async {
+                          final bookingIdStr = booking.bookingId;
+                          if (bookingIdStr == null || bookingIdStr.isEmpty) {
+                            Toasts.getErrorToast(
+                              text: "Booking ID not available",
+                            );
+                            return;
+                          }
 
-                        ),
-                      ),
-                    );
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BookingDetails(bookingData: booking),
-                      ),
-                    );
-                  }
-                },
-                onCheckIn: () async {
-                  final bookingIdStr = booking.bookingId;
-                  if (bookingIdStr == null || bookingIdStr.isEmpty) {
-                    Toasts.getErrorToast(text: "Booking ID not available");
-                    return;
-                  }
+                          final bookingId = int.tryParse(bookingIdStr);
+                          if (bookingId == null) {
+                            Toasts.getErrorToast(text: "Invalid booking ID");
+                            return;
+                          }
 
-                  final bookingId = int.tryParse(bookingIdStr);
-                  if (bookingId == null) {
-                    Toasts.getErrorToast(text: "Invalid booking ID");
-                    return;
-                  }
+                          bool success = false;
 
-                  bool success = false;
+                          if (booking.isEvent == true) {
+                            // Event booking
+                            success = await provider.checkInBooking(
+                              bookingId: bookingId,
+                            );
+                          } else {
+                            // Normal booking
+                            success = await provider.checkInSimpleBooking(
+                              bookingId: bookingId,
+                              timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC',
+                            );
+                          }
 
-                  if (booking.isEvent == true) {
-                    // Event booking
-                    success = await provider.checkInBooking(bookingId: bookingId);
-                  } else {
-                    // Normal booking
-                    success = await provider.checkInSimpleBooking(
-                      bookingId: bookingId,
-                      timeZone: TimezoneHelper.cachedTimeZone ?? 'UTC',
-                    );
-                  }
-
-                  if (success) {
-                    // Refresh bookings after successful check-in
-                    await provider.getBookings(status: BookingStatus.scheduled);
-                  }
-                },
-                onCancel: () {
-                  showCancelConfirmationAlert(
-                    context: context,
-                    booking: booking,   //  Pass whole booking
-                  );
-                },
-              );
-            },
-          ),
+                          if (success) {
+                            // Refresh bookings after successful check-in
+                            await provider.getBookings(
+                              status: BookingStatus.scheduled,
+                            );
+                          }
+                        },
+                        onCancel: () {
+                          showCancelConfirmationAlert(
+                            context: context,
+                            booking: booking, //  Pass whole booking
+                          );
+                        },
+                      );
+                    },
+                  ),
         ),
       ],
     );
@@ -153,7 +166,6 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
     required BuildContext context,
     required BookingCardData booking,
   }) {
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -196,7 +208,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => BookingsView()),
-                      (route) => false,
+                  (route) => false,
                 );
               } else {
                 Toasts.getErrorToast(text: "Failed to cancel booking");
@@ -209,9 +221,9 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
   }
 
   List<BookingCardData> _buildBookingItems(
-      UserBookingsData? data,
-      UserRole role,
-      ) {
+    UserBookingsData? data,
+    UserRole role,
+  ) {
     if (data == null) {
       return [];
     }
@@ -226,12 +238,22 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
       final eventName = event?.title ?? '';
       final producerName = entry.producer?.name ?? event?.producer?.name ?? '';
 
+      String eventImageUrl = '';
+      if (eventImages.isNotEmpty) {
+        eventImageUrl = _getFullImageUrl(eventImages.first);
+      } else if (event?.coverImage != null && event!.coverImage!.isNotEmpty) {
+        eventImageUrl = _getFullImageUrl(event.coverImage!);
+      } else if (event?.image != null && event!.image!.isNotEmpty) {
+        eventImageUrl = _getFullImageUrl(event.image!);
+      }
+
       bookings.add(
         BookingCardData(
-          name: isUser
-              ? eventName
-              : (producerName.isNotEmpty ? producerName : eventName),
-          imageUrl: eventImages.isNotEmpty ? eventImages.first : '',
+          name:
+              isUser
+                  ? eventName
+                  : (producerName.isNotEmpty ? producerName : eventName),
+          imageUrl: eventImageUrl, // Use the properly formatted URL
           date: event?.date ?? '',
           startTime: event?.startTime ?? '',
           endTime: event?.endTime ?? '',
@@ -257,18 +279,30 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
 
       final restaurantName =
           entry.producer?.name ??
-              restaurant?.producer?.name ??
-              restaurant?.fullName ??
-              restaurant?.userName ??
-              '';
+          restaurant?.producer?.name ??
+          restaurant?.fullName ??
+          restaurant?.userName ??
+          '';
       final customerName = customer?.fullName ?? booking?.customerName ?? '';
+      String restaurantImageUrl = '';
+      if (restaurant?.profileImageUrl != null &&
+          restaurant!.profileImageUrl!.isNotEmpty) {
+        restaurantImageUrl = _getFullImageUrl(restaurant.profileImageUrl!);
+      } else if (restaurant?.imageUrl != null &&
+          restaurant!.imageUrl!.isNotEmpty) {
+        restaurantImageUrl = _getFullImageUrl(restaurant.imageUrl!);
+      } else if (restaurant?.coverImage != null &&
+          restaurant!.coverImage!.isNotEmpty) {
+        restaurantImageUrl = _getFullImageUrl(restaurant.coverImage!);
+      }
 
       bookings.add(
         BookingCardData(
-          name: isUser
-              ? restaurantName
-              : (customerName.isNotEmpty ? customerName : restaurantName),
-          imageUrl: restaurant?.profileImageUrl ?? '',
+          name:
+              isUser
+                  ? restaurantName
+                  : (customerName.isNotEmpty ? customerName : restaurantName),
+          imageUrl: restaurantImageUrl, // Use the properly formatted URL
           date: booking?.bookingDate ?? booking?.date ?? '',
           startTime: booking?.slotStartTime ?? booking?.startDateTime ?? '',
           endTime: booking?.slotEndTime ?? booking?.endDateTime ?? '',
@@ -280,11 +314,12 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           isEvent: false,
           buttonText: isUser ? al.modify : al.checkIn,
           address: entry.producer?.address ?? booking?.location,
-          customerName: isUser
-              ? customerName
-              : (customerName.isNotEmpty
-              ? customerName
-              : booking?.customerName),
+          customerName:
+              isUser
+                  ? customerName
+                  : (customerName.isNotEmpty
+                      ? customerName
+                      : booking?.customerName),
           customerEmail: customer?.email,
           customerPhone: customer?.phoneNumber?.toString(),
           internalNotes: booking?.specialRequest,
@@ -294,6 +329,19 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
     }
 
     return bookings;
+  }
+
+  String _getFullImageUrl(String relativePath) {
+    if (relativePath.isEmpty) return '';
+    if (relativePath.startsWith('http')) {
+      return relativePath;
+    }
+    const baseUrl =
+        "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/";
+    final cleanPath =
+        relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+
+    return baseUrl + cleanPath;
   }
 }
 

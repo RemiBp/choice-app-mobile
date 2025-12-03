@@ -17,10 +17,10 @@ class LanguageSelection extends StatefulWidget {
   const LanguageSelection({super.key, this.isFromProfile});
 
   @override
-  _LanguageSelectionState createState() => _LanguageSelectionState();
+  LanguageSelectionState createState() => LanguageSelectionState();
 }
 
-class _LanguageSelectionState extends State<LanguageSelection> {
+class LanguageSelectionState extends State<LanguageSelection> {
   String selectedLanguage = al.english;
 
   void selectLanguage(String language) {
@@ -72,73 +72,82 @@ class _LanguageSelectionState extends State<LanguageSelection> {
             const SizedBox(height: 12),
 
             languageOption(label: al.french, flagPath: Assets.franceFlagIcon),
-            ],
+          ],
         ),
       ),
 
-        bottomNavigationBar: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: getWidth() * .05,
-            vertical: getHeight() * .02,
-          ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: getWidth() * .05,
+          vertical: getHeight() * .02,
+        ),
 
-            child: widget.isFromProfile??false?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomButton(
-                  buttonText: al.cancel,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  buttonWidth: getWidth() * .42,
-                  backgroundColor: Colors.transparent,
-                  borderColor: AppColors.blackColor,
-                  textColor: AppColors.blackColor,
-                  textFontWeight: FontWeight.w700,
-                ),
-                CustomButton(
-                  buttonText: al.saveChanges,
-                  onTap: () async {
-                    final locale = selectedLanguage == al.english ? "en" : "fr";
-                    provider.changeLocale(locale);
-                    context.pop();
-                    context.pop();
-                    setState(() {});
-                  },
-                  buttonWidth: getWidth() * .42,
-                  backgroundColor: AppColors.getPrimaryColorFromContext(context),
-                  borderColor: AppColors.getPrimaryColorFromContext(context),
-                  textColor: AppColors.whiteColor,
-                  textFontWeight: FontWeight.w700,
-                ),
-              ],
-            ):
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final locale = selectedLanguage == al.english ? "en" : "fr";
-                  provider.changeLocale(locale);
-                  context.push(Routes.authRoute).then((_) =>
-                      setState(() {}));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.getPrimaryColorFromContext(context),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+        child:
+            widget.isFromProfile == true
+                ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomButton(
+                      buttonText: al.cancel,
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      buttonWidth: getWidth() * .42,
+                      backgroundColor: Colors.transparent,
+                      borderColor: AppColors.blackColor,
+                      textColor: AppColors.blackColor,
+                      textFontWeight: FontWeight.w700,
+                    ),
+                    CustomButton(
+                      buttonText: al.saveChanges,
+                      onTap: () async {
+                        final locale =
+                            selectedLanguage == al.english ? "en" : "fr";
+                        provider.changeLocale(locale);
+                        context.pop();
+                        context.pop();
+                      },
+                      buttonWidth: getWidth() * .42,
+                      backgroundColor: AppColors.getPrimaryColorFromContext(
+                        context,
+                      ),
+                      borderColor: AppColors.getPrimaryColorFromContext(
+                        context,
+                      ),
+                      textColor: AppColors.whiteColor,
+                      textFontWeight: FontWeight.w700,
+                    ),
+                  ],
+                )
+                : SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final locale =
+                          selectedLanguage == al.english ? "en" : "fr";
+                      provider.changeLocale(locale);
+                      context
+                          .push(Routes.authRoute)
+                          .then((_) => setState(() {}));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.getPrimaryColorFromContext(
+                        context,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: CustomText(
+                      text: al.continueText,
+                      fontSize: sizes?.fontSize16,
+                      fontFamily: Assets.onsetSemiBold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                child: CustomText(
-                  text: al.continueText,
-                  fontSize: sizes?.fontSize16,
-                  fontFamily: Assets.onsetSemiBold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-        ),
+      ),
     );
   }
 
@@ -150,10 +159,16 @@ class _LanguageSelectionState extends State<LanguageSelection> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.getPrimaryColorFromContext(context).withAlpha(20) : Colors.white,
+          color:
+              isSelected
+                  ? AppColors.getPrimaryColorFromContext(context).withAlpha(20)
+                  : Colors.white,
           border: Border.all(
             // color: isSelected ? Colors.lightBlue : Colors.grey.shade300,
-            color: isSelected ? AppColors.getPrimaryColorFromContext(context) : AppColors.greyBordersColor,
+            color:
+                isSelected
+                    ? AppColors.getPrimaryColorFromContext(context)
+                    : AppColors.greyBordersColor,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -169,7 +184,11 @@ class _LanguageSelectionState extends State<LanguageSelection> {
             ),
             const Spacer(),
             if (isSelected)
-              Icon(Icons.check, color: AppColors.getPrimaryColorFromContext(context), size: 20),
+              Icon(
+                Icons.check,
+                color: AppColors.getPrimaryColorFromContext(context),
+                size: 20,
+              ),
           ],
         ),
       ),

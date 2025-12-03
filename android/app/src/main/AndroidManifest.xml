@@ -6,7 +6,7 @@
         android:icon="@mipmap/ic_launcher">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDyEDfTwhNHGXx_ok4JsQDay3fU-RZkO_4"/>
+            android:value="AIzaSyDRvEPM8JZ1Wpn_J6ku4c3r5LQIocFmzOE"/>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

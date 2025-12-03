@@ -22,6 +22,7 @@ import 'package:choice_app/models/get_producer_profile_response.dart';
 
 import 'package:choice_app/models/get_producer_slots_response.dart';
 import 'package:choice_app/models/get_user_bookings_response.dart';
+import 'package:choice_app/models/get_user_live_offers_response.dart';
 import 'package:choice_app/models/more_events_by_producer_response.dart';
 import 'package:choice_app/models/producer_delete_document_response.dart';
 import 'package:choice_app/models/producer_delete_gallery_images_response.dart';
@@ -29,6 +30,7 @@ import 'package:choice_app/models/producer_posts_response.dart';
 import 'package:choice_app/models/producer_update_document_response.dart';
 import 'package:choice_app/models/restaurant_update_profile_response.dart';
 import '../models/error_model.dart';
+import '../models/get_producer_offer_templates_response.dart';
 import '../models/get_producers_places_claim_response.dart';
 import '../models/near_by_producers_response.dart';
 
@@ -77,8 +79,8 @@ class Models {
   static const String getSimpleBookingDetailsModel = "GET_NORMAL_BOOKING_DETAILS_MODEL";
   static const String getProducerPostsByIdModel = "GET_PRODUCER_POSTS_BY_ID_MODEL";
   static const String getProducerHeatmapModel = "GET_PRODUCER_HEATMAP_MODEL";
-
-
+  static const String getProducerOfferTemplateModel = "GET_PRODUCER_OFFER_TEMPLATES_MODEL";
+  static const String getUserLiveOfferModel = "GET_USER_LIVE_OFFERS_MODEL";
 
 
 
@@ -156,6 +158,10 @@ class Models {
         return SimpleBookingDetailsResponse.fromJson(json);
       case getProducerPostsByIdModel:
         return GetProducerPostsByIdResponse.fromJson(json);
+      case getProducerOfferTemplateModel:
+        return GetProducerOfferTemplatesResponse.fromJson(json);
+      case getUserLiveOfferModel:
+        return GetUserLiveOffersResponse.fromJson(json);
     }
   }
 }

@@ -14,6 +14,7 @@ import '../../../customWidgets/icon_svg.dart';
 import '../../../l18n.dart';
 import '../../../res/res.dart';
 import '../../customer/profile/customer_profile/customer_profile_provider.dart';
+import '../profile/profile_provider.dart';
 
 class ProfileMenuAppBar extends StatelessWidget implements PreferredSizeWidget {
 
@@ -76,7 +77,8 @@ class ProfileMenuAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class RestaurantProfileHeader extends StatelessWidget {
-  const RestaurantProfileHeader({super.key});
+  final String? userName;
+  const RestaurantProfileHeader({super.key, this.userName});
 
   @override
   Widget build(BuildContext context) {
@@ -84,15 +86,17 @@ class RestaurantProfileHeader extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
       child: Row(
         children: [
-          // Profile Picture
-          const CircleAvatar(
-            radius: 30,
-            backgroundImage: NetworkImage(
-              "https://i.imgur.com/QCNbOAo.png", // Replace with restaurant image URL
-            ),
+          Selector<ProfileProvider, String>(
+              selector: (context, provider) => provider.getProducerProfileResponse?.businessProfile?.profileImageUrl ?? "",
+              builder: (context, image, _) {
+                return CircleAvatar(
+                  radius: 30,
+                  backgroundImage: image.isNotEmpty ? NetworkImage(image) : null,
+                  child: image.isEmpty ? Icon(Icons.business, size: 30) : null,
+                );
+              }
           ),
           SizedBox(width: getWidth() * 0.02),
-
           // Name + Stats Section
           Expanded(
             child: Column(
@@ -100,7 +104,7 @@ class RestaurantProfileHeader extends StatelessWidget {
               children: [
                 // Restaurant Name
                 CustomText(
-                  text: "The Wholesome Fork",
+                  text: userName??"",
                   textOverflow: TextOverflow.ellipsis,
                   fontSize: sizes?.fontSize16,
                   color: AppColors.blackColor,

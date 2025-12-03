@@ -115,8 +115,17 @@ class _OfferTemplateBottomSheetState extends State<OfferTemplateBottomSheet> {
                       buttonText: al.continueText,
                       onTap: selectedIndex != null
                           ? () {
-                        Navigator.pop(context);
-                        // Handle next step
+                        final selectedTemplate = templates[selectedIndex!];
+
+                        Navigator.pop(context); // close the template selection sheet
+
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => TargetedNotificationBottomSheet(
+                            templateToEdit: selectedTemplate, // pass the selected template
+                          ),
+                        );
                       }
                           : null,
                       backgroundColor: selectedIndex != null
@@ -353,16 +362,22 @@ class _OfferTemplateBottomSheetState extends State<OfferTemplateBottomSheet> {
 
 
 class TargetedNotificationBottomSheet extends StatelessWidget {
-  const TargetedNotificationBottomSheet({super.key});
+  final Template? templateToEdit;
+  const TargetedNotificationBottomSheet({super.key,this.templateToEdit});
 
   @override
   Widget build(BuildContext context) {
-    final title = TextEditingController();
-    final msg = TextEditingController();
-    final reduction = TextEditingController();
-    final validate = TextEditingController();
-    final users = TextEditingController();
-    final distance = TextEditingController();
+    final title = TextEditingController(text: templateToEdit?.title ?? '');
+    final msg = TextEditingController(text: templateToEdit?.message ?? '');
+    final reduction = TextEditingController(
+        text: templateToEdit != null ? templateToEdit!.reduction.toString() : ''
+    );
+    final validate = TextEditingController(
+        text: templateToEdit?.validityMinutes.toString() ?? '');
+    final users = TextEditingController(
+        text: templateToEdit?.maxRecipients.toString() ?? '');
+    final distance = TextEditingController(
+        text: templateToEdit?.radiusMeters.toString() ?? '');
 
     Widget label(String text) => RichText(
       text: TextSpan(
@@ -583,6 +598,7 @@ class TargetedNotificationBottomSheet extends StatelessWidget {
 
                               //  All checks passed, send to preview
                               final data = TargetedNotificationData(
+                                offerId: templateToEdit?.offerId,
                                 title: t,
                                 message: m,
                                 reduction: discount,
@@ -625,6 +641,7 @@ class TargetedNotificationBottomSheet extends StatelessWidget {
 }
 
 class TargetedNotificationData {
+  final int? offerId;
   final String title;
   final String message;
   final int reduction;
@@ -633,6 +650,7 @@ class TargetedNotificationData {
   final int radiusMeters;
 
   TargetedNotificationData({
+    this.offerId,
     required this.title,
     required this.message,
     required this.reduction,
@@ -908,6 +926,7 @@ class _TargetedNotificationPreviewSheetState
                         buttonText: al.sendNow,
                           onTap: () async {
                             final provider = context.read<TemplateProvider>();
+
                             double? lat = double.tryParse(widget.producerLat.replaceAll(',', '.'));
                             double? long = double.tryParse(widget.producerLong.replaceAll(',', '.'));
                             if (lat == null || long == null) {
@@ -915,23 +934,38 @@ class _TargetedNotificationPreviewSheetState
                               return;
                             }
 
-                            bool success = await provider.sendProducerOffer(
-                              context: context,
-                              producerId: widget.producerId,
-                              title: widget.data.title,
-                              message: widget.data.message,
-                              discountPercent: widget.data.reduction,
-                              validityMinutes: widget.data.validityMinutes,
-                              maxRecipients: widget.data.maxRecipients,
-                              radiusMeters: widget.data.radiusMeters,
-                              saveAsTemplate: saveTemplate, // checkbox value
-                              latitude: lat,
-                              longitude: long,
-                            );
+                            if (widget.data.offerId != null) {
+                              // Editing an existing offer
+                              bool success = await provider.editProducerOffer(
+                                context: context,
+                                offerId: widget.data.offerId!,
+                                title: widget.data.title,
+                                message: widget.data.message,
+                                discountPercent: widget.data.reduction,
+                                validityMinutes: widget.data.validityMinutes,
+                                maxRecipients: widget.data.maxRecipients,
+                                radiusMeters: widget.data.radiusMeters,
+                                saveAsTemplate: saveTemplate,
+                              );
 
-                            //  Success navigation + toast already handled inside provider
-                            if (success) {
-                              Navigator.pop(context);
+                              if (success) Navigator.pop(context);
+                            } else {
+                              // Creating a new offer
+                              bool success = await provider.sendProducerOffer(
+                                context: context,
+                                producerId: widget.producerId,
+                                title: widget.data.title,
+                                message: widget.data.message,
+                                discountPercent: widget.data.reduction,
+                                validityMinutes: widget.data.validityMinutes,
+                                maxRecipients: widget.data.maxRecipients,
+                                radiusMeters: widget.data.radiusMeters,
+                                saveAsTemplate: saveTemplate,
+                                latitude: lat,
+                                longitude: long,
+                              );
+
+                              if (success) Navigator.pop(context);
                             }
                           },
                         backgroundColor:
