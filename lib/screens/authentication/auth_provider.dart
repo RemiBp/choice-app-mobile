@@ -13,12 +13,13 @@ import '../../l18n.dart';
 import '../../network/API.dart';
 import '../../network/api_url.dart';
 import '../../network/models.dart';
+import '../../network/socket_service.dart';
 import '../../res/loader.dart';
 import '../../res/strings.dart';
 import '../../res/toasts.dart';
 import '../../routes/routes.dart';
 
-class AuthProvider extends ChangeNotifier{
+class AuthProvider extends ChangeNotifier {
   AuthResponse authResponse = AuthResponse();
   bool loginPassVisibility = false;
   bool signupPassVisibility = false;
@@ -27,11 +28,8 @@ class AuthProvider extends ChangeNotifier{
   bool _agreed = false;
   bool _rememberMe = false;
 
-
-
   bool get agreed => _agreed;
   bool get rememberMe => _rememberMe;
-
 
   final Loader _loader = Loader();
   PlatformFile? selectedDoc1;
@@ -57,7 +55,6 @@ class AuthProvider extends ChangeNotifier{
     }
   }
 
-
   Future<void> pickFile(int docNumber) async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -78,11 +75,12 @@ class AuthProvider extends ChangeNotifier{
     this.context = context;
   }
 
-  toggleLoginPassVisibility(){
+  toggleLoginPassVisibility() {
     loginPassVisibility = !loginPassVisibility;
     notifyListeners();
   }
-  toggleSignupPassVisibility(){
+
+  toggleSignupPassVisibility() {
     signupPassVisibility = !signupPassVisibility;
     notifyListeners();
   }
@@ -91,6 +89,7 @@ class AuthProvider extends ChangeNotifier{
     _agreed = value;
     notifyListeners();
   }
+
   void toggleRememberMe(bool value) {
     _rememberMe = value;
     notifyListeners();
@@ -109,7 +108,7 @@ class AuthProvider extends ChangeNotifier{
         "email": email,
         "password": password,
         "businessName": businessName,
-        "role": role
+        "role": role,
       };
       debugPrint("body is : ---------->$body");
       final signupResponse = await MyApi.callPostApi(
@@ -122,10 +121,10 @@ class AuthProvider extends ChangeNotifier{
       if (signupResponse?["message"] != null) {
         debugPrint("register response : ${signupResponse?["message"]}");
         // Toasts.getSuccessToast(text: al.registrationSuccessful);
-        context?.push(Routes.otpVerificationRoute, extra: {
-          "email": email,
-          "isResetPassFlow": false,
-        });
+        context?.push(
+          Routes.otpVerificationRoute,
+          extra: {"email": email, "isResetPassFlow": false},
+        );
         globalBusinessName = businessName;
       }
       _loader.hideLoader(context!);
@@ -134,7 +133,6 @@ class AuthProvider extends ChangeNotifier{
       _loader.hideLoader(context!);
     }
   }
-
 
   Future<void> reclaimRegister({
     required String email,
@@ -164,10 +162,10 @@ class AuthProvider extends ChangeNotifier{
       if (signupResponse?["message"] != null) {
         Toasts.getSuccessToast(text: al.registrationSuccessful);
 
-        context?.push(Routes.otpVerificationRoute, extra: {
-          "email": email,
-          "isResetPassFlow": false,
-        });
+        context?.push(
+          Routes.otpVerificationRoute,
+          extra: {"email": email, "isResetPassFlow": false},
+        );
       }
 
       _loader.hideLoader(context!);
@@ -177,7 +175,6 @@ class AuthProvider extends ChangeNotifier{
       Toasts.getErrorToast(text: al.failedToRegisterAccount);
     }
   }
-
 
   Future<void> registerUser({
     required String fullName,
@@ -191,11 +188,11 @@ class AuthProvider extends ChangeNotifier{
       _loader.showLoader(context: context);
       Map<String, dynamic> headers = {"Content-Type": "application/json"};
       Map<String, dynamic> body = {
-      "fullName": fullName,
-      "userName": userName,
-      "email": email,
-      "password": password,
-      "phoneNumber": phone
+        "fullName": fullName,
+        "userName": userName,
+        "email": email,
+        "password": password,
+        "phoneNumber": phone,
       };
       debugPrint("body is : ---------->$body");
       final signupResponse = await MyApi.callPostApi(
@@ -208,10 +205,10 @@ class AuthProvider extends ChangeNotifier{
       if (signupResponse?["message"] != null) {
         debugPrint("register response : ${signupResponse?["message"]}");
         // Toasts.getSuccessToast(text: al.registrationSuccessful);
-        context?.push(Routes.otpVerificationRoute, extra: {
-          "email": email,
-          "isResetPassFlow": false,
-        });
+        context?.push(
+          Routes.otpVerificationRoute,
+          extra: {"email": email, "isResetPassFlow": false},
+        );
       }
       _loader.hideLoader(context!);
     } catch (err) {
@@ -219,8 +216,6 @@ class AuthProvider extends ChangeNotifier{
       _loader.hideLoader(context!);
     }
   }
-
-
 
   Future<void> loginUser({
     required String email,
@@ -233,7 +228,7 @@ class AuthProvider extends ChangeNotifier{
       Map<String, dynamic> body = {
         "email": email,
         "password": password,
-        "deviceId": ""
+        "deviceId": "",
       };
 
       debugPrint("body is : ---------->$body");
@@ -242,7 +237,8 @@ class AuthProvider extends ChangeNotifier{
         body["requiredRole"] = roleProvider!.role.roleValue;
       }
       authResponse = await MyApi.callPostApi(
-        url:roleProvider?.role == UserRole.user?userLoginApiUrl: loginApiUrl,
+        url:
+            roleProvider?.role == UserRole.user ? userLoginApiUrl : loginApiUrl,
         myHeaders: headers,
         body: body,
         modelName: Models.authModel,
@@ -250,12 +246,19 @@ class AuthProvider extends ChangeNotifier{
       debugPrint("login response : ${authResponse.toJson()}");
       if (authResponse.user != null) {
         await PreferenceUtils.setAuthResponse(authResponse);
+
+        // Connect socket for real-time chat
+        if (authResponse.accessToken != null) {
+          debugPrint('🔌 Connecting socket after login...');
+          SocketService().connect(authResponse.accessToken!);
+        }
+
         _loader.hideLoader(context!);
         // if(roleProvider?.role == UserRole.user){
         //   context?.push(Routes.customerHomeRoute);
         // }else
         // {
-          context?.go(Routes.restaurantBottomTabRoute);
+        context?.go(Routes.restaurantBottomTabRoute);
         // }
 
         return;
@@ -269,37 +272,36 @@ class AuthProvider extends ChangeNotifier{
 
   Future<void> submitDocs() async {
     try {
-      if(expiryDate1 == null){
+      if (expiryDate1 == null) {
         Toasts.getErrorToast(text: al.expiryDate1Placeholder);
-      }else if(selectedDoc1 == null){
+      } else if (selectedDoc1 == null) {
         Toasts.getErrorToast(text: al.businessRegistrationPlaceholder);
-      }else  if(expiryDate2 == null){
+      } else if (expiryDate2 == null) {
         Toasts.getErrorToast(text: al.expiryDate2Placeholder);
-      }else if(selectedDoc2 == null){
+      } else if (selectedDoc2 == null) {
         Toasts.getErrorToast(text: al.utilityBillPlaceholder);
-      }else{ _loader.showLoader(context: context);
-      Map<String, dynamic> body = {
-        "document1": selectedDoc1?.path,
-        "document1Expiry": DateFormat("yyyy-MM-dd").format(expiryDate1!),
-        "document2": selectedDoc2?.path,
-        "document2Expiry": DateFormat("yyyy-MM-dd").format(expiryDate2!)
-      };
-      debugPrint("body is : ---------->$body");
-      final response = await MyApi.callPostApi(
-        url: submitDocsApiUrl,
-        body: body,
-      );
-      debugPrint("upload docs response : $response");
-      if (response?["message"] != null) {
-        Toasts.getSuccessToast(text: response?["message"]);
+      } else {
+        _loader.showLoader(context: context);
+        Map<String, dynamic> body = {
+          "document1": selectedDoc1?.path,
+          "document1Expiry": DateFormat("yyyy-MM-dd").format(expiryDate1!),
+          "document2": selectedDoc2?.path,
+          "document2Expiry": DateFormat("yyyy-MM-dd").format(expiryDate2!),
+        };
+        debugPrint("body is : ---------->$body");
+        final response = await MyApi.callPostApi(
+          url: submitDocsApiUrl,
+          body: body,
+        );
+        debugPrint("upload docs response : $response");
+        if (response?["message"] != null) {
+          Toasts.getSuccessToast(text: response?["message"]);
+          _loader.hideLoader(context!);
+          context?.push(Routes.restaurantProfileRoute);
+          return;
+        }
         _loader.hideLoader(context!);
-        context?.push(Routes.restaurantProfileRoute);
-        return;
       }
-      _loader.hideLoader(context!);
-
-      }
-
     } catch (err) {
       debugPrint("error during upload docs : $err");
       _loader.hideLoader(context!);
@@ -308,11 +310,14 @@ class AuthProvider extends ChangeNotifier{
 
   Future<void> logout(BuildContext context) async {
     try {
+      // Disconnect socket
+      debugPrint('🔌 Disconnecting socket on logout...');
+      SocketService().disconnect();
+
       // Remove only the access token
       await PreferenceUtils.setString(Strings.token, "");
 
       debugPrint("✅ Access token removed, user logged out.");
-
 
       // await PreferenceUtils.setString(Strings.refreshToken, "");
       // await PreferenceUtils.setString(Strings.email, "");
@@ -327,7 +332,4 @@ class AuthProvider extends ChangeNotifier{
       debugPrint("❌ Error during logout: $e");
     }
   }
-
-
-
 }

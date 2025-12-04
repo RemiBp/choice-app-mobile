@@ -52,31 +52,38 @@ class MessageBubble extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: getWidth() * 0.6,
-          ),
+          constraints: BoxConstraints(maxWidth: getWidth() * 0.6),
           child: Container(
-            padding: imageUrl != null
-                ? const EdgeInsets.all(8)
-                : EdgeInsets.symmetric(horizontal: sizes!.pagePadding, vertical: getHeight() * 0.01),
+            padding:
+                imageUrl != null
+                    ? const EdgeInsets.all(8)
+                    : EdgeInsets.symmetric(
+                      horizontal: sizes!.pagePadding,
+                      vertical: getHeight() * 0.01,
+                    ),
             decoration: BoxDecoration(
-              color: isSentByMe ? AppColors.getPrimaryColorFromContext(context) : AppColors.greyColor,
-              borderRadius: isSentByMe
-                  ? const BorderRadius.only(
-                topRight: Radius.circular(16),
-                topLeft: Radius.circular(16),
-                bottomLeft: Radius.circular(16),
-              )
-                  : const BorderRadius.only(
-                topRight: Radius.circular(16),
-                topLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
+              color:
+                  isSentByMe
+                      ? AppColors.getPrimaryColorFromContext(context)
+                      : AppColors.greyColor,
+              borderRadius:
+                  isSentByMe
+                      ? const BorderRadius.only(
+                        topRight: Radius.circular(16),
+                        topLeft: Radius.circular(16),
+                        bottomLeft: Radius.circular(16),
+                      )
+                      : const BorderRadius.only(
+                        topRight: Radius.circular(16),
+                        topLeft: Radius.circular(16),
+                        bottomRight: Radius.circular(16),
+                      ),
             ),
             child: Column(
-              crossAxisAlignment: isSentByMe
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isSentByMe
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
               children: [
                 // if (imageUrl != null)
                 //   ClipRRect(
@@ -91,28 +98,29 @@ class MessageBubble extends StatelessWidget {
                   text: message,
                   fontSize: sizes?.fontSize14,
                   giveLinesAsText: true,
-                  color: isSentByMe
-                      ? AppColors.whiteColor
-                      : AppColors.blackColor,
+                  color:
+                      isSentByMe ? AppColors.whiteColor : AppColors.blackColor,
                 ),
                 const SizedBox(height: 6),
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: isSentByMe
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
+                  mainAxisAlignment:
+                      isSentByMe
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
                   children: [
                     CustomText(
                       text: time,
                       giveLinesAsText: true,
-                      color: isSentByMe
-                          ? AppColors.whiteColor
-                          : AppColors.blackColor,
+                      color:
+                          isSentByMe
+                              ? AppColors.whiteColor
+                              : AppColors.blackColor,
                       fontSize: sizes?.fontSize10,
                     ),
                     if (isSentByMe && isRead) ...[
                       const SizedBox(width: 4),
-                       CustomText(
+                      CustomText(
                         text: "· Read",
                         color: AppColors.whiteColor,
                         fontSize: 10,
@@ -130,7 +138,16 @@ class MessageBubble extends StatelessWidget {
 }
 
 class ChatInputField extends StatelessWidget {
-  const ChatInputField({super.key});
+  final TextEditingController controller;
+  final Function(String) onSend;
+  final bool isSending;
+
+  const ChatInputField({
+    super.key,
+    required this.controller,
+    required this.onSend,
+    this.isSending = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -151,13 +168,25 @@ class ChatInputField extends StatelessWidget {
               child: SizedBox(
                 height: fieldHeight,
                 child: TextField(
+                  controller: controller,
+                  enabled: !isSending,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (value) {
+                    if (value.trim().isNotEmpty && !isSending) {
+                      onSend(value);
+                    }
+                  },
                   decoration: InputDecoration(
                     hintText: al.typeMessage,
                     filled: true,
-                    fillColor: AppColors.getPrimaryColorFromContext(context).withAlpha(40),
+                    fillColor: AppColors.getPrimaryColorFromContext(
+                      context,
+                    ).withAlpha(40),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(fieldHeight / 2), // pill shape
+                      borderRadius: BorderRadius.circular(
+                        fieldHeight / 2,
+                      ), // pill shape
                       borderSide: BorderSide.none,
                     ),
                     enabledBorder: OutlineInputBorder(
@@ -176,20 +205,41 @@ class ChatInputField extends StatelessWidget {
 
             // Send Button
             GestureDetector(
-              onTap: () {},
+              onTap:
+                  isSending
+                      ? null
+                      : () {
+                        final text = controller.text;
+                        if (text.trim().isNotEmpty) {
+                          onSend(text);
+                        }
+                      },
               child: Container(
                 width: fieldHeight,
                 height: fieldHeight,
                 decoration: BoxDecoration(
-                  color: AppColors.getPrimaryColorFromContext(context),
+                  color:
+                      isSending
+                          ? AppColors.greyBordersColor
+                          : AppColors.getPrimaryColorFromContext(context),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Image.asset(
-                    Assets.chatSentIcon,
-                    width: fieldHeight * 0.5,
-                    height: fieldHeight * 0.5,
-                  ),
+                  child:
+                      isSending
+                          ? SizedBox(
+                            width: fieldHeight * 0.4,
+                            height: fieldHeight * 0.4,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                          : Image.asset(
+                            Assets.chatSentIcon,
+                            width: fieldHeight * 0.5,
+                            height: fieldHeight * 0.5,
+                          ),
                 ),
               ),
             ),
@@ -201,7 +251,6 @@ class ChatInputField extends StatelessWidget {
     );
   }
 }
-
 
 class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -268,10 +317,6 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-
-
-
-
 // class ChatSearchAppBar extends StatelessWidget implements PreferredSizeWidget {
 //   final TextEditingController searchController;
 //   final VoidCallback onNext;
@@ -332,8 +377,6 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 //   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 // }
 
-
-
 class ChatGroupTile extends StatelessWidget {
   final String name;
   final String username;
@@ -382,7 +425,10 @@ class ChatGroupTile extends StatelessWidget {
           ),
           Icon(
             isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: isSelected ? AppColors.getPrimaryColorFromContext(context) : Colors.grey,
+            color:
+                isSelected
+                    ? AppColors.getPrimaryColorFromContext(context)
+                    : Colors.grey,
           ),
         ],
       ),
@@ -393,10 +439,7 @@ class ChatGroupTile extends StatelessWidget {
 class SelectedMembersRow extends StatelessWidget {
   final List<Map<String, String>> selectedUsers;
 
-  const SelectedMembersRow({
-    super.key,
-    required this.selectedUsers,
-  });
+  const SelectedMembersRow({super.key, required this.selectedUsers});
 
   @override
   Widget build(BuildContext context) {
@@ -451,4 +494,3 @@ class SelectedMembersRow extends StatelessWidget {
     );
   }
 }
-
