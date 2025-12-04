@@ -44,28 +44,56 @@ class LanguageSelectionState extends State<LanguageSelection> {
     final provider = Provider.of<LanguageSelectionProvider>(context);
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
+      appBar: widget.isFromProfile == true
+          ? AppBar(
+        backgroundColor: AppColors.whiteColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: AppColors.blackColor,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: CustomText(
+          text: al.language,
+          fontSize: sizes?.fontSize18,
+          fontFamily: Assets.onsetSemiBold,
+          color: AppColors.blackColor,
+        ),
+      )
+          : null,
       body: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: getWidth() * .05,
-          vertical: getHeight() * .1,
+          vertical: widget.isFromProfile == true
+              ? getHeight() * .02 // Reduced vertical padding when AppBar exists
+              : getHeight() * .1,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            CustomText(
-              text: al.selectLanguage,
-              fontSize: sizes?.fontSize28,
-              fontFamily: Assets.onsetSemiBold,
-            ),
-            SizedBox(height: getHeight() * .01),
-            CustomText(
-              text: al.choosePreferredLanguage,
-              fontSize: sizes?.fontSize16,
-              giveLinesAsText: true,
-            ),
-
-            SizedBox(height: getHeight() * .03),
+            // Only show this title if NOT from profile (no AppBar)
+            if (widget.isFromProfile != true) ...[
+              CustomText(
+                text: al.selectLanguage,
+                fontSize: sizes?.fontSize28,
+                fontFamily: Assets.onsetSemiBold,
+              ),
+              SizedBox(height: getHeight() * .01),
+              CustomText(
+                text: al.choosePreferredLanguage,
+                fontSize: sizes?.fontSize16,
+                giveLinesAsText: true,
+              ),
+              SizedBox(height: getHeight() * .03),
+            ] else ...[
+              // Add some spacing when coming from profile
+              SizedBox(height: getHeight() * .02),
+            ],
 
             languageOption(label: al.english, flagPath: Assets.ukFlagIcon),
 
@@ -81,72 +109,64 @@ class LanguageSelectionState extends State<LanguageSelection> {
           horizontal: getWidth() * .05,
           vertical: getHeight() * .02,
         ),
-
-        child:
-            widget.isFromProfile == true
-                ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CustomButton(
-                      buttonText: al.cancel,
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      buttonWidth: getWidth() * .42,
-                      backgroundColor: Colors.transparent,
-                      borderColor: AppColors.blackColor,
-                      textColor: AppColors.blackColor,
-                      textFontWeight: FontWeight.w700,
-                    ),
-                    CustomButton(
-                      buttonText: al.saveChanges,
-                      onTap: () async {
-                        final locale =
-                            selectedLanguage == al.english ? "en" : "fr";
-                        provider.changeLocale(locale);
-                        context.pop();
-                        context.pop();
-                      },
-                      buttonWidth: getWidth() * .42,
-                      backgroundColor: AppColors.getPrimaryColorFromContext(
-                        context,
-                      ),
-                      borderColor: AppColors.getPrimaryColorFromContext(
-                        context,
-                      ),
-                      textColor: AppColors.whiteColor,
-                      textFontWeight: FontWeight.w700,
-                    ),
-                  ],
-                )
-                : SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final locale =
-                          selectedLanguage == al.english ? "en" : "fr";
-                      provider.changeLocale(locale);
-                      context
-                          .push(Routes.authRoute)
-                          .then((_) => setState(() {}));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.getPrimaryColorFromContext(
-                        context,
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: CustomText(
-                      text: al.continueText,
-                      fontSize: sizes?.fontSize16,
-                      fontFamily: Assets.onsetSemiBold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+        child: widget.isFromProfile == true
+            ? Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CustomButton(
+              buttonText: al.cancel,
+              onTap: () {
+                Navigator.pop(context);
+              },
+              buttonWidth: getWidth() * .42,
+              backgroundColor: Colors.transparent,
+              borderColor: AppColors.blackColor,
+              textColor: AppColors.blackColor,
+              textFontWeight: FontWeight.w700,
+            ),
+            CustomButton(
+              buttonText: al.saveChanges,
+              onTap: () async {
+                final locale =
+                selectedLanguage == al.english ? "en" : "fr";
+                provider.changeLocale(locale);
+                context.pop();
+                context.pop();
+              },
+              buttonWidth: getWidth() * .42,
+              backgroundColor:
+              AppColors.getPrimaryColorFromContext(context),
+              borderColor: AppColors.getPrimaryColorFromContext(context),
+              textColor: AppColors.whiteColor,
+              textFontWeight: FontWeight.w700,
+            ),
+          ],
+        )
+            : SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () async {
+              final locale =
+              selectedLanguage == al.english ? "en" : "fr";
+              provider.changeLocale(locale);
+              context.push(Routes.authRoute).then((_) => setState(() {}));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+              AppColors.getPrimaryColorFromContext(context),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: CustomText(
+              text: al.continueText,
+              fontSize: sizes?.fontSize16,
+              fontFamily: Assets.onsetSemiBold,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -159,16 +179,13 @@ class LanguageSelectionState extends State<LanguageSelection> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? AppColors.getPrimaryColorFromContext(context).withAlpha(20)
-                  : Colors.white,
+          color: isSelected
+              ? AppColors.getPrimaryColorFromContext(context).withAlpha(20)
+              : Colors.white,
           border: Border.all(
-            // color: isSelected ? Colors.lightBlue : Colors.grey.shade300,
-            color:
-                isSelected
-                    ? AppColors.getPrimaryColorFromContext(context)
-                    : AppColors.greyBordersColor,
+            color: isSelected
+                ? AppColors.getPrimaryColorFromContext(context)
+                : AppColors.greyBordersColor,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),

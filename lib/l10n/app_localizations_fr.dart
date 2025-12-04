@@ -1946,6 +1946,29 @@ class AppLocalizationsFr extends AppLocalizations {
   String get selectDocument => 'Sélectionner un document';
 
   @override
+  String get pleaseEnterCurrentPassword =>
+      'Veuillez entrer votre mot de passe actuel';
+
+  @override
+  String get pleaseEnterNewPassword =>
+      'Veuillez entrer un nouveau mot de passe';
+
+  @override
+  String get passwordMustInclude =>
+      'Le mot de passe doit contenir au moins 8 caractères et inclure une majuscule, une minuscule, un chiffre et un caractère spécial';
+
+  @override
+  String get confirmPasswordEmpty => 'La confirmation du mot de passe est vide';
+
+  @override
+  String get passwordsDoNotMatch =>
+      'Le nouveau mot de passe et la confirmation ne correspondent pas';
+
+  @override
+  String get newPasswordSameAsCurrent =>
+      'Le nouveau mot de passe ne peut pas être identique au mot de passe actuel';
+
+  @override
   String get pleaseSelectDocumentFirst =>
       'Veuillez d’abord sélectionner un document.';
 

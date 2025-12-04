@@ -20,11 +20,13 @@ class ProfileMenuAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final Function onSetting;
   final Function onSwitchAccount;
+  final String? userName; // Add this parameter
 
   const ProfileMenuAppBar({
     super.key,
     required this.onSetting,
     required this.onSwitchAccount,
+    this.userName, // Add this
   });
 
   @override
@@ -40,7 +42,7 @@ class ProfileMenuAppBar extends StatelessWidget implements PreferredSizeWidget {
             Padding(
               padding: EdgeInsets.only(left: sizes!.pagePadding),
               child: CustomText(
-                text: PreferenceUtils.getString(Strings.name)??"",
+                text: userName ?? "Profile",
                 fontWeight: FontWeight.w600,
                 fontSize: sizes?.fontSize18,
                 color: AppColors.blackColor,

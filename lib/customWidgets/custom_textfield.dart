@@ -11,6 +11,7 @@ class CustomField extends StatelessWidget {
   const CustomField({
     super.key,
     this.textEditingController,
+    this.onTap,
     this.hint,
     this.textInputType,
     this.width,
@@ -46,6 +47,7 @@ class CustomField extends StatelessWidget {
   final double? width;
   final double? height;
   final bool hidePassword;
+  final Function()? onTap; // NEW
   final bool obscure;
   final Function? clickIcon;
   final String? Function(String?)? validate;
@@ -179,6 +181,7 @@ class CustomField extends StatelessWidget {
 
             maxLines: maxLines,
             onChanged: onChanged,
+            onTap: onTap,
           ),
         ),
       ],

@@ -40,6 +40,7 @@ class _RestaurantHomeState extends State<RestaurantHome> {
 
   @override
   Widget build(BuildContext context) {
+    final role = context.read<RoleProvider>().role; //  get role
     _choiceProvider = Provider.of<ChoiceProvider>(context);
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
@@ -52,10 +53,21 @@ class _RestaurantHomeState extends State<RestaurantHome> {
           children: [
             Row(
               children: [
-                CustomText(
-                  text: "Choice",
-                  fontSize: sizes?.fontSize28,
-                  fontFamily: Assets.onsetSemiBold,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: al.welcome,
+                      fontSize: sizes?.fontSize14,
+                      fontFamily: Assets.onsetMedium,
+                    ),
+                    CustomText(
+                      text: "Liberty Bite Bistro",
+                      fontSize: sizes?.fontSize16,
+                      fontFamily: Assets.onsetSemiBold,
+                      color: AppColors.wellnessPrimaryColor,
+                    ),
+                  ],
                 ),
                 Spacer(),
                 CustomIconButton(
@@ -108,7 +120,7 @@ class _RestaurantHomeState extends State<RestaurantHome> {
           ),
           backgroundColor: AppColors.getPrimaryColorFromContext(context),
           onPressed: (){
-            final role = context.read<RoleProvider>().role; //  get role
+
             debugPrint("Current user role: $role");
 
             if (role == UserRole.user) {

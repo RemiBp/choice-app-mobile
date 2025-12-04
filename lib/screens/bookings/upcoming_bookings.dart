@@ -68,7 +68,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
                         date: booking.date,
                         endTime: booking.endTime,
                         guests: booking.guests,
-                        totalPrice: booking.totalPrice,
+                        totalPrice: '\$${booking.totalPrice}',
                         isEvent: booking.isEvent,
                         bookingId: booking.bookingId,
                         address: booking.address,
@@ -253,7 +253,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
               isUser
                   ? eventName
                   : (producerName.isNotEmpty ? producerName : eventName),
-          imageUrl: eventImageUrl, // Use the properly formatted URL
+          imageUrl: eventImageUrl,
           date: event?.date ?? '',
           startTime: event?.startTime ?? '',
           endTime: event?.endTime ?? '',
@@ -284,17 +284,17 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
           restaurant?.userName ??
           '';
       final customerName = customer?.fullName ?? booking?.customerName ?? '';
-      String restaurantImageUrl = '';
-      if (restaurant?.profileImageUrl != null &&
-          restaurant!.profileImageUrl!.isNotEmpty) {
-        restaurantImageUrl = _getFullImageUrl(restaurant.profileImageUrl!);
-      } else if (restaurant?.imageUrl != null &&
-          restaurant!.imageUrl!.isNotEmpty) {
-        restaurantImageUrl = _getFullImageUrl(restaurant.imageUrl!);
-      } else if (restaurant?.coverImage != null &&
-          restaurant!.coverImage!.isNotEmpty) {
-        restaurantImageUrl = _getFullImageUrl(restaurant.coverImage!);
-      }
+      // String restaurantImageUrl = '';
+      // if (restaurant?.profileImageUrl != null &&
+      //     restaurant!.profileImageUrl!.isNotEmpty) {
+      //   restaurantImageUrl = _getFullImageUrl(restaurant.profileImageUrl!);
+      // } else if (restaurant?.imageUrl != null &&
+      //     restaurant!.imageUrl!.isNotEmpty) {
+      //   restaurantImageUrl = _getFullImageUrl(restaurant.imageUrl!);
+      // } else if (restaurant?.coverImage != null &&
+      //     restaurant!.coverImage!.isNotEmpty) {
+      //   restaurantImageUrl = _getFullImageUrl(restaurant.coverImage!);
+      // }
 
       bookings.add(
         BookingCardData(
@@ -302,7 +302,7 @@ class _UpcomingBookingsState extends State<UpcomingBookings> {
               isUser
                   ? restaurantName
                   : (customerName.isNotEmpty ? customerName : restaurantName),
-          imageUrl: restaurantImageUrl, // Use the properly formatted URL
+          imageUrl:"https://dummyimage.com/600x400/cccccc/000000&text=No+Image",
           date: booking?.bookingDate ?? booking?.date ?? '',
           startTime: booking?.slotStartTime ?? booking?.startDateTime ?? '',
           endTime: booking?.slotEndTime ?? booking?.endDateTime ?? '',

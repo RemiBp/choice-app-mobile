@@ -1905,6 +1905,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectDocument => 'Select Document';
 
   @override
+  String get pleaseEnterCurrentPassword => 'Please enter your current password';
+
+  @override
+  String get pleaseEnterNewPassword => 'Please enter a new password';
+
+  @override
+  String get passwordMustInclude =>
+      'Password must be at least 8 characters and include uppercase, lowercase, number, and special character';
+
+  @override
+  String get confirmPasswordEmpty => 'Confirm Password is empty';
+
+  @override
+  String get passwordsDoNotMatch =>
+      'New Password and Confirm Password do not match';
+
+  @override
+  String get newPasswordSameAsCurrent =>
+      'New password cannot be the same as the current password';
+
+  @override
   String get pleaseSelectDocumentFirst => 'Please select a document first.';
 
   @override

@@ -59,9 +59,13 @@ class _WellnessProfileViewState extends State<WellnessProfileView>
 
   @override
   Widget build(BuildContext context) {
+    final userName = context.select<ProfileProvider, String>(
+          (provider) => provider.getProducerProfileResponse?.producer?.name ?? "",
+    );
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: ProfileMenuAppBar(
+        userName: userName,
         onSwitchAccount: () {
           showModalBottomSheet(
             context: context,
