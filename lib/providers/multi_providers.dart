@@ -6,6 +6,7 @@ import 'package:choice_app/screens/authentication/passwordManagement/password_pr
 import 'package:choice_app/screens/bookings/bookings_provider.dart';
 import 'package:choice_app/screens/customer/explore/book_now/create_booking_provider.dart';
 import 'package:choice_app/screens/customer/explore/customer_explore/customer_explore_view_provider.dart';
+import 'package:choice_app/screens/customer/maps/customer_maps/customer_maps_provider.dart';
 import 'package:choice_app/screens/customer/profile/customer_profile/customer_profile_provider.dart';
 import 'package:choice_app/screens/languageSelection/language_selection_provider.dart';
 import 'package:choice_app/screens/producer_maps/offer_provider.dart';
@@ -99,6 +100,10 @@ final multiProviders = [
   ),
   ChangeNotifierProvider<SubscriberProvider>(
     create: (context) => SubscriberProvider(),
+    lazy: true,
+  ),
+  ChangeNotifierProvider<CustomerMapsProvider>(
+    create: (context) => CustomerMapsProvider(),
     lazy: true,
   ),
 

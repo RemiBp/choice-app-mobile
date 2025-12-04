@@ -101,3 +101,5 @@ const String editProducerOfferApiUrl = "$baseUrl/api/producer/maps/updateProduce
 const String getUserLiveOfferApiUrl = "$baseUrl/api/producer/maps/getUserLiveOffers";
 
 const String copilotQueryApiUrl = "$baseUrl/api/app/copilot/query";
+
+const String getNearbyProducersOnMapApiUrl = "$baseUrl/api/app/maps/getNearbyProducers";
