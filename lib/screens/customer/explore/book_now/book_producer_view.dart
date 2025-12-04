@@ -94,7 +94,7 @@ class _BookProducerViewState extends State<BookProducerView> {
     const names = [
       "Monday",
       "Tuesday",
-      "Wednesday",
+      " Wednesday ",
       "Thursday",
       "Friday",
       "Saturday",

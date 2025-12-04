@@ -1,6 +1,7 @@
 import 'package:choice_app/utilities/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
@@ -42,7 +43,7 @@ class EventInfoSection extends StatelessWidget {
           ),
           SizedBox(height: 12),
           IconTextRow(
-            text: event?.date ?? "Unknown Date",
+            text: DateFormat('EEEE, MMMM d, yyyy').format(DateTime.tryParse(event?.date ?? "")?? DateTime.now()),
             svgString: Assets.calenderCircleSvg,
             subText: "${event?.startTime} - ${event?.endTime}",
           ),

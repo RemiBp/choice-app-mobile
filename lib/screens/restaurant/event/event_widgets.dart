@@ -5,6 +5,7 @@ import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/restaurant/event/eventWidgets/delete_event.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../appAssets/app_assets.dart';
@@ -116,7 +117,7 @@ class EventCard extends StatelessWidget {
                       SizedBox(width: 6),
                       CustomText(
                         text:
-                            '${eventsResponse?.date}, ${eventsResponse?.startTime} - ${eventsResponse?.endTime}',
+                            '${DateFormat('MMMM d').format(DateTime.tryParse(eventsResponse?.date ?? "")?? DateTime.now())}, ${eventsResponse?.startTime} - ${eventsResponse?.endTime}',
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
