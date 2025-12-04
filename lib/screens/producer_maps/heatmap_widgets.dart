@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../appColors/colors.dart';
-import '../../customWidgets/custom_text.dart';
-import '../../res/res.dart';
 import '../../utilities/heatmap_painter.dart';
 
 class HeatmapOverlay extends StatefulWidget {
   final GoogleMapController controller;
   final double zoom;
   final List<Map<String, dynamic>> points;
+  final GlobalKey mapKey;
   final Function(Map<String, dynamic> data, Offset position)? onPointTapped;
 
   const HeatmapOverlay({
@@ -17,6 +15,7 @@ class HeatmapOverlay extends StatefulWidget {
     required this.controller,
     required this.zoom,
     required this.points,
+    required this.mapKey,
     this.onPointTapped,
   });
 
@@ -28,6 +27,7 @@ class _HeatmapOverlayState extends State<HeatmapOverlay> {
   List<Offset> screenPoints = [];
   HeatmapPainter? _painter;
   bool _isComputing = false;
+  int _computeVersion = 0;
 
   @override
   void initState() {
@@ -38,40 +38,59 @@ class _HeatmapOverlayState extends State<HeatmapOverlay> {
   @override
   void didUpdateWidget(HeatmapOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // CRITICAL FIX: Recalculate on ANY change
     if (oldWidget.zoom != widget.zoom ||
-        oldWidget.points != widget.points ||
-        oldWidget.controller != widget.controller) {
+        oldWidget.points != widget.points) {
       _computeScreenPoints();
     }
   }
 
   Future<void> _computeScreenPoints() async {
-    // Prevent multiple simultaneous computations
     if (_isComputing) return;
+
     _isComputing = true;
+    final currentVersion = ++_computeVersion;
 
     try {
+      final RenderBox? mapBox = widget.mapKey.currentContext?.findRenderObject() as RenderBox?;
+      final Offset mapOffset = mapBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+
       final newPoints = <Offset>[];
 
-      // Batch process all points
       for (var p in widget.points) {
         try {
           final screenCoord = await widget.controller
               .getScreenCoordinate(LatLng(p["lat"], p["lng"]));
-          newPoints.add(Offset(screenCoord.x.toDouble(), screenCoord.y.toDouble()));
+
+          if (currentVersion != _computeVersion) {
+            return;
+          }
+
+          // Add map's offset to screen coordinates
+          final offset = Offset(
+            screenCoord.x.toDouble() + mapOffset.dx,
+            screenCoord.y.toDouble() + mapOffset.dy,
+          );
+          newPoints.add(offset);
+
+          // DEBUG: Print first point to verify coordinates
+          if (newPoints.length == 1) {
+            debugPrint("🎯 First heatmap point - Lat: ${p["lat"]}, Lng: ${p["lng"]} -> Screen: $offset (Map offset: $mapOffset)");
+          }
         } catch (e) {
-          debugPrint("Error converting coordinates: $e");
+          debugPrint("❌ Error converting coordinates: $e");
         }
       }
 
-      if (mounted) {
+      if (mounted && currentVersion == _computeVersion) {
         setState(() {
           screenPoints = newPoints;
         });
+        debugPrint("✅ Heatmap updated with ${newPoints.length} points at zoom ${widget.zoom}");
       }
     } finally {
-      _isComputing = false;
+      if (currentVersion == _computeVersion) {
+        _isComputing = false;
+      }
     }
   }
 
@@ -96,12 +115,13 @@ class _HeatmapOverlayState extends State<HeatmapOverlay> {
       },
       child: CustomPaint(
         painter: _painter,
+        size: Size.infinite,
         child: Container(),
       ),
     );
   }
 }
-// Custom widget that only accepts hits on heatmap bubbles
+
 class _CustomHitTestWidget extends SingleChildRenderObjectWidget {
   final HeatmapPainter painter;
   final Function(Offset position, int index) onTap;
@@ -179,16 +199,13 @@ class HeatmapTooltip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: getWidth() * 0.04,
-        vertical: getHeight() * 0.012,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -197,13 +214,15 @@ class HeatmapTooltip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CustomText(
-            text: '$userCount user${userCount == 1 ? '' : 's'} in this area',
-            fontSize: getWidth() * 0.032,
-            color: AppColors.blackColor,
-            fontWeight: FontWeight.w500,
+          Text(
+            '$userCount user${userCount == 1 ? '' : 's'} in this area',
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black87,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          SizedBox(width: getWidth() * 0.02),
+          const SizedBox(width: 8),
           GestureDetector(
             onTap: onDismiss,
             child: Icon(Icons.close, size: 16, color: Colors.grey[600]),

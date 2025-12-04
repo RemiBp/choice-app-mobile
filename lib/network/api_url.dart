@@ -100,3 +100,4 @@ const String getOfferTemplatesApiUrl = "$baseUrl/api/producer/maps/getOfferTempl
 const String editProducerOfferApiUrl = "$baseUrl/api/producer/maps/updateProducerOffer";
 const String getUserLiveOfferApiUrl = "$baseUrl/api/producer/maps/getUserLiveOffers";
 
+const String copilotQueryApiUrl = "$baseUrl/api/app/copilot/query";

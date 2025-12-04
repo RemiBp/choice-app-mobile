@@ -2,12 +2,15 @@ import 'package:choice_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_button.dart';
 import '../../../../res/res.dart';
 import '../../customWidgets/custom_text.dart';
 import '../../l18n.dart';
+import '../subscription/subscriber_provider.dart';
 
 class ChatBotHome extends StatefulWidget {
   const ChatBotHome({super.key});
@@ -20,37 +23,24 @@ class _ChatBotHomeState extends State<ChatBotHome> {
   final TextEditingController messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final List<Map<String, dynamic>> messages = []; // 👈 start empty
+  @override
+  void initState() {
+    super.initState();
 
-  void sendMessage() {
-    if (messageController.text.trim().isEmpty) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<SubscriberProvider>();
 
-    setState(() {
-      messages.add({
-        "text": messageController.text.trim(),
-        "isUser": true,
-      });
+      // Set the dialog callback
+      provider.onLimitReached = _showUpgradeDialog;
 
-      // Simulated AI reply (just for demo)
-      messages.add({
-        "text": "Got it! I’ll process your request soon 😊",
-        "isUser": false,
+      // Auto-scroll listener only
+      provider.addListener(() {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+        });
       });
     });
-
-    messageController.clear();
-
-    // After UI update, scroll to bottom
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-
-    // Show Upgrade Dialog after 5 user messages
-    final userMessages =
-        messages.where((msg) => msg["isUser"] == true).length;
-    if (userMessages == 5) {
-      Future.delayed(const Duration(milliseconds: 300), _showUpgradeDialog);
-    }
   }
-
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -62,9 +52,26 @@ class _ChatBotHomeState extends State<ChatBotHome> {
     }
   }
 
+  void sendMessage() {
+    final provider = context.read<SubscriberProvider>();
+
+    // Show dialog and block sending when limit reached
+    if (provider.limitBlocked) {
+      _showUpgradeDialog();
+      return;
+    }
+
+    final text = messageController.text.trim();
+    if (text.isEmpty) return;
+
+    provider.sendQuery(text);
+    messageController.clear();
+  }
   @override
   Widget build(BuildContext context) {
     final themeColor = AppColors.getPrimaryColorFromContext(context);
+    final provider = context.watch<SubscriberProvider>();
+    final messages = provider.messages;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -85,7 +92,7 @@ class _ChatBotHomeState extends State<ChatBotHome> {
       ),
       body: Column(
         children: [
-          // Chat / Welcome Area
+          // Chat Area
           Expanded(
             child: messages.isEmpty
                 ? _buildWelcomeView(themeColor)
@@ -98,12 +105,11 @@ class _ChatBotHomeState extends State<ChatBotHome> {
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final msg = messages[index];
-                final isUser = msg["isUser"] as bool;
+                final isUser = msg.isUser;
 
                 return Align(
-                  alignment: isUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
+                  alignment:
+                  isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: EdgeInsets.only(
                       bottom: getHeight() * 0.015,
@@ -115,30 +121,54 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                           ? CrossAxisAlignment.end
                           : CrossAxisAlignment.start,
                       children: [
-                        if (msg["text"] != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: isUser
-                                  ? themeColor
-                                  : AppColors.greyColor
-                                  .withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(14),
-                                topRight: const Radius.circular(14),
-                                bottomLeft:
-                                Radius.circular(isUser ? 14 : 0),
-                                bottomRight:
-                                Radius.circular(isUser ? 0 : 14),
-                              ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isUser
+                                ? themeColor
+                                : AppColors.greyColor.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(14),
+                              topRight: const Radius.circular(14),
+                              bottomLeft:
+                              Radius.circular(isUser ? 14 : 0),
+                              bottomRight:
+                              Radius.circular(isUser ? 0 : 14),
                             ),
-                            child: ChatBotCustomText(
-                              text: msg["text"],
-                              color: isUser
-                                  ? AppColors.whiteColor
-                                  : AppColors.blackColor,
-                              fontSize: sizes?.fontSize14,
+                          ),
+                          child: ChatBotCustomText(
+                            text: msg.text,
+                            color: isUser
+                                ? AppColors.whiteColor
+                                : AppColors.blackColor,
+                            fontSize: sizes?.fontSize14,
+                          ),
+                        ),
+
+                        // DATA LIST (if exists)
+                        if (msg.data != null &&
+                            msg.data is List &&
+                            msg.data.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 6.0, left: 6, right: 6),
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: msg.data.map<Widget>((item) {
+                                return Padding(
+                                  padding:
+                                  const EdgeInsets.only(bottom: 4),
+                                  child: Text(
+                                    "• ${item["name"]} — ${item["openFrom"]} to ${item["openUntil"]}",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.blackColor,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                             ),
                           ),
                       ],
@@ -149,7 +179,7 @@ class _ChatBotHomeState extends State<ChatBotHome> {
             ),
           ),
 
-          // Divider + Input Field
+          // Input Bar
           SafeArea(
             top: false,
             child: Column(
@@ -173,7 +203,6 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                           controller: messageController,
                           maxLines: null,
                           minLines: 1,
-                          textInputAction: TextInputAction.newline,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: themeColor.withValues(alpha: 0.08),
@@ -208,15 +237,16 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                       ),
                       SizedBox(width: getWidth() * 0.02),
                       GestureDetector(
-                        onTap: sendMessage,
+                        onTap: sendMessage, // Always callable - handles blocking internally
                         child: CircleAvatar(
                           radius: 22,
-                          backgroundColor: themeColor,
-                          child:
-                          const Icon(Icons.send, color: AppColors.whiteColor),
+                          backgroundColor: provider.limitBlocked ? Colors.grey : themeColor,
+                          child: Icon(
+                            Icons.send,
+                            color: AppColors.whiteColor,
+                          ),
                         ),
-                      ),
-                    ],
+                      ),                    ],
                   ),
                 ),
               ],
@@ -227,7 +257,7 @@ class _ChatBotHomeState extends State<ChatBotHome> {
     );
   }
 
-  // Empty State (Welcome screen)
+  // Welcome empty state
   Widget _buildWelcomeView(Color themeColor) {
     return Center(
       child: Padding(
@@ -235,10 +265,8 @@ class _ChatBotHomeState extends State<ChatBotHome> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Copilot Icon + Text in one row
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
                   Assets.copilotIcon,
@@ -251,23 +279,19 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                   style: TextStyle(
                     fontSize: 34,
                     fontWeight: FontWeight.w600,
-                    fontFamily:Assets.onsetSemiBold
-
+                    fontFamily: Assets.onsetSemiBold,
                   ),
                 ),
               ],
             ),
-
             const SizedBox(height: 5),
-
-            // Subtitle
             Text(
               "Your Everyday AI Companion",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
-                fontFamily: Assets.onsetRegular
+                fontFamily: Assets.onsetRegular,
               ),
             ),
           ],
@@ -276,6 +300,7 @@ class _ChatBotHomeState extends State<ChatBotHome> {
     );
   }
 
+  // Upgrade Dialog
   void _showUpgradeDialog() {
     showDialog(
       context: context,
@@ -287,11 +312,10 @@ class _ChatBotHomeState extends State<ChatBotHome> {
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: EdgeInsets.symmetric(
-            horizontal: getWidth() * 0.08, //  horizontal margin
+            horizontal: getWidth() * 0.08,
           ),
           child: Container(
-            width: getWidth() * 0.85, // 342px on typical phone
-            height: getHeight() * 0.35, // 304px
+            height: getHeight() * 0.35,
             padding: EdgeInsets.all(getWidth() * 0.06),
             decoration: BoxDecoration(
               color: AppColors.whiteColor,
@@ -300,9 +324,8 @@ class _ChatBotHomeState extends State<ChatBotHome> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Circle container with SVG icon
                 Container(
-                  width: getWidth() * 0.20, // ~80px
+                  width: getWidth() * 0.20,
                   height: getWidth() * 0.20,
                   decoration: BoxDecoration(
                     color: AppColors.restaurantPrimaryColor.withValues(alpha: 0.1),
@@ -310,16 +333,13 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                   ),
                   child: Center(
                     child: SvgPicture.asset(
-                      Assets.crownIcon, // your SVG icon path
-                      height: getWidth() * 0.12, // ~48px
+                      Assets.crownIcon,
+                      height: getWidth() * 0.12,
                       width: getWidth() * 0.12,
                     ),
                   ),
                 ),
-
                 SizedBox(height: getHeight() * 0.02),
-
-                // Title
                 CustomText(
                   text: al.unlockMoreWithPlus,
                   textAlign: TextAlign.center,
@@ -327,10 +347,7 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                   fontWeight: FontWeight.w600,
                   fontFamily: Assets.onsetSemiBold,
                 ),
-
                 SizedBox(height: getHeight() * 0.01),
-
-                // Subtitle
                 CustomText(
                   text: al.getMoreCapableModels,
                   textAlign: TextAlign.center,
@@ -339,15 +356,11 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                   fontFamily: Assets.onsetRegular,
                   giveLinesAsText: true,
                 ),
-
                 const Spacer(),
-
-                // Upgrade Button
                 CustomButton(
                   buttonText: al.upgrade,
                   onTap: () {
                     context.push(Routes.subscribeRoute);
-                    //  handle upgrade action here
                   },
                   backgroundColor: themeColor,
                   textColor: AppColors.whiteColor,
@@ -363,5 +376,4 @@ class _ChatBotHomeState extends State<ChatBotHome> {
       },
     );
   }
-
 }
