@@ -15,6 +15,8 @@ import 'package:choice_app/screens/restaurant/home/choice_provider.dart';
 import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../screens/customer/chat/chat_provider.dart';
+import '../screens/customer/chat/messages_provider.dart';
 import '../screens/customer/explore/restaurant_explore_details/event_details_provider.dart';
 import '../screens/customer/explore/restaurant_explore_details/non_event_details_provider.dart';
 import '../screens/customer/home/choice_provider.dart';
@@ -26,7 +28,8 @@ final multiProviders = [
   ChangeNotifierProvider<LanguageSelectionProvider>(
     create: (_) => LanguageSelectionProvider(),
     lazy: true,
-  ), ChangeNotifierProvider<ProfileProvider>(
+  ),
+  ChangeNotifierProvider<ProfileProvider>(
     create: (_) => ProfileProvider(),
     lazy: true,
   ),
@@ -42,10 +45,7 @@ final multiProviders = [
     create: (_) => RoleProvider(),
     lazy: true,
   ),
-  ChangeNotifierProvider<OtpProvider>(
-    create: (_) => OtpProvider(),
-    lazy: true,
-  ),
+  ChangeNotifierProvider<OtpProvider>(create: (_) => OtpProvider(), lazy: true),
   ChangeNotifierProvider<TemplateProvider>(
     create: (_) => TemplateProvider(),
     lazy: true,
@@ -107,4 +107,12 @@ final multiProviders = [
     lazy: true,
   ),
 
+  ChangeNotifierProvider<ChatProvider>(
+    create: (_) => ChatProvider(),
+    lazy: true,
+  ),
+  ChangeNotifierProvider<MessagesProvider>(
+    create: (_) => MessagesProvider(),
+    lazy: true,
+  ),
 ];
