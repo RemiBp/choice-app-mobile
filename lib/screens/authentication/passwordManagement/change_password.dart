@@ -122,38 +122,55 @@ class _ChangePassword extends State<ChangePassword> {
               child: CustomButton(
                 buttonText: al.saveChanges,
 
-                onTap: () {
+                  onTap: () async {
                     final currentPassword = currentPasswordController.text.trim();
                     final newPassword = newPasswordController.text.trim();
                     final confirmPassword = confirmPasswordController.text.trim();
 
                     final provider = context.read<ProfileProvider>();
-                    provider.init(context); // This line is REQUIRED before using context-dependent code
+                    provider.init(context);
 
-                    if (currentPassword.isEmpty ) {
-                      Toasts.getErrorToast(text: "Current Password is empty");
+                    // Validation 1: Current Password Empty
+                    if (currentPassword.isEmpty) {
+                      Toasts.getErrorToast(text: al.pleaseEnterCurrentPassword);
                       return;
                     }
+
+                    // Validation 2: New Password Empty
                     if (newPassword.isEmpty) {
-                      Toasts.getErrorToast(text: "New Password is empty");
+                      Toasts.getErrorToast(text: al.pleaseEnterNewPassword);
                       return;
                     }
+
+                    if (!_isPasswordValid(newPassword)) {
+                      Toasts.getErrorToast(
+                          text: al.passwordMustInclude
+                      );
+                      return;
+                    }
+
+                    // Validation 3: Confirm Password Empty
                     if (confirmPassword.isEmpty) {
-                      Toasts.getErrorToast(text: "Confirm Password is empty");
+                      Toasts.getErrorToast(text: al.confirmPasswordEmpty);
                       return;
                     }
 
+                    // Validation 4: Passwords don't match
                     if (newPassword != confirmPassword) {
-                      Toasts.getErrorToast(text: "New Password and Confirm Password do not match");
+                      Toasts.getErrorToast(text: al.passwordsDoNotMatch);
                       return;
                     }
-
+                    // Validation 5: New password same as current password
+                    if (newPassword == currentPassword) {
+                      Toasts.getErrorToast(text: al.newPasswordSameAsCurrent);
+                      return;
+                    }
                     context.read<ProfileProvider>().updatePassword(
                       currentPassword: currentPassword,
                       newPassword: newPassword,
                       confirmPassword: confirmPassword,
                     );
-                },
+                  },
                 backgroundColor: AppColors.getPrimaryColorFromContext(context),
                 textColor: AppColors.whiteColor,
                 borderColor: AppColors.getPrimaryColorFromContext(context),
@@ -163,6 +180,24 @@ class _ChangePassword extends State<ChangePassword> {
         ),
       ),
     );
+  }
+  bool _isPasswordValid(String password) {
+    // At least 8 characters
+    if (password.length < 8) return false;
+
+    // Contains uppercase
+    if (!password.contains(RegExp(r'[A-Z]'))) return false;
+
+    // Contains lowercase
+    if (!password.contains(RegExp(r'[a-z]'))) return false;
+
+    // Contains number
+    if (!password.contains(RegExp(r'[0-9]'))) return false;
+
+    // Contains special character
+    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) return false;
+
+    return true;
   }
 }
 

@@ -426,6 +426,7 @@ class _CreateChoiceState extends State<CreateChoice> {
                     textColor: AppColors.blackColor,
                     borderColor: AppColors.blackColor,
                     onTap: () => Navigator.pop(context),
+
                   ),
                 ),
                 SizedBox(width: 12),
@@ -513,6 +514,7 @@ class _CreateChoiceState extends State<CreateChoice> {
     );
 
     Toasts.getSuccessToast(text: al.choiceCreatedSuccessfully);
+    Navigator.pop(context);
     Navigator.pop(context);
   }
 

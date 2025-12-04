@@ -299,7 +299,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                           //final int idx = provider.wellness!.selectedServices.indexOf(s);
                           //final isSelected = selectedServiceIndexes.contains(idx);
                           return Padding(
-                            padding: const EdgeInsets.only(left: 20), // optional, for alignment
+                            padding: const EdgeInsets.only(left: 20 , right: 20), // optional, for alignment
                             child: WellnessServiceTile(
                               title: serviceName,
                               //isSelected: isSelected,

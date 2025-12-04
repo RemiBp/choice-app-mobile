@@ -3788,6 +3788,42 @@ abstract class AppLocalizations {
   /// **'Select Document'**
   String get selectDocument;
 
+  /// No description provided for @pleaseEnterCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your current password'**
+  String get pleaseEnterCurrentPassword;
+
+  /// No description provided for @pleaseEnterNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a new password'**
+  String get pleaseEnterNewPassword;
+
+  /// No description provided for @passwordMustInclude.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters and include uppercase, lowercase, number, and special character'**
+  String get passwordMustInclude;
+
+  /// No description provided for @confirmPasswordEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password is empty'**
+  String get confirmPasswordEmpty;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password and Confirm Password do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @newPasswordSameAsCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'New password cannot be the same as the current password'**
+  String get newPasswordSameAsCurrent;
+
   /// No description provided for @pleaseSelectDocumentFirst.
   ///
   /// In en, this message translates to:
