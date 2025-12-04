@@ -88,7 +88,7 @@ class _SignupState extends State<Signup> {
               borderColor: AppColors.greyBordersColor,
               hint: al.businessName,
               label: al.businessName,
-              inputFormatters: [AllowOnlyAlphanumericUnderscore()],
+              inputFormatters: [AllowAllButNoEmojis()],
             ),
             SizedBox(height: getHeight() * .01),
             CustomField(

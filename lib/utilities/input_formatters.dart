@@ -38,3 +38,21 @@ class AllowOnlyAsciiCharacters extends TextInputFormatter {
     return oldValue;
   }
 }
+
+
+// Allows all languages & symbols, BUT blocks emojis and all surrogate-pair characters.
+class AllowAllButNoEmojis extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+
+    // This regex matches characters that are NOT surrogate pairs (U+0000–U+FFFF).
+    // Emojis live in UTF-16 surrogate ranges: \uD800–\uDFFF.
+    final regex = RegExp(r'^[^\uD800-\uDFFF]*$');
+
+    if (regex.hasMatch(newValue.text)) {
+      return newValue;
+    }
+    return oldValue;
+  }
+}

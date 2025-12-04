@@ -254,7 +254,7 @@ class _UploadReclaimDocsState extends State<UploadReclaimDocs> {
             const Spacer(),
 
             CustomButton(
-              buttonText: al.continueText,
+              buttonText: "Submit & Review",
               onTap: () {
                 context.push(Routes.restaurantProfileRoute);
               },
