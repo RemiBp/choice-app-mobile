@@ -149,4 +149,12 @@ class Assets {
 
   //images
   static const String waiting = "assets/images/waiting.png";
+
+  //loader
+  static const String userLoader = "assets/json/Blue.json";
+  static const String restaurantLoader = "assets/json/Yellow.json";
+  static const String leisureLoader = "assets/json/Purple.json";
+  static const String wellnessLoader = "assets/json/Green.json";
+
+
 }

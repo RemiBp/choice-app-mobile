@@ -75,6 +75,12 @@
   "continueText": "Continuer",
   "phoneNumber": "Numéro de téléphone",
   "weeklyEvolution": "Évolution Hebdomadaire",
+    "pleaseEnterCurrentPassword": "Veuillez entrer votre mot de passe actuel",
+    "pleaseEnterNewPassword": "Veuillez entrer un nouveau mot de passe",
+    "passwordMustInclude": "Le mot de passe doit contenir au moins 8 caractères et inclure une majuscule, une minuscule, un chiffre et un caractère spécial",
+    "confirmPasswordEmpty": "La confirmation du mot de passe est vide",
+    "passwordsDoNotMatch": "Le nouveau mot de passe et la confirmation ne correspondent pas",
+    "newPasswordSameAsCurrent": "Le nouveau mot de passe ne peut pas être identique au mot de passe actuel",
 
   "welcome": "Bienvenue",
   "sound": "Son",

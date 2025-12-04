@@ -23,7 +23,8 @@ class LeisureProfileView extends StatefulWidget {
   State<LeisureProfileView> createState() => _LeisureProfileViewState();
 }
 
-class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTickerProviderStateMixin{
+class _LeisureProfileViewState extends State<LeisureProfileView>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedTabIndex = 0;
 
@@ -33,7 +34,8 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
 
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
-      if (_tabController.indexIsChanging || _tabController.index != _selectedTabIndex) {
+      if (_tabController.indexIsChanging ||
+          _tabController.index != _selectedTabIndex) {
         setState(() {
           _selectedTabIndex = _tabController.index;
         });
@@ -62,10 +64,14 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
   @override
   Widget build(BuildContext context) {
     final roleProvider = Provider.of<RoleProvider>(context, listen: false);
+    final userName = context.select<ProfileProvider, String>(
+      (provider) => provider.getProducerProfileResponse?.producer?.name ?? "",
+    );
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: ProfileMenuAppBar(
-        onSwitchAccount: (){
+        userName: userName,
+        onSwitchAccount: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -86,18 +92,26 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
           SizedBox(height: getHeight() * 0.02),
 
           Selector<ProfileProvider, String>(
-              selector: (context, provider) => provider.getProducerProfileResponse?.producer?.name ?? "",
-              builder: (context, userName, _) {
-                return RestaurantProfileHeader(userName: userName);
-              }
+            selector:
+                (context, provider) =>
+                    provider.getProducerProfileResponse?.producer?.name ?? "",
+            builder: (context, userName, _) {
+              return RestaurantProfileHeader(userName: userName);
+            },
           ),
           // CustomerProfileHeader(),
           SizedBox(height: getHeight() * 0.01),
 
-          Selector<ProfileProvider , String>(
-              selector: (context, provider) => provider.getProducerProfileResponse?.businessProfile?.description??"",
-              builder: (context ,description, _) {
-                return Padding(
+          Selector<ProfileProvider, String>(
+            selector:
+                (context, provider) =>
+                    provider
+                        .getProducerProfileResponse
+                        ?.businessProfile
+                        ?.description ??
+                    "",
+            builder: (context, description, _) {
+              return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: CustomText(
                   text: description,
@@ -108,7 +122,7 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
                   giveLinesAsText: true,
                 ),
               );
-            }
+            },
           ),
           SizedBox(height: getHeight() * 0.01),
           Container(
@@ -150,10 +164,12 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
             child: TabBarView(
               controller: _tabController,
               children: [
-                const RestaurantChoiceView(enableOnTap: true,),
+                const RestaurantChoiceView(enableOnTap: true),
                 const RestaurantPostsView(),
-                if(roleProvider.role == UserRole.leisure) const LeisureAboutView(),
-                if(roleProvider.role == UserRole.restaurant) const RestaurantAboutView(),
+                if (roleProvider.role == UserRole.leisure)
+                  const LeisureAboutView(),
+                if (roleProvider.role == UserRole.restaurant)
+                  const RestaurantAboutView(),
               ],
             ),
           ),

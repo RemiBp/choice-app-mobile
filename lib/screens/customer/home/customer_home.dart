@@ -15,6 +15,7 @@ import '../../../l18n.dart';
 import '../../../userRole/role_provider.dart';
 import '../../../userRole/user_role.dart';
 import '../../producer_maps/offer_provider.dart';
+import '../Search/social_search_customer.dart';
 
 class CustomerHome extends StatefulWidget {
   const CustomerHome({super.key});
@@ -163,11 +164,17 @@ class _CustomerHomeState extends State<CustomerHome> {
 
             SizedBox(height: getHeight() * .02),
 
-            // Search Field
             CustomField(
               borderColor: AppColors.greyBordersColor,
               hint: al.searchUserPlaceholder,
               prefixIconSvg: Assets.searchIcon,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchScreen()),
+                );
+              },
+
             ),
 
             SizedBox(height: getHeight() * .02),

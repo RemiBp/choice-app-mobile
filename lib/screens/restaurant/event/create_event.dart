@@ -302,7 +302,7 @@ class _CreateEventState extends State<CreateEvent> {
                       fontFamily: Assets.onsetMedium,
                     ),
                     CustomText(
-                      text: al.uploadEventImages,
+                      text: al.upTo5Images,
                       fontSize: sizes?.fontSize12,
                     ),
                     SizedBox(height: getHeight() * .02),

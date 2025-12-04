@@ -1,20 +1,46 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:choice_app/providers/multi_providers.dart';
+import 'package:choice_app/res/constant.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/languageSelection/language_selection_provider.dart';
+import 'package:choice_app/store_config.dart';
 import 'package:choice_app/utilities/timezone_helper.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'common/utils.dart';
 import 'l10n/app_localizations.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   TimezoneHelper.initialize();
   await PreferenceUtils.init();
+
+
+  // if (Platform.isIOS || Platform.isMacOS) {
+  //   StoreConfig(store: Store.appStore, apiKey: appleApiKey);
+  // } else if (Platform.isAndroid) {
+  //   StoreConfig(store: Store.playStore, apiKey: googleApiKey);
+  // }
+  //
+  // await Purchases.setLogLevel(LogLevel.debug);
+  //
+  // PurchasesConfiguration configuration =
+  // PurchasesConfiguration(StoreConfig.instance.apiKey)
+  //   ..appUserID = null
+  //   ..purchasesAreCompletedBy =
+  //   const PurchasesAreCompletedByRevenueCat();
+  //
+  // await Purchases.configure(configuration);
+
+
   runApp(MultiProvider(providers: multiProviders, child: const MyApp()));
 }
 
