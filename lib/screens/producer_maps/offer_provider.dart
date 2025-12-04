@@ -1,3 +1,4 @@
+import 'package:choice_app/models/get_user_live_offers_response.dart';
 import 'package:flutter/material.dart';
 import '../../models/get_producer_offer_templates_response.dart';
 import '../../network/API.dart';
@@ -221,6 +222,40 @@ class TemplateProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Future<GetUserLiveOffersResponse?> getUserLiveOffers({
+    required BuildContext context,
+  }) async {
+    try {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      final response = await MyApi.callGetApi(
+        url: getUserLiveOfferApiUrl,
+        modelName: Models.getUserLiveOfferModel,
+      );
+
+      _isLoading = false;
+      notifyListeners();
+
+      if (response is GetUserLiveOffersResponse) {
+        debugPrint("✅ User Live Offers fetched: ${response.message}");
+        return response; // return the full response object
+      } else {
+        Toasts.getErrorToast(text: "Failed to parse live offers.");
+        return null;
+      }
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = "Error fetching live offers";
+      notifyListeners();
+      debugPrint("❌ getUserLiveOffers error: $e");
+      Toasts.getErrorToast(text: "Something went wrong while fetching live offers.");
+      return null;
+    }
+  }
+
 
 
 }

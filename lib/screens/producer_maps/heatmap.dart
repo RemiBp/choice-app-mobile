@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:choice_app/screens/producer_maps/producer_heatmap_provider.dart';
 import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +26,17 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
   double _currentZoom = 11;
 
   GoogleMapController? _mapController;
+  final GlobalKey _mapKey = GlobalKey();
 
   Map<String, dynamic>? _selectedPoint;
   Offset? _selectedPointPosition;
+  LatLng? _selectedLatLng;
+
+
+  Set<Marker> _markers = {};
+  int _heatmapKey = 0;
+  Set<Circle> _heatmapCircles = {};
+
 
   final List<String> timeFilters = [
     al.allDay,
@@ -63,20 +72,241 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
       profileProvider.context = context;
 
       await heatmapProvider.fetchProducerHeatmapFromProfile();
+      _createHeatmapCircles();
     });
   }
-  void _showTooltip(Map<String, dynamic> data, Offset position) {
+
+
+  void _createHeatmapCircles() {
+    final heatmapProvider = ProducerHeatmapProvider.of(context, listen: false);
+    final points = heatmapProvider.heatmapCoordinates;
+
+    if (points.isEmpty) return;
+
+    // Find max intensity for normalization
+    final maxIntensity = points
+        .map((e) => (e["count"] ?? 1).toDouble())
+        .reduce((a, b) => a > b ? a : b);
+
     setState(() {
-      _selectedPoint = data;
-      _selectedPointPosition = position;
+      _heatmapCircles = points.asMap().entries.expand((entry) {
+        final index = entry.key;
+        final point = entry.value;
+        final count = point["count"] ?? 1;
+        final intensity = count.toDouble();
+        final normalizedIntensity = (intensity / maxIntensity).clamp(0.0, 1.0);
+
+        // Base radius that doesn't change with zoom - smaller size
+        final baseRadius = 30.0 + (normalizedIntensity * 40.0); // 30-70 meters instead of 50-200
+
+        // Create multiple circles for gradient effect (like the image)
+        List<Circle> gradientCircles = [];
+
+        // Layer 1 - Innermost (Red/Orange) - Most opaque
+        gradientCircles.add(Circle(
+          circleId: CircleId('heatmap_${index}_inner'),
+          center: LatLng(point["lat"], point["lng"]),
+          radius: baseRadius * 0.3,
+          fillColor: _getInnerColor(normalizedIntensity).withValues(alpha:0.8),
+          strokeWidth: 0,
+          consumeTapEvents: true,
+          onTap: () => _showTooltipForPoint(point),
+        ));
+
+        // Layer 2 - Middle-Inner (Orange/Yellow)
+        gradientCircles.add(Circle(
+          circleId: CircleId('heatmap_${index}_mid1'),
+          center: LatLng(point["lat"], point["lng"]),
+          radius: baseRadius * 0.5,
+          fillColor: _getMidColor1(normalizedIntensity).withValues(alpha:0.6),
+          strokeWidth: 0,
+          consumeTapEvents: true,
+          onTap: () => _showTooltipForPoint(point),
+        ));
+
+        // Layer 3 - Middle (Yellow/Green)
+        gradientCircles.add(Circle(
+          circleId: CircleId('heatmap_${index}_mid2'),
+          center: LatLng(point["lat"], point["lng"]),
+          radius: baseRadius * 0.7,
+          fillColor: _getMidColor2(normalizedIntensity).withValues(alpha:0.4),
+          strokeWidth: 0,
+          consumeTapEvents: true,
+          onTap: () => _showTooltipForPoint(point),
+        ));
+
+        // Layer 4 - Outer (Green/Blue)
+        gradientCircles.add(Circle(
+          circleId: CircleId('heatmap_${index}_outer1'),
+          center: LatLng(point["lat"], point["lng"]),
+          radius: baseRadius * 0.85,
+          fillColor: _getOuterColor1(normalizedIntensity).withValues(alpha:0.25),
+          strokeWidth: 0,
+          consumeTapEvents: true,
+          onTap: () => _showTooltipForPoint(point),
+        ));
+
+        // Layer 5 - Outermost (Blue - fades out)
+        gradientCircles.add(Circle(
+          circleId: CircleId('heatmap_${index}_outer2'),
+          center: LatLng(point["lat"], point["lng"]),
+          radius: baseRadius,
+          fillColor: const Color(0xFF2196F3).withValues(alpha:0.15),
+          strokeWidth: 0,
+          consumeTapEvents: true,
+          onTap: () => _showTooltipForPoint(point),
+        ));
+
+        return gradientCircles;
+      }).toSet();
+
+      // Create visible markers in the center
+      _markers = points.asMap().entries.map((entry) {
+        final index = entry.key;
+        final point = entry.value;
+
+        return Marker(
+          markerId: MarkerId('marker_$index'),
+          position: LatLng(point["lat"], point["lng"]),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          onTap: () {
+            print('Marker tapped: ${point["count"]} users');
+            _showTooltipForPoint(point);
+          },
+        );
+      }).toSet();
     });
   }
+  Color _getInnerColor(double normalizedIntensity) {
+    // Red to Orange based on intensity
+    if (normalizedIntensity > 0.7) return Colors.red; // High intensity
+    if (normalizedIntensity > 0.5) return const Color(0xFFFF5722); // Orange-Red
+    if (normalizedIntensity > 0.3) return const Color(0xFFFF9800); // Orange
+    return const Color(0xFFFFEB3B); // Yellow for low intensity
+  }
+
+  Color _getMidColor1(double normalizedIntensity) {
+    // Orange to Yellow
+    if (normalizedIntensity > 0.7) return const Color(0xFFFF5722); // Orange
+    if (normalizedIntensity > 0.5) return const Color(0xFFFF9800); // Orange
+    if (normalizedIntensity > 0.3) return const Color(0xFFFFEB3B); // Yellow
+    return const Color(0xFF8BC34A); // Light Green
+  }
+
+  Color _getMidColor2(double normalizedIntensity) {
+    // Yellow to Green
+    if (normalizedIntensity > 0.7) return const Color(0xFFFF9800); // Orange
+    if (normalizedIntensity > 0.5) return const Color(0xFFFFEB3B); // Yellow
+    if (normalizedIntensity > 0.3) return const Color(0xFF8BC34A); // Light Green
+    return const Color(0xFF4CAF50); // Green
+  }
+
+  Color _getOuterColor1(double normalizedIntensity) {
+    // Green to Blue
+    if (normalizedIntensity > 0.7) return const Color(0xFFFFEB3B); // Yellow
+    if (normalizedIntensity > 0.5) return const Color(0xFF8BC34A); // Light Green
+    if (normalizedIntensity > 0.3) return const Color(0xFF4CAF50); // Green
+    return const Color(0xFF03A9F4); // Light Blue
+  }
+
+
+  void _showTooltipForPoint(Map<String, dynamic> point) async {
+    final latLng = LatLng(point["lat"], point["lng"]);
+
+    // Convert LatLng to screen position first
+    if (_mapController != null) {
+      try {
+        final screenCoordinate = await _mapController!.getScreenCoordinate(latLng);
+
+        if (mounted) {
+          setState(() {
+            _selectedPoint = point;
+            _selectedLatLng = latLng;
+            _selectedPointPosition = Offset(
+              screenCoordinate.x.toDouble(),
+              screenCoordinate.y.toDouble(),
+            );
+          });
+
+          // Auto-hide after 5 seconds
+          Future.delayed(const Duration(seconds: 5), () {
+            if (mounted && _selectedPoint == point) {
+              _hideTooltip();
+            }
+          });
+        }
+      } catch (e) {
+        print('Error getting screen coordinate: $e');
+      }
+    }
+  }
+
+  // void _createMarkers() {
+  //   final heatmapProvider = ProducerHeatmapProvider.of(context, listen: false);
+  //   final points = heatmapProvider.heatmapCoordinates;
+  //
+  //   setState(() {
+  //     _markers = points.asMap().entries.map((entry) {
+  //       final index = entry.key;
+  //       final point = entry.value;
+  //       final count = point["count"] ?? 0;
+  //
+  //       return Marker(
+  //         markerId: MarkerId('point_$index'),
+  //         position: LatLng(point["lat"], point["lng"]),
+  //         icon: BitmapDescriptor.defaultMarkerWithHue(_getMarkerHue(count)),
+  //         infoWindow: InfoWindow(
+  //           title: '$count user${count == 1 ? '' : 's'}',
+  //           snippet: 'Lat: ${point["lat"]}, Lng: ${point["lng"]}',
+  //         ),
+  //       );
+  //     }).toSet();
+  //   });
+  // }
+  //
+  // double _getMarkerHue(int count) {
+  //   // Green (120) -> Yellow (60) -> Red (0)
+  //   if (count <= 5) return 120.0;  // Green
+  //   if (count <= 10) return 90.0;  // Yellow-Green
+  //   if (count <= 15) return 60.0;  // Yellow
+  //   if (count <= 20) return 30.0;  // Orange
+  //   return 0.0;                     // Red
+  // }
+
+  // void _showTooltip(Map<String, dynamic> data, Offset position) {
+  //   setState(() {
+  //     _selectedPoint = data;
+  //     _selectedPointPosition = position;
+  //   });
+  // }
 
   void _hideTooltip() {
     setState(() {
       _selectedPoint = null;
       _selectedPointPosition = null;
+      _selectedLatLng = null;
     });
+  }
+  void _updateTooltipPosition() async {
+    if (_selectedLatLng != null && _mapController != null) {
+      final RenderBox? mapBox = _mapKey.currentContext?.findRenderObject() as RenderBox?;
+      final screenCoordinate = await _mapController!.getScreenCoordinate(_selectedLatLng!);
+
+      double topOffset = 0;
+      if (mapBox != null) {
+        final mapPosition = mapBox.localToGlobal(Offset.zero);
+        topOffset = mapPosition.dy;
+      }
+
+      if (mounted) {
+        setState(() {
+          _selectedPointPosition = Offset(
+            screenCoordinate.x.toDouble(),
+            screenCoordinate.y.toDouble() + topOffset,
+          );
+        });
+      }
+    }
   }
 
   @override
@@ -92,35 +322,20 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
           Expanded(
             child: Stack(
               children: [
-                // GOOGLE MAP
-                Positioned.fill(
-                  child: _buildGoogleMap(heatmapProvider),
-                ),
 
-                // HEATMAP OVERLAY - allows taps to pass through to map
-                if (_mapController != null && heatmapProvider.heatmapCoordinates.isNotEmpty)
-                  Positioned.fill(
-                    child: HeatmapOverlay(
-                      key: ValueKey('${_currentZoom}_${heatmapProvider.heatmapCoordinates.length}'),
-                      controller: _mapController!,
-                      zoom: _currentZoom,
-                      points: heatmapProvider.heatmapCoordinates,
-                      onPointTapped: (data, position) {
-                        _showTooltip(data, position);
-                      },
-                    ),
-                  ),
+                _buildGoogleMap(heatmapProvider),
 
                 // ZOOM BUTTONS
                 _buildZoomButtons(),
 
-                // TOOLTIP - positioned directly, not as a full-screen overlay
+                // TOOLTIP
                 if (_selectedPoint != null && _selectedPointPosition != null)
                   Positioned(
-                    left: (_selectedPointPosition!.dx - 80).clamp(10.0, MediaQuery.of(context).size.width - 170),
-                    top: (_selectedPointPosition!.dy - 60).clamp(10.0, MediaQuery.of(context).size.height - 100),
-                    child: GestureDetector(
-                      onTap: () {}, // Absorb taps on tooltip itself
+                    left: (_selectedPointPosition!.dx - 75).clamp(10.0, MediaQuery.of(context).size.width - 160),
+                    top: (_selectedPointPosition!.dy - 100).clamp(10.0, MediaQuery.of(context).size.height - 200),
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(8),
                       child: HeatmapTooltip(
                         position: _selectedPointPosition!,
                         userCount: _selectedPoint!["count"] ?? 0,
@@ -198,37 +413,29 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
   Widget _buildGoogleMap(ProducerHeatmapProvider provider) {
     return GoogleMap(
       initialCameraPosition: const CameraPosition(
-        target: LatLng(31.5204, 74.3587),  // Lahore center
-        zoom: 17,                          // closer zoom so heatmap is visible
+        target: LatLng(31.5204, 74.3587),
+        zoom: 14,
       ),
+      markers: _markers,
+      circles: _heatmapCircles, // ADD CIRCLES
       onMapCreated: (controller) {
         _mapController = controller;
-        // Trigger initial render after a short delay
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) setState(() {});
-        });
       },
       onCameraMove: (position) {
         _currentZoom = position.zoom;
-        // Hide tooltip when map moves
-        if (_selectedPoint != null) {
-          _hideTooltip();
+        if (_selectedLatLng != null && _mapController != null) {
+          _updateTooltipPosition();
         }
-      },
-      onCameraIdle: () {
-        setState(() {});     // map finished moving
       },
       myLocationButtonEnabled: false,
       zoomControlsEnabled: false,
       onTap: (latLng) {
-        // Hide tooltip when tapping on map
         if (_selectedPoint != null) {
           _hideTooltip();
         }
       },
     );
-  }
-  // ZOOM BUTTONS
+  }  // ZOOM BUTTONS
   Widget _buildZoomButtons() {
     return Positioned(
       top: getHeight() * 0.03,

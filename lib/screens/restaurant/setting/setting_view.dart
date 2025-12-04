@@ -87,7 +87,7 @@ class _SettingViewState extends State<SettingView> {
                   leadingAssetPath: Assets.subscriptionIcon, // your custom icon
                   trailingText: 'Free Plan',
                   onTap: () {
-                    context.push(Routes.subscribeRoute);
+                    context.push(Routes.chatbotHomeRoute);
                   },
                 ),
                 // if(role == UserRole.user)

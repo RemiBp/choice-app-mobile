@@ -1,14 +1,19 @@
+import 'dart:async';
+
 import 'package:choice_app/appColors/colors.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/screens/leisure/leisure_profile_tab_bar/leisure_profile_tab_bar.dart';
 import 'package:choice_app/screens/wellness/wellness_profile_tab_bar/wellness_Profile_tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../../../appAssets/app_assets.dart';
 import '../../../../customWidgets/common_app_bar.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../l18n.dart';
+import '../../../../res/toasts.dart';
 import '../../../../userRole/role_provider.dart';
 import '../../../../userRole/user_role.dart';
 import '../../../restaurant/profile_menu/profile_menu_widgets.dart';
@@ -23,6 +28,10 @@ class CustomerMapsView extends StatefulWidget {
 }
 
 class _CustomerMapsViewState extends State<CustomerMapsView> {
+  GoogleMapController? _mapController;
+  double _currentZoom = 17;
+  Map<String, dynamic>? _selectedPoint;
+  LatLng? _userLocation;
   bool showHeatmap = false;
   final List<Map<String, dynamic>> filters = [
     {"title": "All", "icon": Assets.leisureIcon},
@@ -35,12 +44,7 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
   int selectedFilterIndex = 0;
 
   final List<Map<String, dynamic>> markers = [
-    {
-      "icon": Assets.userMarker,
-      "dx": 0.35,
-      "dy": 0.3,
-      "type": UserRole.user,
-    },
+    {"icon": Assets.userMarker, "dx": 0.35, "dy": 0.3, "type": UserRole.user},
     {
       "icon": Assets.restaurantMarker,
       "dx": 0.55,
@@ -62,13 +66,57 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _fetchUserLocation();
+    });
+  }
+
+  Future<void> _fetchUserLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        Toasts.getErrorToast(text: "Location services are disabled. Please enable them to use the map.");
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          Toasts.getErrorToast(text: "Location permission is denied. Please grant permission to use the map.");
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        Toasts.getErrorToast(text: "Location permission is permanently denied. Please enable it in settings.");
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      if (mounted) {
+        setState(() {
+          _userLocation = LatLng(position.latitude, position.longitude);
+        });
+      }
+    } catch (e) {
+      // Handle error silently
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final roleProvider = context.read<RoleProvider>();
     return Scaffold(
       appBar: CommonAppBar(title: al.mapLocation),
       body: Container(
-        height: double.infinity,
-        width: double.infinity,
+        height: MediaQuery.sizeOf(context).height,
+        width: MediaQuery.sizeOf(context).width,
         child: Stack(
           children: [
             // Map image placeholder + optional heatmap overlay
@@ -77,10 +125,7 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                 fit: StackFit.expand, //  ensures full area fill
                 children: [
                   // Base map
-                  Image.asset(
-                    Assets.mapImage2,
-                    fit: BoxFit.cover,
-                  ),
+                  _buildGoogleMap(),
 
                   ...markers.map((marker) {
                     return Positioned(
@@ -90,15 +135,12 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                         onTap: () => _openProfileSheet(context, marker["type"]),
                         child: SvgPicture.asset(
                           marker["icon"],
-                          width: getWidth() * 0.11,  // ~42px
+                          width: getWidth() * 0.11, // ~42px
                           height: getHeight() * 0.065, // ~58px
                         ),
                       ),
                     );
                   }).toList(),
-
-
-
 
                   if (showHeatmap)
                     AnimatedOpacity(
@@ -115,7 +157,6 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
               ),
             ),
 
-
             // Top filter chips (horizontal)
             SafeArea(
               child: Container(
@@ -125,7 +166,8 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   itemCount: filters.length,
-                  separatorBuilder: (_, __) => SizedBox(width: getWidth() * 0.02),
+                  separatorBuilder:
+                      (_, __) => SizedBox(width: getWidth() * 0.02),
                   itemBuilder: (context, index) {
                     final filter = filters[index];
                     return ChoiceChip(
@@ -133,16 +175,20 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                         filter["icon"],
                         width: getWidthRatio() * 18,
                         height: getHeightRatio() * 18,
-                        colorFilter: ColorFilter.mode(index == selectedFilterIndex
-                            ? AppColors.whiteColor
-                            : AppColors.primarySlateColor,BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(
+                          index == selectedFilterIndex
+                              ? AppColors.whiteColor
+                              : AppColors.primarySlateColor,
+                          BlendMode.srcIn,
+                        ),
                       ),
                       label: CustomText(
                         text: filter["title"],
                         fontSize: sizes?.fontSize12,
-                        color: index == selectedFilterIndex
-                            ? AppColors.whiteColor
-                            : AppColors.primarySlateColor,
+                        color:
+                            index == selectedFilterIndex
+                                ? AppColors.whiteColor
+                                : AppColors.primarySlateColor,
                         fontWeight: FontWeight.w500,
                       ),
                       selected: index == selectedFilterIndex,
@@ -159,12 +205,10 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                         });
                       },
                     );
-
                   },
                 ),
               ),
             ),
-
 
             //Side control buttons (rectangular with rounded corners)
             Positioned(
@@ -175,8 +219,10 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                   _buildSideButton(Icons.filter_list_sharp, () {
                     showModalBottomSheet(
                       context: context,
-                      isScrollControlled: true, // allows 90% height (since you used 0.9 of screen height)
-                      backgroundColor: Colors.transparent, // keeps your rounded corners visible
+                      isScrollControlled: true,
+                      // allows 90% height (since you used 0.9 of screen height)
+                      backgroundColor: Colors.transparent,
+                      // keeps your rounded corners visible
                       builder: (context) => const FiltersBottomSheet(),
                     );
                   }),
@@ -185,16 +231,14 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                   _buildSideButton(Icons.public, () {
                     setState(() {
                       showHeatmap = !showHeatmap; // toggle heat map overlay
-                    });                  }),
-                  const SizedBox(height: 16),
-                  _buildSideButton(Icons.add, () {
-
+                    });
                   }),
+                  const SizedBox(height: 16),
+                  _buildSideButton(Icons.add, () {}),
                   const SizedBox(height: 8),
                   _buildSideButton(Icons.remove, () {
                     // zoom out
                   }),
-
                 ],
               ),
             ),
@@ -206,17 +250,22 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
               child: SizedBox(
                 height: getHeightRatio() * 230,
                 child: ListView.builder(
-                  padding: EdgeInsets.only(left: getWidth() * 0.06, right: getWidth() * 0.03),
+                  padding: EdgeInsets.only(
+                    left: getWidth() * 0.06,
+                    right: getWidth() * 0.03,
+                  ),
                   scrollDirection: Axis.horizontal,
                   itemCount: 5,
                   itemBuilder: (context, index) {
                     return SizedBox(
                       width: getWidthRatio() * 280,
                       child: BookmarkRestaurantCard(
-                        imageUrl: "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
+                        imageUrl:
+                            "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
                         address: "123 Main Street, City",
                         rating: 4.2,
-                        tag: "Wellness", // ← shows in top-left chip
+                        tag: "Wellness",
+                        // ← shows in top-left chip
                         isBookmarked: true,
                         margin: EdgeInsets.only(
                           top: getHeightRatio() * 8,
@@ -230,14 +279,11 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                           // handle navigation
                         },
                       ),
-
                     );
                   },
                 ),
               ),
             ),
-
-
 
             /// Floating filter button (bottom right)
             // Positioned(
@@ -255,6 +301,52 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
         ),
       ),
     );
+  }
+
+  Widget _buildGoogleMap() {
+    Timer? _zoomDebounce;
+    return GoogleMap(
+      initialCameraPosition: const CameraPosition(
+        target: LatLng(31.5204, 74.3587),  // Lahore center
+        zoom: 17,                          // closer zoom so heatmap is visible
+      ),
+      onMapCreated: (controller) {
+        _mapController = controller;
+        // Trigger initial render after a short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) setState(() {});
+        });
+      },
+      onCameraMove: (position) {
+        _currentZoom = position.zoom;
+        // Hide tooltip when map moves
+        _zoomDebounce?.cancel();
+        _zoomDebounce = Timer(const Duration(milliseconds: 50), () {
+          if (mounted) setState(() {});
+        });
+
+        if (_selectedPoint != null) {
+          _hideTooltip();
+        }
+      },
+      onCameraIdle: () {
+        setState(() {});     // map finished moving
+      },
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      onTap: (latLng) {
+        // Hide tooltip when tapping on map
+        if (_selectedPoint != null) {
+          _hideTooltip();
+        }
+      },
+    );
+  }
+
+  void _hideTooltip() {
+    setState(() {
+      _selectedPoint = null;
+    });
   }
 
   // Rectangular side buttons (like in screenshot)
@@ -290,8 +382,10 @@ void _openProfileSheet(BuildContext context, UserRole type) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.black.withValues(alpha: 0.8), // dims the background
-    barrierColor: Colors.black.withValues(alpha: 0.8), // dim effect
+    backgroundColor: Colors.black.withValues(alpha: 0.8),
+    // dims the background
+    barrierColor: Colors.black.withValues(alpha: 0.8),
+    // dim effect
     builder: (context) {
       return DraggableScrollableSheet(
         initialChildSize: 0.7,
@@ -302,7 +396,9 @@ void _openProfileSheet(BuildContext context, UserRole type) {
           return Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
             ),
             child: Column(
               children: [
@@ -328,6 +424,3 @@ void _openProfileSheet(BuildContext context, UserRole type) {
     },
   );
 }
-
-
-

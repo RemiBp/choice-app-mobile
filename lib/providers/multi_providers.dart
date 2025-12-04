@@ -18,6 +18,7 @@ import '../screens/customer/explore/restaurant_explore_details/event_details_pro
 import '../screens/customer/explore/restaurant_explore_details/non_event_details_provider.dart';
 import '../screens/customer/home/choice_provider.dart';
 import '../screens/producer_maps/producer_heatmap_provider.dart';
+import '../screens/subscription/subscriber_provider.dart';
 import '../userRole/role_provider.dart';
 
 final multiProviders = [
@@ -94,6 +95,10 @@ final multiProviders = [
   ),
   ChangeNotifierProvider<ProducerHeatmapProvider>(
     create: (context) => ProducerHeatmapProvider(),
+    lazy: true,
+  ),
+  ChangeNotifierProvider<SubscriberProvider>(
+    create: (context) => SubscriberProvider(),
     lazy: true,
   ),
 
