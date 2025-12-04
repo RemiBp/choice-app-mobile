@@ -12,6 +12,7 @@ import 'package:choice_app/models/get_events_details_response.dart';
 import 'package:choice_app/models/get_gallery_image_response.dart';
 import 'package:choice_app/models/get_menu_categories_response.dart';
 import 'package:choice_app/models/get_menu_response.dart';
+import 'package:choice_app/models/get_nearby_producers_response.dart';
 import 'package:choice_app/models/get_non_events_details_response.dart';
 import 'package:choice_app/models/get_normal_booking_details_response.dart';
 import 'package:choice_app/models/get_producer_booking_slots_response.dart';
@@ -81,6 +82,7 @@ class Models {
   static const String getProducerHeatmapModel = "GET_PRODUCER_HEATMAP_MODEL";
   static const String getProducerOfferTemplateModel = "GET_PRODUCER_OFFER_TEMPLATES_MODEL";
   static const String getUserLiveOfferModel = "GET_USER_LIVE_OFFERS_MODEL";
+  static const String getNearbyProducersOnMapModel = "GET_NEARBY_PRODUCERS_ON_MAP_MODEL";
 
 
 
@@ -162,6 +164,8 @@ class Models {
         return GetProducerOfferTemplatesResponse.fromJson(json);
       case getUserLiveOfferModel:
         return GetUserLiveOffersResponse.fromJson(json);
+      case getNearbyProducersOnMapModel:
+        return GetNearbyProducersOnMapResponse.fromJson(json);
     }
   }
 }

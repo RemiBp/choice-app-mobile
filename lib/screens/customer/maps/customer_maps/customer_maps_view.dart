@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:choice_app/appColors/colors.dart';
+import 'package:choice_app/models/get_nearby_producers_response.dart';
 import 'package:choice_app/res/res.dart';
+import 'package:choice_app/screens/customer/maps/customer_maps/customer_maps_provider.dart';
 import 'package:choice_app/screens/leisure/leisure_profile_tab_bar/leisure_profile_tab_bar.dart';
 import 'package:choice_app/screens/wellness/wellness_profile_tab_bar/wellness_Profile_tab_bar.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +35,10 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
   Map<String, dynamic>? _selectedPoint;
   LatLng? _userLocation;
   bool showHeatmap = false;
+  Set<Marker> _markers = {};
+  Set<Marker> _allMarkers = {}; // Store all markers for filtering
+  bool _isBuildingMarkers = false;
+  MapType _currentMapType = MapType.normal;
   final List<Map<String, dynamic>> filters = [
     {"title": "All", "icon": Assets.leisureIcon},
     {"title": "Friends", "icon": Assets.profileIcon},
@@ -65,12 +71,308 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
     },
   ];
 
+  late CustomerMapsProvider customerMapsProvider;
+
   @override
   void initState() {
     super.initState();
+    customerMapsProvider = Provider.of<CustomerMapsProvider>(context, listen: false,);
+    customerMapsProvider.context = context;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _fetchUserLocation();
+      await customerMapsProvider.getNearbyProducers(latitude: 0, longitude: 0, radius: 0);
+      // Build markers after data is fetched
+      if (customerMapsProvider.getNearbyProducersOnMapResponse != null) {
+        debugPrint('Response received, building markers...');
+        await _buildMarkers();
+        debugPrint('Marker building completed. Total markers: ${_markers.length}');
+      } else {
+        debugPrint('Response is null, cannot build markers');
+      }
+      // await _fetchUserLocation();
     });
+  }
+
+  String _getMarkerIconPath(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'restaurant':
+        return Assets.restaurantMarker;
+      case 'wellness':
+        return Assets.wellnessMarker;
+      case 'leisure':
+        return Assets.leisureMarker;
+      default:
+        return Assets.userMarker;
+    }
+  }
+
+
+  static final Map<String, BitmapDescriptor> _iconCache = {};
+
+  Future<BitmapDescriptor> _getBitmapDescriptorFromSvg(String assetPath) async {
+    // Check cache first
+    if (_iconCache.containsKey(assetPath)) {
+      return _iconCache[assetPath]!;
+    }
+
+    try {
+      // For now, use default markers with different colors based on asset path
+      // You can implement proper SVG conversion later if needed
+      BitmapDescriptor descriptor;
+      
+      if (assetPath.contains('restaurant')) {
+        descriptor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+      } else if (assetPath.contains('wellness')) {
+        descriptor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+      } else if (assetPath.contains('leisure')) {
+        descriptor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+      } else {
+        descriptor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
+      }
+      
+      _iconCache[assetPath] = descriptor;
+      return descriptor;
+    } catch (e) {
+      debugPrint('Error creating bitmap from SVG $assetPath: $e');
+      // Fallback to default marker
+      final fallback = BitmapDescriptor.defaultMarker;
+      _iconCache[assetPath] = fallback;
+      return fallback;
+    }
+  }
+
+  Future<void> _buildMarkers() async {
+    if (_isBuildingMarkers) {
+      debugPrint('_buildMarkers: Already building markers, skipping');
+      return;
+    }
+    
+    _isBuildingMarkers = true;
+    
+    // final customerMapsProvider = Provider.of<CustomerMapsProvider>(context, listen: false);
+    final response = customerMapsProvider.getNearbyProducersOnMapResponse;
+    
+    if (response == null) {
+      debugPrint('_buildMarkers: Response is null');
+      _isBuildingMarkers = false;
+      return;
+    }
+
+    debugPrint('_buildMarkers: Building markers. Producers: ${response.producers?.length ?? 0}, Friends: ${response.friends?.length ?? 0}');
+
+    Set<Marker> newMarkers = {};
+    int markerIndex = 0;
+
+    // Add a test marker at the center to verify markers work
+    // newMarkers.add(
+    //   Marker(
+    //     markerId: const MarkerId('test_marker'),
+    //     position: const LatLng(38.703900, -9.139900),
+    //     icon: BitmapDescriptor.defaultMarker,
+    //     infoWindow: const InfoWindow(title: 'Test Marker'),
+    //   ),
+    // );
+    // debugPrint('Added test marker at (38.703900, -9.139900)');
+
+    // Add producers markers
+    if (response.producers != null && response.producers!.isNotEmpty) {
+      for (var producer in response.producers!) {
+        if (producer.latitude != null && producer.longitude != null) {
+          try {
+            final latStr = producer.latitude?.toString().trim() ?? '';
+            final lngStr = producer.longitude?.toString().trim() ?? '';
+            final lat = double.tryParse(latStr) ?? 0.0;
+            final lng = double.tryParse(lngStr) ?? 0.0;
+            
+            debugPrint('Producer ${producer.id}: latStr="$latStr", lngStr="$lngStr", parsed lat=$lat, lng=$lng, type=${producer.type}');
+            
+            if (lat != 0.0 && lng != 0.0 && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+              final iconPath = _getMarkerIconPath(producer.type);
+              final icon = await _getBitmapDescriptorFromSvg(iconPath);
+              
+              newMarkers.add(
+                Marker(
+                  markerId: MarkerId('producer_${producer.id}_$markerIndex'),
+                  position: LatLng(lat, lng),
+                  icon: icon,
+                ),
+              );
+              markerIndex++;
+              debugPrint('Added marker for producer ${producer.id} at ($lat, $lng)');
+            } else {
+              debugPrint('Invalid coordinates for producer ${producer.id}');
+            }
+          } catch (e) {
+            debugPrint('Error creating marker for producer ${producer.id}: $e');
+          }
+        } else {
+          debugPrint('Producer ${producer.id}: latitude or longitude is null');
+        }
+      }
+    } else {
+      debugPrint('No producers in response');
+    }
+
+    // Add friends markers
+    if (response.friends != null && response.friends!.isNotEmpty) {
+      for (var friend in response.friends!) {
+        if (friend.latitude != null && friend.longitude != null) {
+          try {
+            final lat = friend.latitude!;
+            final lng = friend.longitude!;
+            
+            debugPrint('Friend ${friend.id}: lat=$lat, lng=$lng');
+            
+            if (lat != 0.0 && lng != 0.0) {
+              final icon = await _getBitmapDescriptorFromSvg(Assets.userMarker);
+              
+              newMarkers.add(
+                Marker(
+                  markerId: MarkerId('friend_${friend.id}_$markerIndex'),
+                  position: LatLng(lat, lng),
+                  icon: icon,
+                ),
+              );
+              markerIndex++;
+              debugPrint('Added marker for friend ${friend.id} at ($lat, $lng)');
+            }
+          } catch (e) {
+            debugPrint('Error creating marker for friend ${friend.id}: $e');
+          }
+        }
+      }
+    }
+
+    debugPrint('_buildMarkers: Created ${newMarkers.length} markers');
+
+    if (mounted) {
+      setState(() {
+        _allMarkers = newMarkers; // Store all markers
+        _markers = newMarkers; // Initially show all markers
+        _isBuildingMarkers = false;
+      });
+      debugPrint('_buildMarkers: Markers updated in state. Total markers: ${_markers.length}');
+      
+      // Apply current filter
+      _filterMarkers();
+      
+      // Adjust camera to show all markers if we have any
+      if (_markers.isNotEmpty && _mapController != null) {
+        _fitMarkersInView();
+      }
+    } else {
+      debugPrint('_buildMarkers: Widget not mounted, cannot update state');
+      _isBuildingMarkers = false;
+    }
+  }
+
+  void _filterMarkers() {
+    if (_allMarkers.isEmpty) return;
+    
+    Set<Marker> filteredMarkers = {};
+    
+    switch (selectedFilterIndex) {
+      case 0: // "All"
+        filteredMarkers = _allMarkers;
+        break;
+      case 1: // "Friends"
+        filteredMarkers = _allMarkers.where((marker) {
+          return marker.markerId.value.startsWith('friend_');
+        }).toSet();
+        break;
+      case 2: // Restaurant
+        filteredMarkers = _allMarkers.where((marker) {
+          return marker.markerId.value.startsWith('producer_') &&
+                 _isMarkerType(marker, 'restaurant');
+        }).toSet();
+        break;
+      case 3: // Wellness
+        filteredMarkers = _allMarkers.where((marker) {
+          return marker.markerId.value.startsWith('producer_') &&
+                 _isMarkerType(marker, 'wellness');
+        }).toSet();
+        break;
+      case 4: // Leisure
+        filteredMarkers = _allMarkers.where((marker) {
+          return marker.markerId.value.startsWith('producer_') &&
+                 _isMarkerType(marker, 'leisure');
+        }).toSet();
+        break;
+      default:
+        filteredMarkers = _allMarkers;
+    }
+    
+    setState(() {
+      _markers = filteredMarkers;
+    });
+    
+    // Adjust camera to show filtered markers
+    if (_markers.isNotEmpty && _mapController != null) {
+      _fitMarkersInView();
+    }
+  }
+
+  bool _isMarkerType(Marker marker, String type) {
+    // Extract producer ID from marker ID (format: 'producer_{id}_{index}')
+    final markerId = marker.markerId.value;
+    if (!markerId.startsWith('producer_')) return false;
+    
+    final response = customerMapsProvider.getNearbyProducersOnMapResponse;
+    if (response?.producers == null || response!.producers!.isEmpty) return false;
+    
+    // Extract the producer ID from marker ID
+    final parts = markerId.split('_');
+    if (parts.length < 2) return false;
+    
+    final producerId = int.tryParse(parts[1]);
+    if (producerId == null) return false;
+    
+    // Find the producer and check its type
+    try {
+      final producer = response.producers!.firstWhere(
+        (p) => p.id == producerId,
+      );
+      
+      return producer.type?.toLowerCase() == type.toLowerCase();
+    } catch (e) {
+      return false;
+    }
+  }
+
+  void _fitMarkersInView() {
+    if (_markers.isEmpty || _mapController == null) return;
+    
+    try {
+      final positions = _markers.map((marker) => marker.position).toList();
+      
+      double minLat = positions.first.latitude;
+      double maxLat = positions.first.latitude;
+      double minLng = positions.first.longitude;
+      double maxLng = positions.first.longitude;
+      
+      for (var position in positions) {
+        minLat = minLat < position.latitude ? minLat : position.latitude;
+        maxLat = maxLat > position.latitude ? maxLat : position.latitude;
+        minLng = minLng < position.longitude ? minLng : position.longitude;
+        maxLng = maxLng > position.longitude ? maxLng : position.longitude;
+      }
+      
+      final bounds = LatLngBounds(
+        southwest: LatLng(minLat - 0.01, minLng - 0.01),
+        northeast: LatLng(maxLat + 0.01, maxLng + 0.01),
+      );
+      
+      _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 100));
+      debugPrint('Camera adjusted to fit ${_markers.length} markers');
+    } catch (e) {
+      debugPrint('Error fitting markers in view: $e');
+      // Fallback: just center on first marker
+      if (_markers.isNotEmpty) {
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(_markers.first.position, 15),
+        );
+      }
+    }
   }
 
   Future<void> _fetchUserLocation() async {
@@ -111,10 +413,10 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
 
   @override
   Widget build(BuildContext context) {
-    final roleProvider = context.read<RoleProvider>();
+    // final roleProvider = context.read<RoleProvider>();
     return Scaffold(
       appBar: CommonAppBar(title: al.mapLocation),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.sizeOf(context).height,
         width: MediaQuery.sizeOf(context).width,
         child: Stack(
@@ -127,32 +429,32 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                   // Base map
                   _buildGoogleMap(),
 
-                  ...markers.map((marker) {
-                    return Positioned(
-                      left: MediaQuery.of(context).size.width * marker["dx"],
-                      top: MediaQuery.of(context).size.height * marker["dy"],
-                      child: GestureDetector(
-                        onTap: () => _openProfileSheet(context, marker["type"]),
-                        child: SvgPicture.asset(
-                          marker["icon"],
-                          width: getWidth() * 0.11, // ~42px
-                          height: getHeight() * 0.065, // ~58px
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                  // ...markers.map((marker) {
+                  //   return Positioned(
+                  //     left: MediaQuery.of(context).size.width * marker["dx"],
+                  //     top: MediaQuery.of(context).size.height * marker["dy"],
+                  //     child: GestureDetector(
+                  //       onTap: () => _openProfileSheet(context, marker["type"]),
+                  //       child: SvgPicture.asset(
+                  //         marker["icon"],
+                  //         width: getWidth() * 0.11, // ~42px
+                  //         height: getHeight() * 0.065, // ~58px
+                  //       ),
+                  //     ),
+                  //   );
+                  // }).toList(),
 
-                  if (showHeatmap)
-                    AnimatedOpacity(
-                      opacity: showHeatmap ? 1 : 0,
-                      duration: const Duration(milliseconds: 400),
-                      child: Image.asset(
-                        Assets.heatmapImage, // your heatmap image asset
-                        fit: BoxFit.cover,
-                        color: Colors.white.withValues(alpha: 0.7),
-                        colorBlendMode: BlendMode.modulate,
-                      ),
-                    ),
+                  // if (showHeatmap)
+                  //   AnimatedOpacity(
+                  //     opacity: showHeatmap ? 1 : 0,
+                  //     duration: const Duration(milliseconds: 400),
+                  //     child: Image.asset(
+                  //       Assets.heatmapImage, // your heatmap image asset
+                  //       fit: BoxFit.cover,
+                  //       color: Colors.white.withValues(alpha: 0.7),
+                  //       colorBlendMode: BlendMode.modulate,
+                  //     ),
+                  //   ),
                 ],
               ),
             ),
@@ -203,6 +505,7 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                         setState(() {
                           selectedFilterIndex = index;
                         });
+                        _filterMarkers();
                       },
                     );
                   },
@@ -230,60 +533,70 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
                   const SizedBox(height: 16),
                   _buildSideButton(Icons.public, () {
                     setState(() {
-                      showHeatmap = !showHeatmap; // toggle heat map overlay
+                      if (_currentMapType == MapType.normal) {
+                        _currentMapType = MapType.satellite;
+                      } else if (_currentMapType == MapType.satellite) {
+                        _currentMapType = MapType.terrain;
+                      } else if (_currentMapType == MapType.terrain) {
+                        _currentMapType = MapType.hybrid;
+                      } else {
+                        _currentMapType = MapType.normal;
+                      }
                     });
                   }),
                   const SizedBox(height: 16),
-                  _buildSideButton(Icons.add, () {}),
+                  _buildSideButton(Icons.add, () {
+                    _mapController?.animateCamera(CameraUpdate.zoomIn());
+                  }),
                   const SizedBox(height: 8),
                   _buildSideButton(Icons.remove, () {
-                    // zoom out
+                    _mapController?.animateCamera(CameraUpdate.zoomOut());
                   }),
                 ],
               ),
             ),
 
-            Positioned(
-              bottom: getHeight() * 0.03,
-              left: 0,
-              right: 0,
-              child: SizedBox(
-                height: getHeightRatio() * 230,
-                child: ListView.builder(
-                  padding: EdgeInsets.only(
-                    left: getWidth() * 0.06,
-                    right: getWidth() * 0.03,
-                  ),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return SizedBox(
-                      width: getWidthRatio() * 280,
-                      child: BookmarkRestaurantCard(
-                        imageUrl:
-                            "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
-                        address: "123 Main Street, City",
-                        rating: 4.2,
-                        tag: "Wellness",
-                        // ← shows in top-left chip
-                        isBookmarked: true,
-                        margin: EdgeInsets.only(
-                          top: getHeightRatio() * 8,
-                          bottom: getHeightRatio() * 8,
-                          right: getWidth() * 0.03,
-                        ),
-                        onBookmarkTap: () {
-                          // handle bookmark toggle
-                        },
-                        onCardTap: () {
-                          // handle navigation
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
+            // Positioned(
+            //   bottom: getHeight() * 0.03,
+            //   left: 0,
+            //   right: 0,
+            //   child: SizedBox(
+            //     height: getHeightRatio() * 230,
+            //     child: ListView.builder(
+            //       padding: EdgeInsets.only(
+            //         left: getWidth() * 0.06,
+            //         right: getWidth() * 0.03,
+            //       ),
+            //       scrollDirection: Axis.horizontal,
+            //       itemCount: 5,
+            //       itemBuilder: (context, index) {
+            //         return SizedBox(
+            //           width: getWidthRatio() * 280,
+            //           child: BookmarkRestaurantCard(
+            //             imageUrl:
+            //                 "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
+            //             address: "123 Main Street, City",
+            //             rating: 4.2,
+            //             tag: "Wellness",
+            //             // ← shows in top-left chip
+            //             isBookmarked: true,
+            //             margin: EdgeInsets.only(
+            //               top: getHeightRatio() * 8,
+            //               bottom: getHeightRatio() * 8,
+            //               right: getWidth() * 0.03,
+            //             ),
+            //             onBookmarkTap: () {
+            //               // handle bookmark toggle
+            //             },
+            //             onCardTap: () {
+            //               // handle navigation
+            //             },
+            //           ),
+            //         );
+            //       },
+            //     ),
+            //   ),
+            // ),
 
             /// Floating filter button (bottom right)
             // Positioned(
@@ -307,15 +620,19 @@ class _CustomerMapsViewState extends State<CustomerMapsView> {
     Timer? _zoomDebounce;
     return GoogleMap(
       initialCameraPosition: const CameraPosition(
-        target: LatLng(31.5204, 74.3587),  // Lahore center
+        target: LatLng(38.703900, -9.139900),  // Lahore center
+        // target: LatLng(31.5204, 74.3587),  // Lahore center
         zoom: 17,                          // closer zoom so heatmap is visible
       ),
-      onMapCreated: (controller) {
+      markers: _markers,
+      mapType: _currentMapType,
+      onMapCreated: (controller) async {
         _mapController = controller;
-        // Trigger initial render after a short delay
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) setState(() {});
-        });
+        // Wait a bit for map to be ready, then check if we need to fit markers
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted && _markers.isNotEmpty) {
+          _fitMarkersInView();
+        }
       },
       onCameraMove: (position) {
         _currentZoom = position.zoom;
