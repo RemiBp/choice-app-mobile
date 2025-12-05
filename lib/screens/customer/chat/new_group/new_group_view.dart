@@ -1,9 +1,11 @@
 import 'package:choice_app/appColors/colors.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../l18n.dart';
 import '../../../../res/res.dart';
 import '../chat_widgets.dart';
+import 'create_group_chat_view.dart';
 
 class NewGroupView extends StatefulWidget {
   const NewGroupView({super.key});
@@ -18,22 +20,26 @@ class _NewGroupViewState extends State<NewGroupView> {
     {
       "name": "Emelie",
       "username": "emelie645",
-      "image": "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?fit=crop&w=200&q=80"
+      "image":
+          "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?fit=crop&w=200&q=80",
     },
     {
       "name": "Abigail",
       "username": "abigail645",
-      "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?fit=crop&w=200&q=80"
+      "image":
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?fit=crop&w=200&q=80",
     },
     {
       "name": "Penelope",
       "username": "penelope645",
-      "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?fit=crop&w=200&q=80"
+      "image":
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?fit=crop&w=200&q=80",
     },
     {
       "name": "Doreen Bayer",
       "username": "doreenbayer645",
-      "image": "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?fit=crop&w=200&q=80"
+      "image":
+          "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?fit=crop&w=200&q=80",
     },
   ];
 
@@ -55,15 +61,24 @@ class _NewGroupViewState extends State<NewGroupView> {
       backgroundColor: AppColors.whiteColor,
       appBar: ChatAppBar(
         title: al.newGroup,
+        showAvatar: false,
+        showNextButton: selectedUsers.isNotEmpty,
         onNext: () {
-          // handle next
+          if (selectedUsers.isEmpty) return;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CreateGroupChatView(
+                selectedUsers: selectedUsers,
+              ),
+            ),
+          );
         },
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (selectedUsers.isEmpty)
-          SizedBox(height: getHeight() * 0.02),
+          if (selectedUsers.isEmpty) SizedBox(height: getHeight() * 0.02),
           if (selectedUsers.isNotEmpty)
             SelectedMembersRow(selectedUsers: selectedUsers),
 

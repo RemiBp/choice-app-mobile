@@ -150,6 +150,30 @@ class _MessagesViewState extends State<MessagesView> {
                               }
                             }
 
+                            // Get sender's avatar URL
+                            String? senderAvatarUrl;
+                            if (isSentByMe) {
+                              // For sent messages, get current user's avatar from chat members
+                              if (widget.chat.members.isNotEmpty) {
+                                try {
+                                  final currentUserMember = widget.chat.members.firstWhere(
+                                    (member) => member.userId == widget.currentUserId,
+                                  );
+                                  senderAvatarUrl = currentUserMember.user?.profileImageUrl ?? 
+                                                   currentUserMember.user?.profilePicture;
+                                } catch (e) {
+                                  // If current user not found, use first member as fallback
+                                  final firstMember = widget.chat.members.first;
+                                  senderAvatarUrl = firstMember.user?.profileImageUrl ?? 
+                                                   firstMember.user?.profilePicture;
+                                }
+                              }
+                            } else {
+                              // For received messages, get sender's avatar from message
+                              senderAvatarUrl = message.sender?.profileImageUrl ?? 
+                                               message.sender?.profilePicture;
+                            }
+
                             return Column(
                               children: [
                                 if (showDateDivider)
@@ -164,6 +188,7 @@ class _MessagesViewState extends State<MessagesView> {
                                   ),
                                   isSentByMe: isSentByMe,
                                   isRead: message.isRead,
+                                  avatarUrl: senderAvatarUrl,
                                 ),
                               ],
                             );

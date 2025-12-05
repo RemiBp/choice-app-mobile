@@ -59,23 +59,27 @@ class Assets {
   static const String bookingActiveIcon = "assets/icons/bookings_active.svg";
   static const String profileIcon = "assets/icons/profile.svg";
   static const String profileActiveIcon = "assets/icons/profile_active.svg";
-  static const String noNotificationIcon = "assets/icons/no_notification_icon.png";
+  static const String noNotificationIcon =
+      "assets/icons/no_notification_icon.png";
   static const String reviewsIcon = "assets/icons/reviews_icon.svg";
   static const String settingIcon = "assets/icons/setting_icon.png";
   static const String addUserIcon = "assets/icons/add_user_icon.png";
   static const String chatSentIcon = "assets/icons/chat_sent.png";
-  static const String exploreActiveIcon = "assets/icons/explore_active_icon.svg";
+  static const String exploreActiveIcon =
+      "assets/icons/explore_active_icon.svg";
   static const String exploreIcon = "assets/icons/explore_icon.svg";
 
   static const String messagesIcon = "assets/icons/messages_icon.svg";
   static const String editProfileIcon = "assets/icons/edit_profile_icon.svg";
   static const String documentsIcon = "assets/icons/documents_icon.svg";
-  static const String passwordManagerIcon = "assets/icons/password_manager_icon.svg";
+  static const String passwordManagerIcon =
+      "assets/icons/password_manager_icon.svg";
   static const String businessHourIcon = "assets/icons/business_hour_icon.svg";
   static const String slotsIcon = "assets/icons/slots_icon.svg";
   static const String menuIcon = "assets/icons/menu_icon.svg";
   static const String galleryIcon = "assets/icons/gallery_icon.svg";
-  static const String unavailabilityIcon = "assets/icons/unavailability_icon.svg";
+  static const String unavailabilityIcon =
+      "assets/icons/unavailability_icon.svg";
   static const String logoutIcon = "assets/icons/logout_icon.svg";
   static const String languageIcon = "assets/icons/language_icon.svg";
   static const String profileAvatar = "assets/images/profile_avatar.svg";
@@ -97,17 +101,7 @@ class Assets {
   static const String wellnessMarker = "assets/icons/wellness_marker.svg";
   static const String userMarker = "assets/icons/user_marker.svg";
   static const String leisureMarker = "assets/icons/leisure_marker.svg";
-
-
-
-
-
-
-
-
-
-
-
+  static const String cameraIcon = "assets/icons/camera_icon.svg";
 
   static const String editIcon = "assets/icons/edit_icon.png";
   static const String infoIcon = "assets/icons/info_icon.png";
@@ -122,11 +116,10 @@ class Assets {
   static const String copilotIcon = "assets/icons/copilot.png";
   static const String subscriptionIcon = "assets/icons/subscription.svg";
 
-
-
   static const String galleryImage = "assets/images/gallery_image.png";
   static const String originMapImage = "assets/images/origin_map_image.png";
-  static const String originMapImageRes = "assets/images/origin_map_image_res.png";
+  static const String originMapImageRes =
+      "assets/images/origin_map_image_res.png";
   static const String mapImage = "assets/images/map.png";
   static const String mapImage2 = "assets/images/map_image2.png";
   static const String choiceImage = "assets/images/choice_image.png";
@@ -136,14 +129,13 @@ class Assets {
   static const String wellnessImage = "assets/images/wellness.png";
   static const String heatmapImage = "assets/images/heatmap.png";
 
-
   static const String badge1 = "assets/images/badge1.png";
   static const String badge2 = "assets/images/badge2.png";
   static const String badge3 = "assets/images/badge3.png";
   static const String badge4 = "assets/images/badge4.png";
 
-
-  static const String restaurantLocationIcon = "assets/icons/restaurant_location_icon.svg";
+  static const String restaurantLocationIcon =
+      "assets/icons/restaurant_location_icon.svg";
   static const String reportUserIcon = "assets/icons/report_user.svg";
   static const String blockUser = "assets/icons/block_user.svg";
 
@@ -155,6 +147,4 @@ class Assets {
   static const String restaurantLoader = "assets/json/Yellow.json";
   static const String leisureLoader = "assets/json/Purple.json";
   static const String wellnessLoader = "assets/json/Green.json";
-
-
 }

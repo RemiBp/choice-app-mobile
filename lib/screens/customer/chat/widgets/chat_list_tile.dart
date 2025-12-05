@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:choice_app/models/chat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -32,19 +33,34 @@ class ChatListTile extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: getHeight() * 0.03,
-            backgroundImage:
-                avatarUrl != null && avatarUrl.isNotEmpty
-                    ? NetworkImage(avatarUrl)
-                    : null,
             backgroundColor: AppColors.getPrimaryColorFromContext(context),
-            child:
-                avatarUrl == null || avatarUrl.isEmpty
-                    ? Icon(
-                      chat.isGroupChat ? Icons.group : Icons.person,
-                      color: AppColors.whiteColor,
-                      size: getHeight() * 0.03,
-                    )
-                    : null,
+            child: avatarUrl != null && avatarUrl.isNotEmpty
+                ? ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: avatarUrl,
+                      width: getHeight() * 0.06,
+                      height: getHeight() * 0.06,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.getPrimaryColorFromContext(context),
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(
+                        chat.isGroupChat ? Icons.group : Icons.person,
+                        color: AppColors.whiteColor,
+                        size: getHeight() * 0.03,
+                      ),
+                    ),
+                  )
+                : Icon(
+                    chat.isGroupChat ? Icons.group : Icons.person,
+                    color: AppColors.whiteColor,
+                    size: getHeight() * 0.03,
+                  ),
           ),
           SizedBox(width: getWidth() * 0.02),
 

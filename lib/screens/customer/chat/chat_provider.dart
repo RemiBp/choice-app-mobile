@@ -38,12 +38,12 @@ class ChatProvider extends ChangeNotifier {
 
   /// Setup socket event listeners
   void _setupSocketListeners() {
-    _socketService.setOnChatsReceived(_handleChatsReceived);
-    _socketService.setOnChatCreated(_handleChatCreated);
-    _socketService.setOnMessageReceived(_handleNewMessage);
-    _socketService.setOnMessageSent(_handleMessageSent);
-    _socketService.setOnError(_handleError);
-    _socketService.setOnConnected(() {
+    _socketService.addOnChatsReceived(_handleChatsReceived);
+    _socketService.addOnChatCreated(_handleChatCreated);
+    _socketService.addOnMessageReceived(_handleNewMessage);
+    _socketService.addOnMessageSent(_handleMessageSent);
+    _socketService.addOnError(_handleError);
+    _socketService.addOnConnected(() {
       debugPrint('🟢 Chat Provider: Socket connected, loading chats...');
       loadChats();
     });
@@ -266,11 +266,11 @@ class ChatProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _socketService.setOnChatsReceived((_) {});
-    _socketService.setOnChatCreated((_) {});
-    _socketService.setOnMessageReceived((_) {});
-    _socketService.setOnMessageSent((_) {});
-    _socketService.setOnError((_) {});
+    _socketService.removeOnChatsReceived(_handleChatsReceived);
+    _socketService.removeOnChatCreated(_handleChatCreated);
+    _socketService.removeOnMessageReceived(_handleNewMessage);
+    _socketService.removeOnMessageSent(_handleMessageSent);
+    _socketService.removeOnError(_handleError);
     super.dispose();
   }
 }

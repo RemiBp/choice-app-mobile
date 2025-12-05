@@ -29,7 +29,7 @@ class Chat {
       category: json['category'] ?? 'FRIENDS',
       createdAt:
           json['createdAt'] != null
-              ? DateTime.parse(json['createdAt'])
+              ? DateTime.parse(json['createdAt']).toLocal()
               : DateTime.now(),
       creatorId: json['creatorId'],
       lastMessageId: json['lastMessageId'],
@@ -60,29 +60,46 @@ class Chat {
     };
   }
 
-  // Helper to get display name for 1-1 chats
   String getDisplayName(int currentUserId) {
     if (isGroupChat || name.isNotEmpty) {
       return name;
     }
-    // For 1-1 chats, find the other participant
     final otherMember = members.firstWhere(
       (member) => member.userId != currentUserId,
       orElse: () => members.first,
     );
-    return otherMember.user?.fullName ?? 'Unknown User';
+    return otherMember.user?.fullName ??
+        otherMember.user?.userName ??
+        'Unknown User';
   }
 
-  // Helper to get avatar for 1-1 chats
   String? getAvatarUrl(int currentUserId) {
+    if (members.isEmpty) return null;
+
     if (isGroupChat) {
-      return null; // Group chats might use a default group icon
+      try {
+        final otherMember = members.firstWhere(
+          (member) => member.userId != currentUserId,
+        );
+        return otherMember.user?.profileImageUrl ??
+            otherMember.user?.profilePicture;
+      } catch (e) {
+        final firstMember = members.first;
+        return firstMember.user?.profileImageUrl ??
+            firstMember.user?.profilePicture;
+      }
     }
-    final otherMember = members.firstWhere(
-      (member) => member.userId != currentUserId,
-      orElse: () => members.first,
-    );
-    return otherMember.user?.profilePicture;
+    try {
+      final otherMember = members.firstWhere(
+        (member) => member.userId != currentUserId,
+      );
+      return otherMember.user?.profileImageUrl ??
+          otherMember.user?.profilePicture;
+    } catch (e) {
+      final firstMember = members.first;
+      return firstMember.user?.profileImageUrl ??
+          firstMember.user?.profilePicture;
+    }
   }
 }
 
@@ -108,7 +125,7 @@ class ChatMember {
       isAdmin: json['isAdmin'] ?? false,
       joinedAt:
           json['joinedAt'] != null
-              ? DateTime.parse(json['joinedAt'])
+              ? DateTime.parse(json['joinedAt']).toLocal()
               : DateTime.now(),
       user: json['user'] != null ? ChatUser.fromJson(json['user']) : null,
     );
@@ -127,26 +144,29 @@ class ChatMember {
 
 class ChatUser {
   final int id;
-  final String fullName;
+  final String? fullName;
   final String? userName;
   final String? email;
   final String? profilePicture;
+  final String? profileImageUrl;
 
   ChatUser({
     required this.id,
-    required this.fullName,
+    this.fullName,
     this.userName,
     this.email,
     this.profilePicture,
+    this.profileImageUrl,
   });
 
   factory ChatUser.fromJson(Map<String, dynamic> json) {
     return ChatUser(
       id: json['id'] ?? 0,
-      fullName: json['fullName'] ?? '',
+      fullName: json['fullName'],
       userName: json['userName'],
       email: json['email'],
       profilePicture: json['profilePicture'],
+      profileImageUrl: json['profileImageUrl'],
     );
   }
 
@@ -157,6 +177,7 @@ class ChatUser {
       'userName': userName,
       'email': email,
       'profilePicture': profilePicture,
+      'profileImageUrl': profileImageUrl,
     };
   }
 }
@@ -185,11 +206,9 @@ class Message {
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    // Extract sender data first
     final senderData =
         json['sender'] != null ? ChatUser.fromJson(json['sender']) : null;
 
-    // Get senderId from either the top level or from sender.id
     final senderId = json['senderId'] ?? senderData?.id ?? 0;
 
     return Message(
@@ -201,7 +220,7 @@ class Message {
       messageType: json['messageType'] ?? 'text',
       createdAt:
           json['createdAt'] != null
-              ? DateTime.parse(json['createdAt'])
+              ? DateTime.parse(json['createdAt']).toLocal()
               : DateTime.now(),
       isRead: json['isRead'] ?? false,
       sender: senderData,

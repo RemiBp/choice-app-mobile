@@ -4,6 +4,7 @@ import 'package:choice_app/screens/customer/chat/user_new_chat/user_new_chat_vie
 import 'package:choice_app/screens/customer/chat/widgets/chat_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../common/utils.dart';
@@ -27,7 +28,6 @@ class _UserChatViewState extends State<UserChatView> {
   @override
   void initState() {
     super.initState();
-    // Initialize chat provider after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final chatProvider = context.read<ChatProvider>();
       chatProvider.init(context);
@@ -40,7 +40,7 @@ class _UserChatViewState extends State<UserChatView> {
       backgroundColor: AppColors.whiteColor,
       appBar: CommonAppBar(
         title: al.chat,
-        showBackArrow: false,
+        showBackArrow: true,
         hideBottomBorder: true,
       ),
       body: CustomCategoryTabs(
@@ -81,7 +81,6 @@ class _UserChatViewState extends State<UserChatView> {
   Widget _buildChatList(String category) {
     return Consumer<ChatProvider>(
       builder: (context, chatProvider, child) {
-        // Get filtered chats based on category
         final chats = _getChatsForCategory(chatProvider, category);
 
         return Column(

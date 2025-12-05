@@ -9,14 +9,14 @@ class SocketService {
   IO.Socket? _socket;
   bool _isConnected = false;
 
-  Function(dynamic)? _onChatsReceived;
-  Function(dynamic)? _onMessagesReceived;
-  Function(dynamic)? _onChatCreated;
-  Function(dynamic)? _onMessageSent;
-  Function(dynamic)? _onMessageReceived;
-  Function(String)? _onError;
-  Function()? _onConnected;
-  Function()? _onDisconnected;
+  final List<Function(dynamic)> _onChatsReceived = [];
+  final List<Function(dynamic)> _onMessagesReceived = [];
+  final List<Function(dynamic)> _onChatCreated = [];
+  final List<Function(dynamic)> _onMessageSent = [];
+  final List<Function(dynamic)> _onMessageReceived = [];
+  final List<Function(String)> _onError = [];
+  final List<Function()> _onConnected = [];
+  final List<Function()> _onDisconnected = [];
 
   IO.Socket? get socket => _socket;
   bool get isConnected => _isConnected;
@@ -57,13 +57,17 @@ class SocketService {
       debugPrint('🟢 Socket connected');
       _isConnected = true;
       _emitSetup();
-      _onConnected?.call();
+      for (final cb in _onConnected) {
+        cb();
+      }
     });
 
     _socket?.onDisconnect((_) {
       debugPrint('🔴 Socket disconnected');
       _isConnected = false;
-      _onDisconnected?.call();
+      for (final cb in _onDisconnected) {
+        cb();
+      }
     });
 
     _socket?.on('connected', (data) {
@@ -80,34 +84,46 @@ class SocketService {
       } else {
         debugPrint('📋 Chats data: $data');
       }
-      _onChatsReceived?.call(data);
+      for (final cb in _onChatsReceived) {
+        cb(data);
+      }
     });
 
     _socket?.on('messages', (data) {
       debugPrint('💬 Messages received: ${data.runtimeType}');
-      _onMessagesReceived?.call(data);
+      for (final cb in _onMessagesReceived) {
+        cb(data);
+      }
     });
 
     _socket?.on('chatCreated', (data) {
       debugPrint('🆕 Chat created: $data');
-      _onChatCreated?.call(data);
+      for (final cb in _onChatCreated) {
+        cb(data);
+      }
     });
 
     _socket?.on('messageSent', (data) {
       debugPrint('📤 Message sent: $data');
-      _onMessageSent?.call(data);
+      for (final cb in _onMessageSent) {
+        cb(data);
+      }
     });
 
     _socket?.on('receiveMessage', (data) {
       debugPrint('📥 Message received: $data');
-      _onMessageReceived?.call(data);
+      for (final cb in _onMessageReceived) {
+        cb(data);
+      }
     });
 
     _socket?.on('error', (data) {
       debugPrint('❌ Socket error: $data');
       final errorMessage =
           data is Map ? data['message'] ?? 'Unknown error' : data.toString();
-      _onError?.call(errorMessage);
+      for (final cb in _onError) {
+        cb(errorMessage);
+      }
     });
   }
 
@@ -183,37 +199,79 @@ class SocketService {
 
   // ==================== Callback Setters ====================
 
+  // Backward-compatible "set" APIs now replace existing listeners with a single one
   void setOnChatsReceived(Function(dynamic) callback) {
-    _onChatsReceived = callback;
+    _onChatsReceived
+      ..clear()
+      ..add(callback);
   }
 
   void setOnMessagesReceived(Function(dynamic) callback) {
-    _onMessagesReceived = callback;
+    _onMessagesReceived
+      ..clear()
+      ..add(callback);
   }
 
   void setOnChatCreated(Function(dynamic) callback) {
-    _onChatCreated = callback;
+    _onChatCreated
+      ..clear()
+      ..add(callback);
   }
 
   void setOnMessageSent(Function(dynamic) callback) {
-    _onMessageSent = callback;
+    _onMessageSent
+      ..clear()
+      ..add(callback);
   }
 
   void setOnMessageReceived(Function(dynamic) callback) {
-    _onMessageReceived = callback;
+    _onMessageReceived
+      ..clear()
+      ..add(callback);
   }
 
   void setOnError(Function(String) callback) {
-    _onError = callback;
+    _onError
+      ..clear()
+      ..add(callback);
   }
 
   void setOnConnected(Function() callback) {
-    _onConnected = callback;
+    _onConnected
+      ..clear()
+      ..add(callback);
   }
 
   void setOnDisconnected(Function() callback) {
-    _onDisconnected = callback;
+    _onDisconnected
+      ..clear()
+      ..add(callback);
   }
+
+  // Add/remove APIs to support multiple listeners without overwriting
+  void addOnChatsReceived(Function(dynamic) callback) => _onChatsReceived.add(callback);
+  void removeOnChatsReceived(Function(dynamic) callback) => _onChatsReceived.remove(callback);
+
+  void addOnMessagesReceived(Function(dynamic) callback) => _onMessagesReceived.add(callback);
+  void removeOnMessagesReceived(Function(dynamic) callback) => _onMessagesReceived.remove(callback);
+
+  void addOnChatCreated(Function(dynamic) callback) => _onChatCreated.add(callback);
+  void removeOnChatCreated(Function(dynamic) callback) => _onChatCreated.remove(callback);
+
+  void addOnMessageSent(Function(dynamic) callback) => _onMessageSent.add(callback);
+  void removeOnMessageSent(Function(dynamic) callback) => _onMessageSent.remove(callback);
+
+  void addOnMessageReceived(Function(dynamic) callback) => _onMessageReceived.add(callback);
+  void removeOnMessageReceived(Function(dynamic) callback) => _onMessageReceived.remove(callback);
+
+  void addOnError(Function(String) callback) => _onError.add(callback);
+  void removeOnError(Function(String) callback) => _onError.remove(callback);
+
+  void addOnConnected(Function() callback) => _onConnected.add(callback);
+  void removeOnConnected(Function() callback) => _onConnected.remove(callback);
+
+  void addOnDisconnected(Function() callback) => _onDisconnected.add(callback);
+  void removeOnDisconnected(Function() callback) => _onDisconnected.remove(callback);
 
   // ==================== Helper Methods ====================
 
@@ -226,13 +284,13 @@ class SocketService {
   }
 
   void _clearCallbacks() {
-    _onChatsReceived = null;
-    _onMessagesReceived = null;
-    _onChatCreated = null;
-    _onMessageSent = null;
-    _onMessageReceived = null;
-    _onError = null;
-    _onConnected = null;
-    _onDisconnected = null;
+    _onChatsReceived.clear();
+    _onMessagesReceived.clear();
+    _onChatCreated.clear();
+    _onMessageSent.clear();
+    _onMessageReceived.clear();
+    _onError.clear();
+    _onConnected.clear();
+    _onDisconnected.clear();
   }
 }

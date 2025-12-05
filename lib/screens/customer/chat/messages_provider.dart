@@ -32,10 +32,10 @@ class MessagesProvider extends ChangeNotifier {
 
   /// Setup socket event listeners
   void _setupSocketListeners() {
-    _socketService.setOnMessagesReceived(_handleMessagesReceived);
-    _socketService.setOnMessageSent(_handleMessageSent);
-    _socketService.setOnMessageReceived(_handleMessageReceived);
-    _socketService.setOnError(_handleError);
+    _socketService.addOnMessagesReceived(_handleMessagesReceived);
+    _socketService.addOnMessageSent(_handleMessageSent);
+    _socketService.addOnMessageReceived(_handleMessageReceived);
+    _socketService.addOnError(_handleError);
   }
 
   /// Load messages for current chat
@@ -230,9 +230,10 @@ class MessagesProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _socketService.setOnMessagesReceived((_) {});
-    _socketService.setOnMessageSent((_) {});
-    _socketService.setOnMessageReceived((_) {});
+    _socketService.removeOnMessagesReceived(_handleMessagesReceived);
+    _socketService.removeOnMessageSent(_handleMessageSent);
+    _socketService.removeOnMessageReceived(_handleMessageReceived);
+    _socketService.removeOnError(_handleError);
     super.dispose();
   }
 }

@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_text.dart';
@@ -12,19 +14,25 @@ class DateDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(child: Divider(color: AppColors.greyBordersColor)),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.02),
-          child: CustomText(
-            text: date,
-            color: AppColors.inputHintColor,
-            fontSize: sizes?.fontSize12,
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: getHeight() * 0.05,
+        horizontal: getWidth() * 0.1,
+      ),
+      child: Row(
+        children: [
+          const Expanded(child: Divider(color: AppColors.greyBordersColor)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.05),
+            child: CustomText(
+              text: date,
+              color: AppColors.inputHintColor,
+              fontSize: sizes?.fontSize12,
+            ),
           ),
-        ),
-        const Expanded(child: Divider(color: AppColors.greyBordersColor)),
-      ],
+          const Expanded(child: Divider(color: AppColors.greyBordersColor)),
+        ],
+      ),
     );
   }
 }
@@ -35,6 +43,7 @@ class MessageBubble extends StatelessWidget {
   final bool isSentByMe;
   final bool isRead;
   final String? imageUrl;
+  final String? avatarUrl;
 
   const MessageBubble({
     super.key,
@@ -43,6 +52,7 @@ class MessageBubble extends StatelessWidget {
     this.isSentByMe = false,
     this.isRead = false,
     this.imageUrl,
+    this.avatarUrl,
   });
 
   @override
@@ -51,88 +61,142 @@ class MessageBubble extends StatelessWidget {
       alignment: isSentByMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: getWidth() * 0.6),
-          child: Container(
-            padding:
-                imageUrl != null
-                    ? const EdgeInsets.all(8)
-                    : EdgeInsets.symmetric(
-                      horizontal: sizes!.pagePadding,
-                      vertical: getHeight() * 0.01,
-                    ),
-            decoration: BoxDecoration(
-              color:
-                  isSentByMe
-                      ? AppColors.getPrimaryColorFromContext(context)
-                      : AppColors.greyColor,
-              borderRadius:
-                  isSentByMe
-                      ? const BorderRadius.only(
-                        topRight: Radius.circular(16),
-                        topLeft: Radius.circular(16),
-                        bottomLeft: Radius.circular(16),
-                      )
-                      : const BorderRadius.only(
-                        topRight: Radius.circular(16),
-                        topLeft: Radius.circular(16),
-                        bottomRight: Radius.circular(16),
-                      ),
-            ),
-            child: Column(
-              crossAxisAlignment:
-                  isSentByMe
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-              children: [
-                // if (imageUrl != null)
-                //   ClipRRect(
-                //     borderRadius: BorderRadius.circular(4),
-                //     child: Image.asset(
-                //       imageUrl!,
-                //       fit: BoxFit.cover,
-                //     ),
-                //   ),
-                // if (imageUrl != null) const SizedBox(height: 8),
-                CustomText(
-                  text: message,
-                  fontSize: sizes?.fontSize14,
-                  giveLinesAsText: true,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            if (!isSentByMe) ...[
+              _buildAvatar(context),
+              SizedBox(width: getWidth() * 0.02),
+            ],
+            // Message bubble
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: getWidth() * 0.6),
+              child: Container(
+                padding:
+                    imageUrl != null
+                        ? const EdgeInsets.all(8)
+                        : EdgeInsets.symmetric(
+                          horizontal: sizes!.pagePadding,
+                          vertical: getHeight() * 0.01,
+                        ),
+                decoration: BoxDecoration(
                   color:
-                      isSentByMe ? AppColors.whiteColor : AppColors.blackColor,
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment:
                       isSentByMe
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
+                          ? AppColors.getPrimaryColorFromContext(context)
+                          : AppColors.greyColor,
+                  borderRadius:
+                      isSentByMe
+                          ? const BorderRadius.only(
+                            topRight: Radius.circular(16),
+                            topLeft: Radius.circular(16),
+                            bottomLeft: Radius.circular(16),
+                          )
+                          : const BorderRadius.only(
+                            topRight: Radius.circular(16),
+                            topLeft: Radius.circular(16),
+                            bottomRight: Radius.circular(16),
+                          ),
+                ),
+                child: Column(
+                  crossAxisAlignment:
+                      isSentByMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
                   children: [
+                    // if (imageUrl != null)
+                    //   ClipRRect(
+                    //     borderRadius: BorderRadius.circular(4),
+                    //     child: Image.asset(
+                    //       imageUrl!,
+                    //       fit: BoxFit.cover,
+                    //     ),
+                    //   ),
+                    // if (imageUrl != null) const SizedBox(height: 8),
                     CustomText(
-                      text: time,
+                      text: message,
+                      fontSize: sizes?.fontSize14,
                       giveLinesAsText: true,
                       color:
                           isSentByMe
                               ? AppColors.whiteColor
                               : AppColors.blackColor,
-                      fontSize: sizes?.fontSize10,
                     ),
-                    if (isSentByMe && isRead) ...[
-                      const SizedBox(width: 4),
-                      CustomText(
-                        text: "· Read",
-                        color: AppColors.whiteColor,
-                        fontSize: 10,
-                      ),
-                    ],
+                    // const SizedBox(height: 6),
+                    // Row(
+                    //   mainAxisSize: MainAxisSize.min,
+                    //   mainAxisAlignment:
+                    //       isSentByMe
+                    //           ? MainAxisAlignment.end
+                    //           : MainAxisAlignment.start,
+                    //   children: [
+                    //     CustomText(
+                    //       text: time,
+                    //       giveLinesAsText: true,
+                    //       color:
+                    //           isSentByMe
+                    //               ? AppColors.whiteColor
+                    //               : AppColors.blackColor,
+                    //       fontSize: sizes?.fontSize10,
+                    //     ),
+                    //     if (isSentByMe && isRead) ...[
+                    //       const SizedBox(width: 4),
+                    //       CustomText(
+                    //         text: "· Read",
+                    //         color: AppColors.whiteColor,
+                    //         fontSize: 10,
+                    //       ),
+                    //     ],
+                    //   ],
+                    // ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+            if (isSentByMe) ...[
+              SizedBox(width: getWidth() * 0.02),
+              _buildAvatar(context),
+            ],
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAvatar(BuildContext context) {
+    return CircleAvatar(
+      radius: getHeight() * 0.02,
+      backgroundColor: AppColors.getPrimaryColorFromContext(context),
+      child:
+          avatarUrl != null && avatarUrl!.isNotEmpty
+              ? ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: avatarUrl!,
+                  width: getHeight() * 0.04,
+                  height: getHeight() * 0.04,
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.getPrimaryColorFromContext(context),
+                          ),
+                        ),
+                      ),
+                  errorWidget:
+                      (context, url, error) => Icon(
+                        Icons.person,
+                        color: AppColors.whiteColor,
+                        size: getHeight() * 0.02,
+                      ),
+                ),
+              )
+              : Icon(
+                Icons.person,
+                color: AppColors.whiteColor,
+                size: getHeight() * 0.02,
+              ),
     );
   }
 }
@@ -151,7 +215,7 @@ class ChatInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double fieldHeight = getHeight() * 0.06; // same for both
+    final double fieldHeight = getHeight() * 0.06;
 
     return Column(
       children: [
@@ -257,6 +321,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? imageUrl;
   final VoidCallback? onNext;
   final bool showNextButton;
+  final bool showAvatar;
 
   const ChatAppBar({
     super.key,
@@ -264,6 +329,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.imageUrl,
     this.onNext,
     this.showNextButton = false,
+    this.showAvatar = true,
   });
 
   @override
@@ -283,10 +349,40 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             icon: const Icon(Icons.arrow_back, color: AppColors.blackColor),
             onPressed: () => Navigator.pop(context),
           ),
-          if (imageUrl != null) ...[
+          if (showAvatar) ...[
             CircleAvatar(
               radius: getHeight() * 0.02,
-              backgroundImage: NetworkImage(imageUrl!),
+              backgroundColor: AppColors.getPrimaryColorFromContext(context),
+              child:
+                  (imageUrl != null && imageUrl!.isNotEmpty)
+                      ? ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: imageUrl!,
+                          width: getHeight() * 0.04,
+                          height: getHeight() * 0.04,
+                          fit: BoxFit.cover,
+                          placeholder:
+                              (context, url) => Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.getPrimaryColorFromContext(context),
+                                  ),
+                                ),
+                              ),
+                          errorWidget:
+                              (context, url, error) => Icon(
+                                Icons.person,
+                                color: AppColors.whiteColor,
+                                size: getHeight() * 0.02,
+                              ),
+                        ),
+                      )
+                      : Icon(
+                        Icons.person,
+                        color: AppColors.whiteColor,
+                        size: getHeight() * 0.02,
+                      ),
             ),
             SizedBox(width: getWidth() * 0.02),
           ],
@@ -316,66 +412,6 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-
-// class ChatSearchAppBar extends StatelessWidget implements PreferredSizeWidget {
-//   final TextEditingController searchController;
-//   final VoidCallback onNext;
-//
-//   const ChatSearchAppBar({
-//     super.key,
-//     required this.searchController,
-//     required this.onNext,
-//   });
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return AppBar(
-//       automaticallyImplyLeading: false,
-//       backgroundColor: AppColors.whiteColor,
-//       elevation: 0,
-//       shape: const Border(
-//         bottom: BorderSide(color: AppColors.greyBordersColor, width: 1),
-//       ),
-//       title: Row(
-//         children: [
-//           IconButton(
-//             icon: const Icon(Icons.arrow_back, color: AppColors.blackColor),
-//             onPressed: () => Navigator.pop(context),
-//           ),
-//           Expanded(
-//             child: TextField(
-//               controller: searchController,
-//               decoration: InputDecoration(
-//                 hintText: "To: Type a username or name",
-//                 hintStyle: TextStyle(fontSize: sizes?.fontSize14, color: Colors.grey),
-//                 isDense: true,
-//                 contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-//                 filled: true,
-//                 fillColor: Colors.grey[200],
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(8),
-//                   borderSide: BorderSide.none,
-//                 ),
-//               ),
-//             ),
-//           ),
-//           TextButton(
-//             onPressed: onNext,
-//             child: CustomText(
-//               text: "Next",
-//               fontWeight: FontWeight.w600,
-//               fontSize: sizes?.fontSize14,
-//               color: AppColors.getPrimaryColorFromContext(context),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   @override
-//   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-// }
 
 class ChatGroupTile extends StatelessWidget {
   final String name;
@@ -453,17 +489,18 @@ class SelectedMembersRow extends StatelessWidget {
         children: [
           CustomText(
             text: "${al.members}: ${selectedUsers.length} out of 50",
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w400,
             fontSize: sizes?.fontSize14,
-            color: AppColors.blackColor,
+            color: AppColors.primarySlateColor,
           ),
-          SizedBox(height: getHeight() * 0.015),
+          SizedBox(height: getHeight() * 0.005),
           SizedBox(
             height: getHeight() * 0.12,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: selectedUsers.length,
-              separatorBuilder: (_, __) => SizedBox(width: getWidth() * 0.03),
+              padding: EdgeInsets.zero,
+              separatorBuilder: (_, __) => SizedBox(width: getWidth() * 0.00),
               itemBuilder: (context, index) {
                 final user = selectedUsers[index];
                 return Column(
