@@ -115,4 +115,12 @@ final multiProviders = [
     create: (_) => MessagesProvider(),
     lazy: true,
   ),
+  ChangeNotifierProvider<ChatProvider>(
+    create: (_) => ChatProvider(),
+    lazy: true,
+  ),
+  ChangeNotifierProvider<MessagesProvider>(
+    create: (_) => MessagesProvider(),
+    lazy: true,
+  ),
 ];
