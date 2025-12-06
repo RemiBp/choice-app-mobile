@@ -19,7 +19,7 @@ import 'package:choice_app/screens/customer/explore/customer_gallery/customer_ga
 import 'package:choice_app/screens/customer/explore/restaurant_explore_details/restaurant_explore_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../models/get_events_details_response.dart';
+import '../../../../models/get_events_details_response.dart' hide Dish;
 import '../../../onboarding/menu/menu_widgets.dart';
 import '../../../restaurant/profile_menu/profile_menu_widgets.dart';
 import 'package:choice_app/screens/onboarding/menu/menu_widgets.dart' as menuWidgets;
@@ -59,6 +59,21 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
   void dispose() {
     _pageController?.dispose();
     super.dispose();
+  }
+
+  List<MenuGroup> convertMenu(List<MenuCategory> apiMenu) {
+    return apiMenu.map((cat) {
+      return MenuGroup(
+        title: cat.name ?? '',
+        dishes: (cat.dishes ?? []).map((d) {
+          return Dish(
+            name: d.name ?? '',
+            description: d.description ?? '',
+            price: d.price?.toDouble() ?? 0.0,
+          );
+        }).toList(),
+      );
+    }).toList();
   }
 
   Color getTagColor() {
@@ -404,10 +419,11 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
                     optionText: al.seeFullMenu,
                     hideBorder: true,
                     onAddDish: () {
+                      final menuGroupsFromProducer = convertMenu(menuCategories);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => FullMenuView()));
+                              builder: (context) => FullMenuView(menuGroups: menuGroupsFromProducer)));
                     },
                   ),
                 ),

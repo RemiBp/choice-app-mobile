@@ -141,9 +141,10 @@ class _BookingDetailsState extends State<BookingDetails> {
                       SizedBox(height: getHeight() * 0.02),
                       CustomText(
                         text:
-                            booking.internalNotes != null
-                                ? "\"${booking.internalNotes}\""
-                                : 'No internal notes',
+                        (booking.internalNotes != null &&
+                            booking.internalNotes!.trim().isNotEmpty)
+                            ? booking.internalNotes!
+                            : 'No internal notes added.',
                         fontSize: sizes?.fontSize14,
                         color: AppColors.primarySlateColor,
                         fontWeight: FontWeight.w500,

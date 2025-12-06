@@ -97,6 +97,7 @@ class Assets {
   static const String wellnessMarker = "assets/icons/wellness_marker.svg";
   static const String userMarker = "assets/icons/user_marker.svg";
   static const String leisureMarker = "assets/icons/leisure_marker.svg";
+  static const String switchAccountIcon = "assets/icons/switch_account.svg";
 
 
 

@@ -21,6 +21,9 @@ class HeatmapScreen extends StatefulWidget {
 }
 
 class _HeatmapScreenState extends State<HeatmapScreen> {
+
+  LatLng? _producerLocation;
+
   String selectedTime = al.allDay;
   String selectedFrequency = al.everyday;
   double _currentZoom = 11;
@@ -70,6 +73,19 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
       // Set context for BOTH providers
       heatmapProvider.context = context;
       profileProvider.context = context;
+
+      final profile = await profileProvider.getProducerProfile();
+
+      if (profile?.producer?.latitude != null && profile?.producer?.longitude != null) {
+        final lat = double.tryParse(profile!.producer!.latitude ?? "");
+        final lng = double.tryParse(profile.producer!.longitude ?? "");
+
+        if (lat != null && lng != null) {
+          setState(() {
+            _producerLocation = LatLng(lat, lng);
+          });
+        }
+      }
 
       await heatmapProvider.fetchProducerHeatmapFromProfile();
       _createHeatmapCircles();
@@ -411,9 +427,12 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
 
 // GOOGLE MAP + HEATMAP
   Widget _buildGoogleMap(ProducerHeatmapProvider provider) {
+    if (_producerLocation == null) {
+      return const SizedBox.shrink();
+    }
     return GoogleMap(
-      initialCameraPosition: const CameraPosition(
-        target: LatLng(31.5204, 74.3587),
+      initialCameraPosition: CameraPosition(
+        target: _producerLocation ?? const LatLng(31.5204, 74.3587),
         zoom: 14,
       ),
       markers: _markers,

@@ -6,8 +6,10 @@ import '../../../../common/utils.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../l18n.dart';
 import '../../../../models/near_by_producers_response.dart';
+import '../../../../network/api_url.dart';
 import '../../../../res/res.dart';
 import '../customer_explore/customer_explore_view_provider.dart';
+import '../restaurant_explore_details/non_event_explore_details.dart';
 
 class SearchProducersScreen extends StatefulWidget {
   const SearchProducersScreen({Key? key}) : super(key: key);
@@ -107,68 +109,81 @@ class _SearchProducersScreenState extends State<SearchProducersScreen> {
                   itemCount: searchResults.length,
                   itemBuilder: (context, index) {
                     final item = searchResults[index];
-                    return Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                item.profileImage != null
-                                    ? "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/${item.profileImage}"
-                                    : "https://via.placeholder.com/300",
-                                width: getWidth() * 0.15,
-                                height: getWidth() * 0.15,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: getWidth() * 0.15,
-                                    height: getWidth() * 0.15,
-                                    color: Colors.grey.shade200,
-                                    child: const Icon(Icons.broken_image, color: Colors.grey),
-                                  );
-                                },
-                              ),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NonEventDetailsScreen(
+                              type: item.type?.toLowerCase() ?? "",
+                              producerId: item.id.toString(),
                             ),
-                            SizedBox(width: getWidth() * 0.04),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(
-                                    text: item.name ?? "Unknown Producer",
-                                    fontSize: sizes?.fontSize16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  SizedBox(height: getHeight() * 0.003),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.location_on,
-                                        color: AppColors.userPrimaryColor,
-                                        size: 14,
-                                      ),
-                                      SizedBox(width: getWidth() * 0.01),
-                                      Expanded(
-                                        child: Text(
-                                          item.address ?? "No address available",
-                                          style: const TextStyle(
-                                            color: Colors.black54,
-                                            fontSize: 13,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.network(
+                                  item.profileImage != null
+                                      ? "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/${item.profileImage}"
+                                      : "https://via.placeholder.com/300",
+                                  width: getWidth() * 0.15,
+                                  height: getWidth() * 0.15,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: getWidth() * 0.15,
+                                      height: getWidth() * 0.15,
+                                      color: Colors.grey.shade200,
+                                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                                    );
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: getWidth() * 0.04),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(
+                                      text: item.name ?? "Unknown Producer",
+                                      fontSize: sizes?.fontSize16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    SizedBox(height: getHeight() * 0.003),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.location_on,
+                                          color: AppColors.userPrimaryColor,
+                                          size: 14,
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                        SizedBox(width: getWidth() * 0.01),
+                                        Expanded(
+                                          child: Text(
+                                            item.address ?? "No address available",
+                                            style: const TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 13,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: getHeight() * 0.02),
-                      ],
+                            ],
+                          ),
+                          SizedBox(height: getHeight() * 0.02),
+                        ],
+                      ),
                     );
                   },
                 ),

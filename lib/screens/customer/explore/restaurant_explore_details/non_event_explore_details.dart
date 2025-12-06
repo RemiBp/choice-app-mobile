@@ -73,7 +73,20 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
       ),
     );
   }
-
+  List<MenuGroup> convertMenu(List<MenuCategory> apiMenu) {
+    return apiMenu.map((cat) {
+      return MenuGroup(
+        title: cat.name ?? '',
+        dishes: (cat.dishes ?? []).map((d) {
+          return Dish(
+            name: d.name ?? '',
+            description: d.description ?? '',
+            price: d.price?.toDouble() ?? 0.0,
+          );
+        }).toList(),
+      );
+    }).toList();
+  }
   String _formatTime(String? t) {
     if (t == null) return "";
     // backend returns "10:00:00" trim seconds for display
@@ -141,7 +154,7 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                                 setState(() => _currentImageIndex = index);
                               },
                               itemBuilder: (_, index) {
-                                final String url = "${ApiUrl.baseUrl}/${photos[index].url ?? ''}";
+                                final String url = "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/${photos[index].url ?? ''}";
                                 return Image.network(
                                   url,
                                   fit: BoxFit.cover,
@@ -262,14 +275,15 @@ class _NonEventDetailsScreenState extends State<NonEventDetailsScreen> {
                           ))
                               .toList() ??
                               [],
-                                                ),
-                                                header: al.menu,
-                                                optionText: al.seeFullMenu,
-                                                hideBorder: true,
-                                                onAddDish: () {
-                          Navigator.push(
+                              ),
+                              header: al.menu,
+                              optionText: al.seeFullMenu,
+                              hideBorder: true,
+                              onAddDish: () {
+                                final menuGroupsFromAPI = convertMenu(menu);
+                                Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => FullMenuView()),
+                            MaterialPageRoute(builder: (_) => FullMenuView(menuGroups: menuGroupsFromAPI)),
                           );
                                                 },
                                               ),

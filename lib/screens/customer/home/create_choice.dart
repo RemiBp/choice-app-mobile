@@ -99,11 +99,81 @@ class _CreateChoiceState extends State<CreateChoice> {
     setState(() => images.removeAt(index));
   }
 
+  Widget buildSelectedProducerCard({
+    required String name,
+    required String address,
+    required String type,
+    required String icon,
+  }) {
+    Color getColor() {
+      switch (type.toLowerCase()) {
+        case "restaurant":
+          return AppColors.restaurantPrimaryColor.withValues(alpha: 0.2);
+        case "wellness":
+          return AppColors.wellnessPrimaryColor.withValues(alpha: 0.2);
+        case "leisure":
+          return AppColors.leisurePrimaryColor.withValues(alpha: 0.2);
+        default:
+          return const Color(0xFFF2F2F2);
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      decoration: BoxDecoration(
+        color: getColor(),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: SvgPicture.asset(icon, height: 30, width: 30),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 3),
+                  child: CustomText(
+                    text: name,
+                    fontFamily: Assets.onsetMedium,
+                    fontSize: sizes?.fontSize14,
+                    fontWeight: FontWeight.w500,
+                    lines: 1,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                CustomText(
+                  text: address,
+                  fontSize: sizes?.fontSize12,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: Assets.onsetRegular,
+                  lines: 1,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final data = GoRouterState.of(context).extra as Map<String, dynamic>?;
     final categoryTitle = data?["title"];
     final placeId = data?["placeId"];
+    final producerName = data?["name"];
+    final producerAddress = data?["address"];
+    final producerType = data?["producerType"];
     final ratingCategories = getRatingCategories(categoryTitle);
 
     // initialize general ratings
@@ -119,6 +189,15 @@ class _CreateChoiceState extends State<CreateChoice> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (producerName != null && producerAddress != null)
+              buildSelectedProducerCard(
+                name: producerName,
+                address: producerAddress,
+                type: producerType,
+                icon: data?["icon"],
+              ),
+            SizedBox(height: getHeight() * .02),
+
             //  Overall Rating (General)
             Container(
               decoration: BoxDecoration(
@@ -456,6 +535,14 @@ class _CreateChoiceState extends State<CreateChoice> {
 
     final description = shareExpController.text.trim();
     final tags = tagsController.text.trim();
+
+    if (producerType == "leisure" || producerType == "wellness") {
+      if (selectedEvent == null || selectedEvent!.isEmpty) {
+        final typeLabel = producerType == "leisure" ? "event" : "service";
+        Toasts.getErrorToast(text: "Please select a $typeLabel.");
+        return;
+      }
+    }
 
     if (images.isEmpty) {
       Toasts.getErrorToast(text: al.errorSelectImage);

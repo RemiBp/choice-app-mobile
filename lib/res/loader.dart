@@ -38,8 +38,8 @@ class Loader {
           color: Colors.black.withValues(alpha: 0.5),
           child: Center(
             child: SizedBox(
-              height: getHeight() * 0.15,
-              width: getWidth() * 0.15,
+              height: getHeight() * 0.50,
+              width: getWidth() * 0.50,
               child: Lottie.asset(loaderPath),
             ),
           ),
@@ -66,8 +66,8 @@ class LoaderWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Center(
         child: SizedBox(
-          height: getHeight() * 0.15,
-          width: getWidth() * 0.15,
+          height: getHeight() * 0.50,
+          width: getWidth() * 0.50,
           child: Lottie.asset(loaderPath),
         ),
       ),
