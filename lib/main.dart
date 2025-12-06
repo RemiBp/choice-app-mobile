@@ -19,10 +19,9 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  Firebase.initializeApp();
   TimezoneHelper.initialize();
   await PreferenceUtils.init();
-
 
   // if (Platform.isIOS || Platform.isMacOS) {
   //   StoreConfig(store: Store.appStore, apiKey: appleApiKey);
@@ -40,13 +39,10 @@ void main() async {
   //
   // await Purchases.configure(configuration);
 
-
   runApp(MultiProvider(providers: multiProviders, child: const MyApp()));
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -56,7 +52,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
     initializeResources(context: context);
@@ -67,23 +62,22 @@ class _MyAppState extends State<MyApp> {
       ),
     );
     return Consumer<LanguageSelectionProvider>(
-        builder: (context, state, child){
-          debugPrint("Consumer Called");
-      return MaterialApp.router(
-        key: UniqueKey(),
-        title: 'Choice App',
-        builder:BotToastInit(),
-        locale: Locale(state.selectedLocal),
-        routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-      );
-    });
-
-
+      builder: (context, state, child) {
+        debugPrint("Consumer Called");
+        return MaterialApp.router(
+          key: UniqueKey(),
+          title: 'Choice App',
+          builder: BotToastInit(),
+          locale: Locale(state.selectedLocal),
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
+        );
+      },
+    );
   }
 }

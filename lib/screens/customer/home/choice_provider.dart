@@ -1,4 +1,5 @@
 import 'package:choice_app/models/get_producer_places.dart';
+import 'package:choice_app/models/search_users_response.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,6 +15,8 @@ class CustomerChoiceProvider extends ChangeNotifier {
   BuildContext? context;
 
   final Loader _loader = Loader();
+
+  SearchUsersResponse? searchUsersResponse;
 
   init(context) {
     this.context = context;
@@ -170,6 +173,30 @@ class CustomerChoiceProvider extends ChangeNotifier {
     } catch (err) {
       debugPrint("error during saving rating : $err");
       if (showLoader) _loader.hideLoader(context!);
+    }
+  }
+
+  Future<void> searchOtherUsers(String searchText) async {
+    try {
+      _loader.showLoader(context: context);
+
+      searchUsersResponse = await MyApi.callGetApi(
+        url: '$searchUsersApiUrl$searchText',
+        modelName: Models.searchUsersModel,
+      );
+
+      debugPrint("Search Users response: ${searchUsersResponse?.status}");
+
+      _loader.hideLoader(context!);
+
+      if (searchUsersResponse?.data == null) {
+        Toasts.getErrorToast(text: 'Failed to fetch users');
+      }
+      notifyListeners();
+    } catch (err) {
+      debugPrint("Error searching users: $err");
+      _loader.hideLoader(context!);
+      Toasts.getErrorToast(text: 'Failed to search users');
     }
   }
 
