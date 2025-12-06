@@ -12,6 +12,7 @@ import 'package:choice_app/models/get_events_details_response.dart';
 import 'package:choice_app/models/get_gallery_image_response.dart';
 import 'package:choice_app/models/get_menu_categories_response.dart';
 import 'package:choice_app/models/get_menu_response.dart';
+import 'package:choice_app/models/get_my_blocks_response.dart';
 import 'package:choice_app/models/get_nearby_producers_response.dart';
 import 'package:choice_app/models/get_non_events_details_response.dart';
 import 'package:choice_app/models/get_normal_booking_details_response.dart';
@@ -23,6 +24,7 @@ import 'package:choice_app/models/get_producer_profile_response.dart';
 
 import 'package:choice_app/models/get_producer_slots_response.dart';
 import 'package:choice_app/models/get_user_bookings_response.dart';
+import 'package:choice_app/models/get_user_detail_response.dart';
 import 'package:choice_app/models/get_user_live_offers_response.dart';
 import 'package:choice_app/models/more_events_by_producer_response.dart';
 import 'package:choice_app/models/producer_delete_document_response.dart';
@@ -30,6 +32,8 @@ import 'package:choice_app/models/producer_delete_gallery_images_response.dart';
 import 'package:choice_app/models/producer_posts_response.dart';
 import 'package:choice_app/models/producer_update_document_response.dart';
 import 'package:choice_app/models/restaurant_update_profile_response.dart';
+import 'package:choice_app/models/search_users_response.dart';
+import 'package:choice_app/models/unblock_user_response.dart';
 import '../models/error_model.dart';
 import '../models/get_producer_offer_templates_response.dart';
 import '../models/get_producers_places_claim_response.dart';
@@ -83,6 +87,10 @@ class Models {
   static const String getProducerOfferTemplateModel = "GET_PRODUCER_OFFER_TEMPLATES_MODEL";
   static const String getUserLiveOfferModel = "GET_USER_LIVE_OFFERS_MODEL";
   static const String getNearbyProducersOnMapModel = "GET_NEARBY_PRODUCERS_ON_MAP_MODEL";
+  static const String getMyBlocksModel = "GET_MY_BLOCKS_MODEL";
+  static const String unblockUserModel = "UNBLOCK_USER_MODEL";
+  static const String searchUsersModel = "SEARCH_USERS_MODEL";
+  static const String getUserDetailModel = "GET_USER_DETAIL_MODEL";
 
 
 
@@ -166,6 +174,14 @@ class Models {
         return GetUserLiveOffersResponse.fromJson(json);
       case getNearbyProducersOnMapModel:
         return GetNearbyProducersOnMapResponse.fromJson(json);
+      case getMyBlocksModel:
+        return GetMyBlocksResponse.fromJson(json);
+      case unblockUserModel:
+        return UnblockUserResponse.fromJson(json);
+      case searchUsersModel:
+        return SearchUsersResponse.fromJson(json);
+      case getUserDetailModel:
+        return GetUserDetailResponse.fromJson(json);
     }
   }
 }

@@ -13,6 +13,7 @@ import 'package:choice_app/screens/producer_maps/offer_provider.dart';
 import 'package:choice_app/screens/restaurant/event/event_provider.dart';
 import 'package:choice_app/screens/restaurant/home/choice_provider.dart';
 import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
+import 'package:choice_app/screens/restaurant/profile_menu/profile_menu_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/customer/explore/restaurant_explore_details/event_details_provider.dart';
@@ -104,6 +105,10 @@ final multiProviders = [
   ),
   ChangeNotifierProvider<CustomerMapsProvider>(
     create: (context) => CustomerMapsProvider(),
+    lazy: true,
+  ),
+  ChangeNotifierProvider<ProfileMenuProvider>(
+    create: (context) => ProfileMenuProvider(),
     lazy: true,
   ),
 

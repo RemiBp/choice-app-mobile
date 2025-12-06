@@ -33,13 +33,53 @@ class CustomerChoice extends StatelessWidget {
 class CustomerPostCard extends StatelessWidget {
 
 
-  const CustomerPostCard({super.key, this.index = 0});
+  const CustomerPostCard({super.key, this.index = 0, this.showOtherUserDetails = false,});
 
   final int index;
+  final bool showOtherUserDetails;
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<CustomerProfileProvider>(context);
+    
+    // Get post data based on showOtherUserDetails flag
+    final userDetailPosts = provider.getUserDetailResponse?.data?.posts ?? [];
+    final post = showOtherUserDetails && userDetailPosts.isNotEmpty
+        ? userDetailPosts[index]
+        : null;
+    final userPost = showOtherUserDetails
+        ? null
+        : provider.userPosts?[index];
+    
+    // Use appropriate data source
+    final coverImage = showOtherUserDetails
+        ? (post?.coverImage ?? "")
+        : (userPost?.coverImage ?? "");
+    final producerName = showOtherUserDetails
+        ? ""
+        : (userPost?.producer?.name ?? "");
+    final publishDate = showOtherUserDetails
+        ? post?.publishDate
+        : userPost?.publishDate;
+    final description = showOtherUserDetails
+        ? (post?.description ?? "")
+        : (userPost?.description ?? "");
+    final tags = showOtherUserDetails
+        ? <String>[]
+        : (userPost?.tags ?? []);
+    final images = showOtherUserDetails
+        ? post?.images
+        : userPost?.images;
+    final likesCount = showOtherUserDetails
+        ? (post?.likesCount ?? 0)
+        : 0;
+    final commentCount = showOtherUserDetails
+        ? (post?.commentCount ?? 0)
+        : 0;
+    final shareCount = showOtherUserDetails
+        ? (post?.shareCount ?? 0)
+        : 0;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -48,23 +88,18 @@ class CustomerPostCard extends StatelessWidget {
           contentPadding: EdgeInsets.zero,
           leading: CircleAvatar(
             radius: getHeight() * .03,
-            backgroundImage: NetworkImage(
-              provider.userPosts?[index].coverImage ?? "",
-            ),
+            backgroundImage: NetworkImage(coverImage),
           ),
           title: CustomText(
-            text: provider.userPosts?[index].producer?.name ?? "",
+            text: producerName,
             fontSize: sizes?.fontSize16,
             fontFamily: Assets.onsetSemiBold,
             giveLinesAsText: true,
           ),
           subtitle: CustomText(
-            text:
-                provider.userPosts?[index].publishDate != null
-                    ? timeago.format(
-                      DateTime.parse(provider.userPosts![index].publishDate!),
-                    )
-                    : 'nil',
+            text: publishDate != null
+                ? timeago.format(DateTime.parse(publishDate))
+                : 'nil',
             fontSize: sizes?.fontSize12,
             giveLinesAsText: true,
           ),
@@ -72,43 +107,54 @@ class CustomerPostCard extends StatelessWidget {
         ),
         // Post description
         CustomText(
-          text:provider.userPosts?[index].description??"",
+          text: description,
           fontSize: sizes?.fontSize14,
           giveLinesAsText: true,
         ),
         SizedBox(height: getHeight() * 0.01),
         // Hashtags
-        Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: (provider.userPosts?[index].tags ?? [])
-              .map((tag) => Text(
-            '#$tag',
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: sizes?.fontSize12,
-              fontWeight: FontWeight.w500,
-            ),
-          ))
-              .toList(),
-        ),
+        if (tags.isNotEmpty)
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: tags
+                .map((tag) => Text(
+              '#$tag',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: sizes?.fontSize12,
+                fontWeight: FontWeight.w500,
+              ),
+            ))
+                .toList(),
+          ),
 
         SizedBox(height: getHeight() * 0.01),
         // Image carousel with indicator
         Stack(
           children: [
             CarouselSlider(
-              items:
-    provider.userPosts?[index].images?.map((url) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        url.url??"",
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      ),
-                    );
-                  }).toList(),
+              items: showOtherUserDetails
+                  ? (post?.images?.map((img) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          img.url ?? "",
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      );
+                    }).toList() ?? [])
+                  : (userPost?.images?.map((url) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          url.url ?? "",
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      );
+                    }).toList() ?? []),
               options: CarouselOptions(
                 height: getHeight() * .4,
                 viewportFraction: 1.0,
@@ -122,7 +168,10 @@ class CustomerPostCard extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 color: Colors.black54,
-                child: Text('1/${provider.userPosts?[index].images?.length}', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  '1/${showOtherUserDetails ? (post?.images?.length ?? 0) : (userPost?.images?.length ?? 0)}',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -137,9 +186,24 @@ class CustomerPostCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildIconText(Icons.favorite_outlined, '2.2k'),
-              _buildIconText(Icons.chat_bubble, '3.2k'),
-              _buildIconText(Assets.shareIcon, '1.2k'),
+              _buildIconText(
+                Icons.favorite_outlined,
+                showOtherUserDetails
+                    ? '${likesCount}'
+                    : '2.2k',
+              ),
+              _buildIconText(
+                Icons.chat_bubble,
+                showOtherUserDetails
+                    ? '${commentCount}'
+                    : '3.2k',
+              ),
+              _buildIconText(
+                Assets.shareIcon,
+                showOtherUserDetails
+                    ? '${shareCount}'
+                    : '1.2k',
+              ),
               _buildInterestedTag("${al.interested} (0)"),
             ],
           ),

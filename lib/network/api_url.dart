@@ -103,3 +103,12 @@ const String getUserLiveOfferApiUrl = "$baseUrl/api/producer/maps/getUserLiveOff
 const String copilotQueryApiUrl = "$baseUrl/api/app/copilot/query";
 
 const String getNearbyProducersOnMapApiUrl = "$baseUrl/api/app/maps/getNearbyProducers";
+const String getMyBlocksApiUrl = "$baseUrl/api/app/blocking/getMyBlocks";
+const String unblockUserApiUrl = "$baseUrl/api/app/blocking/unblockUser/";
+const String blockUserApiUrl = "$baseUrl/api/app/blocking/createBlock";
+
+const String searchUsersApiUrl = "$baseUrl/api/app/profile/searchUsers?query=";
+
+const String getUserDetailApiUrl = "$baseUrl/api/app/profile/getUserDetail/";
+
+const String reportUserApiUrl = "$baseUrl/api/app/report/createReport";
