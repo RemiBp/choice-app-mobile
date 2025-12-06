@@ -22,11 +22,18 @@ class EventProvider extends ChangeNotifier {
 
   BuildContext? context;
 
-  init(context) {
+  Future<void> init(context) async {
     this.context = context;
-    getAllEvents();
-    getDraftEvents();
-    getCompletedEvents();
+
+    _loader.showLoader(context: context);
+
+    await Future.wait([
+      getAllEvents(showLoader: false),
+      getDraftEvents(showLoader: false),
+      getCompletedEvents(showLoader: false),
+    ]);
+
+    _loader.hideLoader(context);
   }
 
   Future<void> createEventApi({
@@ -160,56 +167,56 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getAllEvents() async {
+  Future<void> getAllEvents({bool showLoader = true}) async {
     try {
-      _loader.showLoader(context: context);
+      if (showLoader) _loader.showLoader(context: context);
       getAllEventsResponse = await MyApi.callGetApi(
         url: getMyEventsApiUrl,
         parameters: {"status": EventStatus.Active.name},
         modelName: Models.eventsModel,
       );
       debugPrint("response is : ${getAllEventsResponse.data?.length}");
-      _loader.hideLoader(context!);
+      if (showLoader) _loader.hideLoader(context!);
       notifyListeners();
     } catch (err) {
       debugPrint("error while getting all events : $err");
-      _loader.hideLoader(context!);
+      if (showLoader) _loader.hideLoader(context!);
       notifyListeners();
     }
   }
 
-  Future<void> getDraftEvents() async {
+  Future<void> getDraftEvents({bool showLoader = true}) async {
     try {
-      _loader.showLoader(context: context);
+      if (showLoader) _loader.showLoader(context: context);
       getDraftEventsResponse = await MyApi.callGetApi(
         url: getMyEventsApiUrl,
         parameters: {"status": EventStatus.Draft.name},
         modelName: Models.eventsModel,
       );
       debugPrint("response is : ${getDraftEventsResponse.data?.length}");
-      _loader.hideLoader(context!);
+      if (showLoader) _loader.hideLoader(context!);
       notifyListeners();
     } catch (err) {
       debugPrint("error while getting draft events : $err");
-      _loader.hideLoader(context!);
+      if (showLoader) _loader.hideLoader(context!);
       notifyListeners();
     }
   }
 
-  Future<void> getCompletedEvents() async {
+  Future<void> getCompletedEvents({bool showLoader = true}) async {
     try {
-      _loader.showLoader(context: context);
+      if (showLoader) _loader.showLoader(context: context);
       getCompletedEventsResponse = await MyApi.callGetApi(
         url: getMyEventsApiUrl,
         parameters: {"status": EventStatus.Closed.name},
         modelName: Models.eventsModel,
       );
       debugPrint("response is : ${getCompletedEventsResponse.data?.length}");
-      _loader.hideLoader(context!);
+      if (showLoader) _loader.hideLoader(context!);
       notifyListeners();
     } catch (err) {
       debugPrint("error while getting completed events : $err");
-      _loader.hideLoader(context!);
+      if (showLoader) _loader.hideLoader(context!);
       notifyListeners();
     }
   }

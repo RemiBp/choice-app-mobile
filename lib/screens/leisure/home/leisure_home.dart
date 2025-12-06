@@ -135,7 +135,7 @@ class _LeisureHomeState extends State<LeisureHome> {
             children: [
               const Icon(Icons.add, color: Colors.white),
               CustomText(
-                text: al.create,
+                text: al.createPost,
                 fontSize: sizes?.fontSize12,
                 fontFamily: Assets.onsetMedium,
                 color: Colors.white,

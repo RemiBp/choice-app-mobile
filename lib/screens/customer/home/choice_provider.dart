@@ -19,26 +19,35 @@ class CustomerChoiceProvider extends ChangeNotifier {
     this.context = context;
   }
 
-  Future<void> getProducerPlaces(String producerType) async {
+  Future<void> getProducerPlaces(String producerType,{String? query}) async {
     try {
-      _loader.showLoader(context: context);
+      if (query == null || query.isEmpty) {
+        _loader.showLoader(context: context);
+      }
+      final Map<String, dynamic> parameters = {"type": producerType};
+      if (query != null && query.isNotEmpty) {
+        parameters["query"] = query;
+      }
 
       placesResponse = await MyApi.callGetApi(
         url: getProducerPlacesApiUrl,
         modelName: Models.producerPlacesModel,
-        parameters: {"query": " ", "type": producerType},
+        parameters: parameters,
       );
 
-      debugPrint("Get cuisine types response: ${placesResponse.status}");
+      debugPrint("Get Producer Places response: ${placesResponse.status}");
 
-      _loader.hideLoader(context!);
+      if (query == null || query.isEmpty) {
+        _loader.hideLoader(context!);
+      }
+
 
       if (placesResponse.data == null) {
         Toasts.getErrorToast(text: al.failedToFetchPlaces);
       }
       notifyListeners();
     } catch (err) {
-      debugPrint("Error getting cuisine types: $err");
+      debugPrint("Error getting Producers: $err");
       _loader.hideLoader(context!);
       Toasts.getErrorToast(text: al.failedToFetchPlaces);
     }

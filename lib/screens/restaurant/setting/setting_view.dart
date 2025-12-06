@@ -27,6 +27,7 @@ import '../../../userRole/role_provider.dart';
 import '../../authentication/auth_provider.dart';
 import '../../onboarding/business_hours/edit_business_hours/edit_operational_hours.dart';
 import '../../onboarding/menu/menu_view.dart';
+import '../../subscription/subscriber_provider.dart';
 import '../profile/profile_provider.dart';
 
 class SettingView extends StatefulWidget {
@@ -251,6 +252,8 @@ class _SettingViewState extends State<SettingView> {
                       confirmText: al.logout,
                       confirmColor: AppColors.redColor,
                       onConfirm: () {
+                        final subscriberProvider = context.read<SubscriberProvider>();
+                        subscriberProvider.clearChat();
                         context.read<AuthProvider>().logout(context);
                       },
                       heightPx: getHeight() * 0.22,

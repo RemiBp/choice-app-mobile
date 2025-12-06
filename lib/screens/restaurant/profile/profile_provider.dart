@@ -39,6 +39,9 @@ class ProfileProvider extends ChangeNotifier {
 
   final Loader _loader = Loader();
 
+  double? _latitude;
+  double? _longitude;
+
   GetCuisineTypesResponse? getCuisineTypesResponse;
   GetProducerSlotsResponse? getProducerSlotsResponse;
   GetAllServiceTypesResponse? getAllServiceTypesResponse;
@@ -49,6 +52,15 @@ class ProfileProvider extends ChangeNotifier {
     this.context = context;
     profileImage = null;
     phoneNumber = PhoneNumber.parse('+33');
+  }
+
+  double? get latitude => _latitude;
+  double? get longitude => _longitude;
+
+  void setLocation(double? lat, double? lng) {
+    _latitude = lat;
+    _longitude = lng;
+    notifyListeners();
   }
 
   getImage({required bool isCamera}) async {
@@ -123,7 +135,7 @@ class ProfileProvider extends ChangeNotifier {
     bool hasPassword = password.trim().isNotEmpty;
     bool hasPhone =
         phoneNumber != null &&
-        phoneNumber!.international.length > 4; // More than just country code
+            phoneNumber!.international.length > 4; // More than just country code
     bool hasWebsite = website.trim().isNotEmpty;
     bool hasInstagram = instagram.trim().isNotEmpty;
     bool hasTwitter = twitter.trim().isNotEmpty;
@@ -263,6 +275,8 @@ class ProfileProvider extends ChangeNotifier {
     required String facebook,
     required String description,
     required String profileImageUrl,
+    double? latitude,
+    double? longitude,
   }) async
   {
     try {
@@ -311,10 +325,11 @@ class ProfileProvider extends ChangeNotifier {
 
       body["businessName"] = globalBusinessName;
       body["profileImageUrl"] = profileImageUrl;
-      body["latitude"] = 48.8566;
-      body["longitude"] = 2.3522;
+      body["latitude"] = latitude ?? _latitude ?? 48.8566;
+      body["longitude"] = longitude ?? _longitude ?? 2.3522;
 
       debugPrint("Update profile body: $body");
+      debugPrint("Using coordinates: lat=${body["latitude"]}, lng=${body["longitude"]}");
 
       final response = await MyApi.callPutApi(
         url: updateProfileApiUrl,
@@ -599,8 +614,8 @@ class ProfileProvider extends ChangeNotifier {
       _loader.showLoader(context: context);
 
       final response = await MyApi.callGetApi(
-        url: getMenuCategoriesApiUrl,
-        modelName: Models.restaurantGetMenuCategoriesModel
+          url: getMenuCategoriesApiUrl,
+          modelName: Models.restaurantGetMenuCategoriesModel
       );
 
       debugPrint("Get menu categories response: $response");

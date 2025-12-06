@@ -8,6 +8,7 @@
   import 'package:choice_app/res/loader.dart';
   import 'package:choice_app/res/toasts.dart';
   import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
   import 'package:phone_form_field/phone_form_field.dart';
 
   import '../../../../common/utils.dart';
@@ -126,5 +127,51 @@
       }
       notifyListeners();
     }
+
+    Future<void> updateUserCoordinatesOnLoginOrAppStart() async {
+      try {
+        // 1. Ensure location permissions
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) return;
+
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+
+        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+          return;
+        }
+
+        // 2. Get current location
+        final pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+
+        final body = {
+          "latitude": pos.latitude,
+          "longitude": pos.longitude,
+        };
+
+        debugPrint("📍 Sending Location Update: $body");
+
+        // 3. Hit POST API — MyApi will automatically attach auth token
+        final response = await MyApi.callPostApi(
+          url: updateUserCoordinatesApiUrl,
+          body: body,
+        );
+
+        debugPrint("📍 Location Update Response: $response");
+
+        // 4. Save locally
+        await PreferenceUtils.setString("latitude", pos.latitude.toString());
+        await PreferenceUtils.setString("longitude", pos.longitude.toString());
+
+      } catch (e) {
+        debugPrint("❌ Error sending location: $e");
+      }
+    }
+
+
 
   }

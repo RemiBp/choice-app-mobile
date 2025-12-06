@@ -79,20 +79,21 @@ class SubscriberProvider extends ChangeNotifier {
       }
 
       // Update remaining and plan from result data
-      if (result["data"] != null) {
-        remaining = result["data"]["remaining"] ?? remaining;
-        plan = result["data"]["plan"] ?? plan;
+      if (result != null) {
+        remaining = result["remaining"] ?? remaining;
+        plan = result["plan"] ?? plan;
       }
 
       if (remaining == 0) {
         limitBlocked = true;
       }
 
+      String formatted = _formatCopilotData(result["data"]);
+
       messages.add(
         CopilotMessage(
-          text: result["message"] ?? "",
+          text: formatted,
           isUser: false,
-          data: result["data"],
         ),
       );
 
@@ -102,6 +103,39 @@ class SubscriberProvider extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+  }
+  String _formatCopilotData(dynamic data) {
+    if (data == null || data is! List) return "";
+
+    final ignoreKeys = {"id", "latitude", "longitude", "distance_km"};
+
+    StringBuffer buffer = StringBuffer();
+
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+
+      buffer.writeln("• *Item ${i + 1}:*");
+
+      item.forEach((key, value) {
+        if (!ignoreKeys.contains(key) &&
+            value != null &&
+            value.toString().trim().isNotEmpty) {
+
+          buffer.writeln("   - ${_formatKey(key)}: $value");
+        }
+      });
+
+      buffer.writeln(""); // blank line between items
+    }
+
+    return buffer.toString().trim();
+  }
+
+  String _formatKey(String key) {
+    return key
+        .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (m) => '${m.group(1)} ${m.group(2)}')
+        .replaceAll("_", " ")
+        .replaceFirst(key[0], key[0].toUpperCase());
   }
 
   void clearChat() {
