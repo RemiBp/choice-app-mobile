@@ -137,13 +137,13 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                               Radius.circular(isUser ? 0 : 14),
                             ),
                           ),
-                          child: ChatBotCustomText(
-                            text: msg.text,
-                            color: isUser
-                                ? AppColors.whiteColor
-                                : AppColors.blackColor,
-                            fontSize: sizes?.fontSize14,
-                          ),
+                          child: SelectableText(
+                            msg.text,
+                            style: TextStyle(
+                              fontSize: sizes?.fontSize14,
+                              color: isUser ? AppColors.whiteColor : AppColors.blackColor,
+                            ),
+                          )
                         ),
 
                         // DATA LIST (if exists)
@@ -157,17 +157,7 @@ class _ChatBotHomeState extends State<ChatBotHome> {
                               crossAxisAlignment:
                               CrossAxisAlignment.start,
                               children: msg.data.map<Widget>((item) {
-                                return Padding(
-                                  padding:
-                                  const EdgeInsets.only(bottom: 4),
-                                  child: Text(
-                                    "• ${item["name"]} — ${item["openFrom"]} to ${item["openUntil"]}",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.blackColor,
-                                    ),
-                                  ),
-                                );
+                                return _buildDynamicDataItem(item);
                               }).toList(),
                             ),
                           ),
@@ -376,4 +366,40 @@ class _ChatBotHomeState extends State<ChatBotHome> {
       },
     );
   }
+
+  Widget _buildDynamicDataItem(Map item) {
+    final ignoreKeys = {"id", "latitude", "longitude", "distance_km"};
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: item.entries
+            .where((e) => !ignoreKeys.contains(e.key) && e.value != null && e.value.toString().trim().isNotEmpty)
+            .map((e) {
+          return Text(
+            "${_formatKey(e.key)}: ${e.value}",
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  String _formatKey(String key) {
+    // businessHours → Business Hours
+    return key
+        .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (m) => '${m.group(1)} ${m.group(2)}')
+        .replaceAll("_", " ")
+        .replaceFirst(key[0], key[0].toUpperCase());
+  }
+
 }

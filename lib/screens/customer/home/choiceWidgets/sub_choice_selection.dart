@@ -10,6 +10,7 @@ import '../../../../customWidgets/custom_text.dart';
 import '../../../../customWidgets/custom_textfield.dart';
 import '../../../../l18n.dart';
 import '../../../../res/res.dart';
+import '../../../../res/toasts.dart';
 import '../../../../routes/routes.dart';
 import '../choice_provider.dart';
 
@@ -24,8 +25,8 @@ class SubChoiceSelection extends StatefulWidget {
 
 class _SubChoiceSelectionState extends State<SubChoiceSelection> {
   String searchText = 'Olivia';
-  String selectedRestaurant = 'Olivia';
-  int selectedIndex = 0;
+  String? selectedRestaurant;
+  int? selectedIndex;
 
 
   @override
@@ -69,6 +70,10 @@ class _SubChoiceSelectionState extends State<SubChoiceSelection> {
               borderColor: AppColors.greyBordersColor,
               hint: _getSearchHint(data?["title"]),
               prefixIconSvg: Assets.searchIcon,
+              onChanged: (text) {
+                final type = data?["title"].toLowerCase();
+                provider.getProducerPlaces(type, query: text.trim().isEmpty ? null : text.trim());
+              },
             ),
             const SizedBox(height: 12),
             Expanded(
@@ -124,11 +129,24 @@ class _SubChoiceSelectionState extends State<SubChoiceSelection> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
+                      if (selectedIndex == null) {
+                        Toasts.getErrorToast(text: "Please select a producer first.");
+                        return;
+                      }
+
+                      final selectedPlace = provider.placesResponse.data?[selectedIndex!];
+                      if (selectedPlace == null) {
+                        Toasts.getErrorToast(text: "Please select a producer first.");
+                        return;
+                      }
                       context.push(Routes.createChoiceRoute, extra: {
                         "title": data?["title"],
                         "icon": data?["icon"],
                         "description": data?["description"],
-                        "placeId":provider.placesResponse.data?[selectedIndex].id,
+                        "placeId":selectedPlace.id,
+                        "name": selectedPlace.name,
+                        "address": selectedPlace.address,
+                        "producerType": data?["title"],
                       });
                     },
                     style: ElevatedButton.styleFrom(
@@ -173,13 +191,10 @@ class _SubChoiceSelectionState extends State<SubChoiceSelection> {
                   fontFamily: Assets.onsetMedium,
                   fontSize: sizes?.fontSize14,
                 ),
-                CustomText(
-                  text: "Lorem ipsum dolor sit amet ",
-                  fontSize: sizes?.fontSize12,
-                ),
-                const SizedBox(height: 4),
+
                 InkWell(
                   onTap: () {
+                    context.pop();
                   },
                   child: CustomText(
                     text: al.changeType,

@@ -1,5 +1,6 @@
 import 'package:choice_app/common/utils.dart';
 import 'package:choice_app/models/auth_ressponse.dart';
+import 'package:choice_app/screens/customer/profile/customer_profile/customer_profile_provider.dart';
 import 'package:choice_app/screens/restaurant/profile/profile_provider.dart';
 import 'package:choice_app/userRole/role_provider.dart';
 import 'package:choice_app/userRole/user_role.dart';
@@ -251,6 +252,12 @@ class AuthProvider extends ChangeNotifier{
       if (authResponse.user != null) {
         await PreferenceUtils.setAuthResponse(authResponse);
         _loader.hideLoader(context!);
+
+        if (context?.read<RoleProvider>().role == UserRole.user) {
+          Future.microtask(() =>
+              context?.read<CustomerProfileProvider>()
+                  .updateUserCoordinatesOnLoginOrAppStart());
+        }
         // if(roleProvider?.role == UserRole.user){
         //   context?.push(Routes.customerHomeRoute);
         // }else

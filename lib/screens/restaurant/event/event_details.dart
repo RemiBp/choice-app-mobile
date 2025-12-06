@@ -17,8 +17,27 @@ import 'eventWidgets/delete_event.dart';
 import 'eventWidgets/event_info.dart';
 import 'package:choice_app/models/get_all_events_response.dart';
 
-class EventDetails extends StatelessWidget {
+class EventDetails extends StatefulWidget {
   const EventDetails({super.key,});
+
+  @override
+  State<EventDetails> createState() => _EventDetailsState();
+}
+class _EventDetailsState extends State<EventDetails> {
+  int _currentImageIndex = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +57,43 @@ class EventDetails extends StatelessWidget {
             Stack(
               children: [
                 Container(
+                  color: Colors.grey.shade200,
                   height: getHeight() * .33,
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        eventImage,
-                      ),
-                      fit: BoxFit.cover,
-                    ),
+                  child: (event?.eventImages == null || event!.eventImages!.isEmpty)
+                      ? Image.asset(
+                    Assets.mapImage,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  )
+                      : PageView.builder(
+                    controller: PageController(),
+                    onPageChanged: (idx) {
+                      // Update page index using setState if EventDetails becomes StatefulWidget
+                    },
+                    itemCount: event.eventImages!.length,
+                    itemBuilder: (context, index) {
+                      final imgPath = event.eventImages![index];
+                      final url = "$imageBaseUrl$imgPath";
+
+                      return Image.network(
+                        url,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        loadingBuilder: (c, child, progress) {
+                          if (progress == null) return child;
+                          return const Center(child: CircularProgressIndicator());
+                        },
+                        errorBuilder: (c, e, s) => Container(
+                          color: Colors.grey.shade200,
+                          child: const Center(child: Icon(Icons.image)),
+                        ),
+                      );
+                    },
                   ),
                 ),
+
+                // Back button
                 Positioned(
                   top: getHeight() * .06,
                   left: 16,
@@ -59,24 +104,24 @@ class EventDetails extends StatelessWidget {
                       ),
                       backgroundColor: Colors.white30,
                     ),
-                    onPressed: () {
-                      context.pop();
-                    },
-                    icon: Icon(Icons.arrow_back),
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.arrow_back),
                   ),
                 ),
+
+                // Image counter (needs StatefulWidget to update index)
                 Positioned(
                   bottom: 10,
                   right: 10,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      "1/5",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      "1/${event?.eventImages?.length ?? 1}", // update dynamically in StatefulWidget
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -156,7 +201,8 @@ class EventDetails extends StatelessWidget {
                       ),
                       Spacer(),
                       SvgPicture.asset(Assets.peopleIcon),
-                      CustomText(text: " 10/120", fontSize: sizes?.fontSize12),
+                      CustomText(text: " 10/${event?.maxCapacity}",
+                          fontSize: sizes?.fontSize12),
                     ],
                   ),
                   SizedBox(height: getHeight() * .01),

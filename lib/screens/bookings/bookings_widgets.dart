@@ -106,17 +106,24 @@ class BookingCard extends StatelessWidget {
                   spacing: 6,
                   runSpacing: 4,
                   children: [
-                    // Event chip (only for events)
-                    if (isEvent ?? false)
-                      _buildChip(al.event, AppColors.redColor),
+                    // For PRODUCER side: show only event chip (if event). No type chip.
+                    if (role != UserRole.user) ...[
+                      if (isEvent ?? false)
+                        _buildChip(al.event, AppColors.redColor),
+                    ]
 
-                    // Booking type chip (always shown)
-                    if (normalizedType.isNotEmpty)
-                      _buildChip(
-                        normalizedType,
-                        typeColors[normalizedType] ??
-                            AppColors.getPrimaryColorFromContext(context),
-                      ),
+                    // For USER side: show event chip + type chip (old behaviour)
+                    else ...[
+                      if (isEvent ?? false)
+                        _buildChip(al.event, AppColors.redColor),
+
+                      if (normalizedType.isNotEmpty)
+                        _buildChip(
+                          normalizedType,
+                          typeColors[normalizedType] ??
+                              AppColors.getPrimaryColorFromContext(context),
+                        ),
+                    ],
                   ],
                 ),
 

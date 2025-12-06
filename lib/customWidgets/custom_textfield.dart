@@ -2,6 +2,8 @@ import 'package:choice_app/utilities/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 
 import '../appAssets/app_assets.dart';
 import '../appColors/colors.dart';
@@ -418,7 +420,7 @@ class CustomField2 extends StatelessWidget {
   }
 }
 
-OutlineInputBorder buildOutlineInputBorder(Color? borderColor) {
+OutlineInputBorder buildOutlineInputBorder(Color? borderColor, {double radius = 15}) {
   return OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(10)),
     borderSide: BorderSide(
@@ -426,4 +428,205 @@ OutlineInputBorder buildOutlineInputBorder(Color? borderColor) {
       color: borderColor ?? AppColors.greyBordersColor,
     ),
   );
+}
+
+
+class CustomGooglePlacesField extends StatelessWidget {
+  const CustomGooglePlacesField({
+    super.key,
+    required this.textEditingController,
+    required this.googleAPIKey,
+    this.hint,
+    this.label,
+    this.borderColor,
+    this.bgColor,
+    this.hintColor,
+    this.hintFontSize,
+    this.labelFontSize,
+    this.labelFontFamily,
+    this.hintFontFamily,
+    this.width,
+    this.height,
+    this.borderRadius,
+    this.countries,
+    this.onPlaceSelected,
+    this.enabled = true,
+  });
+
+  final TextEditingController textEditingController;
+  final String googleAPIKey;
+  final String? hint;
+  final String? label;
+  final Color? borderColor;
+  final Color? bgColor;
+  final Color? hintColor;
+  final double? hintFontSize;
+  final double? labelFontSize;
+  final String? labelFontFamily;
+  final String? hintFontFamily;
+  final double? width;
+  final double? height;
+  final double? borderRadius;
+  final List<String>? countries;
+  final Function(Prediction)? onPlaceSelected;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final double fieldHeight = height ?? getHeight() * .07;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        // LABEL (Same as CustomField)
+        if (label != null) ...[
+          SizedBox(height: getHeight() * .006),
+          RichText(
+            text: TextSpan(
+              text: label!,
+              style: TextStyle(
+                fontSize: labelFontSize ?? sizes!.fontSize14,
+                fontFamily: labelFontFamily ?? Assets.onsetMedium,
+                color: AppColors.blackColor,
+              ),
+              children: const [
+                TextSpan(
+                  text: " *",
+                  style: TextStyle(color: AppColors.redColor, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: getHeight() * .01),
+        ],
+
+        // FIELD BOX (Matches CustomField EXACTLY)
+        Container(
+          height: fieldHeight,
+          decoration: BoxDecoration(
+            color: bgColor ?? AppColors.whiteColor,
+            borderRadius: BorderRadius.circular(borderRadius ?? 15),
+            border: Border.all(
+              color: borderColor ?? AppColors.greyBordersColor,
+              width: 1,
+
+            ),
+          ),
+
+          child: Center(
+            child: GooglePlaceAutoCompleteTextField(
+              textEditingController: textEditingController,
+              googleAPIKey: googleAPIKey,
+
+              // MATCH CustomField Padding
+              inputDecoration: InputDecoration(
+                hintText: hint,
+                filled: true,
+                fillColor: bgColor ?? Colors.transparent,
+
+                // REMOVE inner borders completely
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(borderRadius ?? 15),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(borderRadius ?? 15),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(borderRadius ?? 15),
+                  borderSide: BorderSide.none,
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(borderRadius ?? 15),
+                  borderSide: BorderSide.none,
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(borderRadius ?? 15),
+                  borderSide: BorderSide.none,
+                ),
+
+                contentPadding: EdgeInsets.only(
+                  left: getWidth() * .05,
+                  right: getWidth() * .02,
+                  bottom: getHeight() * .01,
+                  top: getHeight() * .01,
+                ),
+
+                hintStyle: TextStyle(
+                  fontSize: hintFontSize ?? sizes!.fontSize15,
+                  color: hintColor ?? AppColors.inputHintColor,
+                ),
+              ),
+
+              // MATCH text style of CustomField
+              textStyle: TextStyle(
+                fontSize: sizes!.fontSize15,
+                color: AppColors.blackColor,
+              ),
+
+              // Remove "x" button
+              isCrossBtnShown: false,
+
+              // Delay searching
+              debounceTime: 600,
+
+              countries: countries ?? ["pk", "fr"],
+              isLatLngRequired: true,
+
+              getPlaceDetailWithLatLng: (prediction) {
+                if (onPlaceSelected != null) {
+                  onPlaceSelected!(prediction);
+                }
+              },
+
+              itemClick: (prediction) {
+                textEditingController.text = prediction.description ?? "";
+                textEditingController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: prediction.description?.length ?? 0),
+                );
+              },
+
+              seperatedBuilder: Divider(
+                height: 1,
+                color: AppColors.greyBordersColor,
+              ),
+
+              containerHorizontalPadding: getWidth() * .03,
+
+              // Suggestion row
+              itemBuilder: (context, index, prediction) {
+                return Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: getHeight() * .015,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        color: AppColors.getPrimaryColorFromContext(context),
+                      ),
+                      SizedBox(width: getWidth() * .03),
+                      Expanded(
+                        child: Text(
+                          prediction.description ?? "",
+                          style: TextStyle(
+                            fontSize: sizes?.fontSize14,
+                            color: AppColors.blackColor,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

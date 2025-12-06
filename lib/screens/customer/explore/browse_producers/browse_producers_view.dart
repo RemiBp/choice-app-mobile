@@ -6,6 +6,7 @@ import '../../../../l18n.dart';
 import '../../../../res/res.dart';
 import '../../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../customer_explore/customer_explore_view_provider.dart';
+import '../restaurant_explore_details/non_event_explore_details.dart';
 import '../restaurant_explore_details/restaurant_explore_details.dart';
 
 class BrowseProducersScreen extends StatefulWidget {
@@ -103,15 +104,21 @@ class _BrowseProducersScreenState extends State<BrowseProducersScreen> {
                     isFavourite: false,
                     chipText: type,
                     chipColor: _getChipColor(type),
-                    onRestaurantTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) =>
-                      //         RestaurantExploreDetails(tag: type),
-                      //   ),
-                      // );
-                    },
+                      onRestaurantTap: () {
+                        final type = producer.type?.toLowerCase() ?? "";
+
+                        if (type == "restaurant" || type == "wellness") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => NonEventDetailsScreen(
+                                type: type,
+                                producerId: producer.id.toString(),
+                              ),
+                            ),
+                          );
+                        }
+                      }
                   );
                 },
               ),

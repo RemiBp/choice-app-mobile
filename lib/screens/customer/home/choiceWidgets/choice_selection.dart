@@ -165,10 +165,6 @@ class _ChoiceSelectionState extends State<ChoiceSelection> {
                     fontSize: sizes?.fontSize14,
                     fontFamily: Assets.onsetMedium,
                   ),
-                  CustomText(
-                    text: choice['subtitle'],
-                    fontSize: sizes?.fontSize12,
-                  ),
                 ],
               ),
             ),

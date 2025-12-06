@@ -1,9 +1,11 @@
+import 'package:choice_app/customWidgets/custom_button.dart';
 import 'package:choice_app/customWidgets/custom_text.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/restaurant/event/event_provider.dart';
 import 'package:choice_app/screens/restaurant/event/event_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +28,9 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {}); // rebuild to show/hide FAB
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _eventProvider = Provider.of<EventProvider>(context, listen: false);
       _eventProvider.init(context);
@@ -36,6 +41,19 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  int getCurrentTabEventCount() {
+    switch (_tabController.index) {
+      case 0: // Active
+        return _eventProvider.getAllEventsResponse.data?.length ?? 0;
+      case 1: // Draft
+        return _eventProvider.getDraftEventsResponse.data?.length ?? 0;
+      case 2: // Completed
+        return _eventProvider.getCompletedEventsResponse.data?.length ?? 0;
+      default:
+        return 0;
+    }
   }
 
   @override
@@ -147,7 +165,8 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
         ],
       ),
 
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: (getCurrentTabEventCount() > 0)
+          ? FloatingActionButton.extended(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         backgroundColor: AppColors.getPrimaryColorFromContext(context),
         onPressed: () {
@@ -164,7 +183,8 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-      ),
+      )
+          : null,
     );
   }
 
@@ -178,14 +198,15 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
             // Icon
             Container(
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
+                color: AppColors.getPrimaryColorFromContext(context).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               padding: EdgeInsets.all(20),
-              child: Icon(
-                Icons.calendar_month,
-                size: 48,
-                color: Colors.orangeAccent,
+              child: SvgPicture.asset(
+                Assets.eventIcon,
+                width: 48,
+                height: 48,
+                color: AppColors.getPrimaryColorFromContext(context),
               ),
             ),
             SizedBox(height: 24),
@@ -214,21 +235,13 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
             SizedBox(height: 32),
 
             // Create Event Button
-            ElevatedButton(
-              onPressed: () {
-                context.push(Routes.restaurantCreateEventRoute);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                al.createEvent,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+            CustomButton(
+                buttonText: al.createEvent,
+                textColor: AppColors.whiteColor,
+                backgroundColor: AppColors.getPrimaryColorFromContext(context),
+                onTap: (){
+                  context.push(Routes.restaurantCreateEventRoute);
+                } ,
             ),
           ],
         ),

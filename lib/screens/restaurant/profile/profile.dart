@@ -44,6 +44,9 @@ class _ProfileState extends State<Profile> {
   late final TextEditingController fullNameController;
   late final TextEditingController usernameController;
   late final TextEditingController emailController;
+  final _formKey = GlobalKey<FormState>();
+  late PhoneController _phoneController;
+
 
   NetworkProvider networkProvider = NetworkProvider();
 
@@ -64,6 +67,10 @@ class _ProfileState extends State<Profile> {
 
     // Pre-fill email from login
     emailController = TextEditingController(text: PreferenceUtils.email);
+
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    profileProvider.setPhoneNumber(null);
+    _phoneController = PhoneController(initialValue: PhoneNumber.parse('+33'));
 
 
     final provider = Provider.of<ProfileProvider>(context, listen: false);
@@ -91,6 +98,21 @@ class _ProfileState extends State<Profile> {
     if (producer != null) {
       // Address
       addressController.text = producer.address ?? '';
+
+      if (producer.latitude != null && producer.longitude != null) {
+        try {
+          final lat = producer.latitude is String
+              ? double.parse(producer.latitude!)
+              : producer.latitude as double;
+          final lng = producer.longitude is String
+              ? double.parse(producer.longitude!)
+              : producer.longitude as double;
+          provider.setLocation(lat, lng);
+          debugPrint("Restored location - Lat: $lat, Lng: $lng");
+        } catch (e) {
+          debugPrint("Error parsing stored coordinates: $e");
+        }
+      }
 
       //  Website (from producer)
       websiteController.text = producer.website ?? '';
@@ -195,6 +217,7 @@ class _ProfileState extends State<Profile> {
     fullNameController.dispose();
     usernameController.dispose();
     emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -210,379 +233,406 @@ class _ProfileState extends State<Profile> {
           horizontal: getWidth() * .05,
           vertical: getHeight() * .1,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- Header ---
-            Row(
-              children: [
-                if (context.canPop()) ...[
-                  CustomBackButton(),
-                  SizedBox(width: getWidth() * .02),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- Header ---
+              Row(
+                children: [
+                  if (context.canPop()) ...[
+                    CustomBackButton(),
+                    SizedBox(width: getWidth() * .02),
+                  ],
+                  Expanded(
+                    child: CustomText(
+                      text: al.profileSetup,
+                      fontSize: sizes?.fontSize28,
+                      fontFamily: Assets.onsetSemiBold,
+                    ),
+                  ),
                 ],
-                Expanded(
-                  child: CustomText(
-                    text: al.profileSetup,
-                    fontSize: sizes?.fontSize28,
-                    fontFamily: Assets.onsetSemiBold,
+              ),
+              SizedBox(height: getHeight() * .02),
+              // CustomText(
+              //   text: "Lorem ipsum dolor sit amet consectetur.",
+              //   fontSize: sizes?.fontSize16,
+              //   color: AppColors.primarySlateColor,
+              //   giveLinesAsText: true,
+              // ),
+              // SizedBox(height: getHeight() * .02),
+
+              // --- Profile Image ---
+              Stack(
+                alignment: Alignment.bottomRight,
+                clipBehavior: Clip.none, // allow overflow
+                children: [
+                  _buildProfileImage(provider),
+                  Positioned(
+                    right: -getWidth() * .017,
+                    bottom: -getHeight() * .017,
+                    child: IconButton.filled(
+                      style: IconButton.styleFrom(
+                        backgroundColor:
+                        AppColors.getPrimaryColorFromContext(context),
+                      ),
+                      onPressed: () async {
+                        final selectedImage = await bottomSheet(context);
+                        if (selectedImage != null) {
+                          provider.setProfileImage(selectedImage);
+                        }
+                      },
+                      icon: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        size: getHeight() * .022,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: getHeight() * .03),
+
+              // Fields for USER role
+              if (roleProvider.role == UserRole.user) ...[
+                CustomField(
+                  textEditingController: fullNameController,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: al.fullNamePlaceholder,
+                  label: al.fullName,
+                ),
+                SizedBox(height: getHeight() * .02),
+                CustomField(
+                  textEditingController: usernameController,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: al.userNamePlaceholder,
+                  label: al.userName,
+                ),
+                SizedBox(height: getHeight() * .02),
+                CustomField(
+                  textEditingController: emailController,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: al.emailPlaceholder,
+                  label: al.emailLabel,
+                  enabled: false,
+                  bgColor: AppColors.greyColor.withValues(alpha: 0.9),
+                ),
+                SizedBox(height: getHeight() * .02),
+
+                // Phone
+                Row(
+                  children: [
+                    CustomText(
+                      text: al.phoneNumber,
+                      fontSize: sizes!.fontSize14,
+                      fontFamily: Assets.onsetMedium,
+                    ),
+                    CustomText(
+                      text: ' *',
+                      fontSize: sizes!.fontSize14,
+                      fontFamily: Assets.onsetMedium,
+                      color: AppColors.redColor,
+                    ),
+                  ],
+                ),
+                SizedBox(height: getHeight() * .01),
+                PhoneFormField(
+                  controller: _phoneController,
+                  // initialValue: provider.phoneNumber ?? PhoneNumber.parse('+33'),
+                  countrySelectorNavigator:
+                  const CountrySelectorNavigator.page(),
+                  onChanged: (phoneNumber) =>
+                      provider.setPhoneNumber(phoneNumber),
+                  decoration: InputDecoration(
+                    border:
+                    buildOutlineInputBorder(AppColors.greyBordersColor),
+                    focusedBorder: buildOutlineInputBorder(
+                      AppColors.inputHintColor,
+                    ),
+                    errorBorder: buildOutlineInputBorder(AppColors.redColor),
+                    focusedErrorBorder: buildOutlineInputBorder(AppColors.redColor),
+                  ),
+                  validator: PhoneValidator.compose([
+                    PhoneValidator.required(context, errorText: al.phoneNumberMissing),
+                    PhoneValidator.valid(context),
+                  ]),
+                  enabled: true,
+                  isCountrySelectionEnabled: true,
+                  isCountryButtonPersistent: true,
+                  countryButtonStyle: const CountryButtonStyle(
+                    showDialCode: true,
+                    showIsoCode: true,
+                    showFlag: true,
+                    flagSize: 16,
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: getHeight() * .02),
-            // CustomText(
-            //   text: "Lorem ipsum dolor sit amet consectetur.",
-            //   fontSize: sizes?.fontSize16,
-            //   color: AppColors.primarySlateColor,
-            //   giveLinesAsText: true,
-            // ),
-            // SizedBox(height: getHeight() * .02),
+                SizedBox(height: getHeight() * .02),
 
-            // --- Profile Image ---
-            Stack(
-              alignment: Alignment.bottomRight,
-              clipBehavior: Clip.none, // allow overflow
-              children: [
-                _buildProfileImage(provider),
-                Positioned(
-                  right: -getWidth() * .017,
-                  bottom: -getHeight() * .017,
-                  child: IconButton.filled(
-                    style: IconButton.styleFrom(
-                      backgroundColor:
-                      AppColors.getPrimaryColorFromContext(context),
+                // Brief Description
+                CustomField(
+                  textEditingController: descriptionController,
+                  height: getHeight() * .1,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: al.writeSomethingBrief,
+                  label: al.briefDescription,
+                  maxLines: 3,
+                ),
+              ]
+
+              // Fields for RESTAURANT/OTHERS
+              else ...[
+                CustomGooglePlacesField(
+                  textEditingController: addressController,
+                  googleAPIKey: "AIzaSyDA5pgQWxw-HFae23P2C6KaLvY8_LJeFnw", // NEW KEY
+                  borderColor: AppColors.greyBordersColor,
+                  hint: al.address,
+                  label: al.address,
+                  onPlaceSelected: (prediction) {
+                    // Store the coordinates in the provider
+                    if (prediction.lat != null && prediction.lng != null) {
+                      try {
+                        final lat = double.parse(prediction.lat!);
+                        final lng = double.parse(prediction.lng!);
+                        provider.setLocation(lat, lng);
+                        debugPrint("Location saved - Lat: $lat, Lng: $lng");
+                      } catch (e) {
+                        debugPrint("Error parsing coordinates: $e");
+                      }
+                    }
+                  },
+                ),
+                SizedBox(height: getHeight() * .02),
+
+                // phone
+                Row(
+                  children: [
+                    CustomText(
+                      text: al.phoneNumber,
+                      fontSize: sizes!.fontSize14,
+                      fontFamily: Assets.onsetMedium,
                     ),
-                    onPressed: () async {
-                      final selectedImage = await bottomSheet(context);
-                      if (selectedImage != null) {
-                        provider.setProfileImage(selectedImage);
+                    CustomText(
+                      text: ' *',
+                      fontSize: sizes!.fontSize14,
+                      fontFamily: Assets.onsetMedium,
+                      color: AppColors.redColor,
+                    ),
+                  ],
+                ),
+                SizedBox(height: getHeight() * .01),
+                PhoneFormField(
+                  controller: _phoneController,
+                  // initialValue:
+                  // provider.phoneNumber ?? PhoneNumber.parse('+33'),
+                  countrySelectorNavigator:
+                  const CountrySelectorNavigator.page(),
+                  onChanged: (phoneNumber) =>
+                      provider.setPhoneNumber(phoneNumber),
+                  decoration: InputDecoration(
+                    border:
+                    buildOutlineInputBorder(AppColors.greyBordersColor),
+                    focusedBorder: buildOutlineInputBorder(
+                      AppColors.inputHintColor,
+                    ),
+                    errorBorder: buildOutlineInputBorder(AppColors.redColor),
+                    focusedErrorBorder: buildOutlineInputBorder(AppColors.redColor),
+                  ),
+                  validator: PhoneValidator.compose([
+                    PhoneValidator.required(context, errorText: al.phoneNumberMissing),
+                    PhoneValidator.valid(context),
+                  ]),
+                  enabled: true,
+                  isCountrySelectionEnabled: true,
+                  isCountryButtonPersistent: true,
+                  countryButtonStyle: const CountryButtonStyle(
+                    showDialCode: true,
+                    showIsoCode: true,
+                    showFlag: true,
+                    flagSize: 16,
+                  ),
+                ),
+                SizedBox(height: getHeight() * .02),
+
+                CustomText(
+                  text: al.links,
+                  fontSize: sizes!.fontSize14,
+                  fontFamily: Assets.onsetMedium,
+                ),
+                SizedBox(height: getHeight() * .01),
+                CustomField(
+                  textEditingController: websiteController,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: "yoursite.io",
+                  prefixIconSvg: Assets.websiteIcon,
+                ),
+                SizedBox(height: getHeight() * .02),
+                CustomField(
+                  textEditingController: instagramController,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: "https://www.instagram.com/@yourhandle",
+                  prefixIconSvg: Assets.instagramIcon,
+                ),
+                SizedBox(height: getHeight() * .02),
+                CustomField(
+                  textEditingController: twitterController,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: "https://www.twitter.com/@yourhandle",
+                  prefixIconSvg: Assets.xIcon,
+                ),
+                SizedBox(height: getHeight() * .02),
+                CustomField(
+                  textEditingController: facebookController,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: "https://www.facebook.com/@yourhandle",
+                  prefixIconSvg: Assets.facebookIcon,
+                ),
+                SizedBox(height: getHeight() * .02),
+
+                CustomField(
+                  textEditingController: descriptionController,
+                  height: getHeight() * .1,
+                  borderColor: AppColors.greyBordersColor,
+                  hint: al.writeSomethingBrief,
+                  label: al.briefDescription,
+                  maxLines: 3,
+                ),
+              ],
+
+              SizedBox(height: getHeight() * .02),
+
+              // Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomButton(
+                    buttonText: al.cancel,
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    buttonWidth: getWidth() * .42,
+                    backgroundColor: Colors.transparent,
+                    borderColor: AppColors.blackColor,
+                    textColor: AppColors.blackColor,
+                    textFontWeight: FontWeight.w700,
+                  ),
+                  CustomButton(
+                    buttonText: al.saveChanges,
+                    onTap: () async {
+
+                      final role = context.read<RoleProvider>().role;
+
+                      //  Only check links for restaurant / leisure / wellness
+                      if (role != UserRole.user) {
+                        String website = websiteController.text.trim();
+                        String instagram = instagramController.text.trim();
+                        String twitter = twitterController.text.trim();
+                        String facebook = facebookController.text.trim();
+
+                        //  Automatically prepend "https://" if missing
+                        website = normalizeUrl(website);
+                        instagram = normalizeUrl(instagram);
+                        twitter = normalizeUrl(twitter);
+                        facebook = normalizeUrl(facebook);
+
+                        //  Validate links properly
+                        if (website.isNotEmpty && !isValidWebsite(website)) {
+                          Toasts.getErrorToast(text: "${al.validWebsiteLink} (e.g., https://www.example.com)");
+                          return;
+                        }
+                        if (instagram.isNotEmpty && !isValidInstagram(instagram)) {
+                          Toasts.getErrorToast(text: "${al.validInstagramLink} (e.g., https://instagram.com/username)");
+                          return;
+                        }
+                        if (twitter.isNotEmpty && !isValidTwitter(twitter)) {
+                          Toasts.getErrorToast(text: "${al.validTwitterLink} (e.g., https://x.com/username)");
+                          return;
+                        }
+                        if (facebook.isNotEmpty && !isValidFacebook(facebook)) {
+                          Toasts.getErrorToast(text: "${al.validFacebookLink} (e.g., https://facebook.com/username)");
+                          return;
+                        }
+
+                        //  Update the controllers back to normalized URLs before upload
+                        websiteController.text = website;
+                        instagramController.text = instagram;
+                        twitterController.text = twitter;
+                        facebookController.text = facebook;
+                      }
+
+
+                      String? profileImageUrl;
+
+                      if (provider.profilePhoto != null) {
+                        // User selected a new image - upload it
+                        final bytes = await provider.profilePhoto!.readAsBytes();
+                        profileImageUrl = await networkProvider.getUrlForFileUpload(bytes);
+                        if (profileImageUrl == null) {
+                          Toasts.getErrorToast(text: al.failedToGetImageUrl);
+                          return;
+                        }
+                      } else if (widget.isFromSettings && provider.profileImageUrl != null) {
+                        // From settings and no new image selected - use existing URL
+                        profileImageUrl = provider.profileImageUrl;
+                      } else {
+                        // No image available
+                        Toasts.getErrorToast(text: al.selectProfileImage);
+                        return;
+                      }
+
+                      final success = await provider.updateProfile(
+                        address: roleProvider.role == UserRole.user
+                            ? ""
+                            : addressController.text,
+                        password: passwordController.text,
+                        website: roleProvider.role == UserRole.user
+                            ? ""
+                            : websiteController.text,
+                        instagram: roleProvider.role == UserRole.user
+                            ? ""
+                            : instagramController.text,
+                        twitter: roleProvider.role == UserRole.user
+                            ? ""
+                            : twitterController.text,
+                        facebook: roleProvider.role == UserRole.user
+                            ? ""
+                            : facebookController.text,
+                        description: descriptionController.text,
+                        profileImageUrl: profileImageUrl!,
+                        latitude: provider.latitude,
+                        longitude: provider.longitude,
+                      );
+
+                      if (success && context.mounted) {
+                        if(widget.isFromSettings) {
+                          context.pop();
+                          return;
+                        }
+
+                        if (role == UserRole.leisure) {
+                          context.push(Routes.restaurantBottomTabRoute);
+                        } else if(role == UserRole.restaurant) {
+                          context.push(Routes.restaurantAddCuisineRoute);
+                        } else if(role == UserRole.wellness) {
+                          context.push(Routes.wellnessAddServicesRoute);
+                        } else {
+                          context.push(Routes.customerHomeRoute);
+                        }
                       }
                     },
-                    icon: Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                      size: getHeight() * .022,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: getHeight() * .03),
-
-            // Fields for USER role
-            if (roleProvider.role == UserRole.user) ...[
-              CustomField(
-                textEditingController: fullNameController,
-                borderColor: AppColors.greyBordersColor,
-                hint: al.fullNamePlaceholder,
-                label: al.fullName,
-              ),
-              SizedBox(height: getHeight() * .02),
-              CustomField(
-                textEditingController: usernameController,
-                borderColor: AppColors.greyBordersColor,
-                hint: al.userNamePlaceholder,
-                label: al.userName,
-              ),
-              SizedBox(height: getHeight() * .02),
-              CustomField(
-                textEditingController: emailController,
-                borderColor: AppColors.greyBordersColor,
-                hint: al.emailPlaceholder,
-                label: al.emailLabel,
-                enabled: false,
-                bgColor: AppColors.greyColor.withValues(alpha: 0.9),
-              ),
-              SizedBox(height: getHeight() * .02),
-
-              // Phone
-              Row(
-                children: [
-                  CustomText(
-                    text: al.phoneNumber,
-                    fontSize: sizes!.fontSize14,
-                    fontFamily: Assets.onsetMedium,
-                  ),
-                  CustomText(
-                    text: ' *',
-                    fontSize: sizes!.fontSize14,
-                    fontFamily: Assets.onsetMedium,
-                    color: AppColors.redColor,
+                    buttonWidth: getWidth() * .42,
+                    backgroundColor:
+                    AppColors.getPrimaryColorFromContext(context),
+                    borderColor:
+                    AppColors.getPrimaryColorFromContext(context),
+                    textColor: AppColors.whiteColor,
+                    textFontWeight: FontWeight.w700,
                   ),
                 ],
-              ),
-              SizedBox(height: getHeight() * .01),
-              PhoneFormField(
-                initialValue: provider.phoneNumber ?? PhoneNumber.parse('+33'),
-                countrySelectorNavigator:
-                const CountrySelectorNavigator.page(),
-                onChanged: (phoneNumber) =>
-                    provider.setPhoneNumber(phoneNumber),
-                decoration: InputDecoration(
-                  border:
-                  buildOutlineInputBorder(AppColors.greyBordersColor),
-                  focusedBorder: buildOutlineInputBorder(
-                    AppColors.inputHintColor,
-                  ),
-                  errorBorder: buildOutlineInputBorder(AppColors.redColor),
-                  focusedErrorBorder: buildOutlineInputBorder(AppColors.redColor),
-                ),
-                validator: PhoneValidator.valid(context), // Automatic validation per country
-                enabled: true,
-                isCountrySelectionEnabled: true,
-                isCountryButtonPersistent: true,
-                countryButtonStyle: const CountryButtonStyle(
-                  showDialCode: true,
-                  showIsoCode: true,
-                  showFlag: true,
-                  flagSize: 16,
-                ),
-              ),
-              SizedBox(height: getHeight() * .02),
-
-              // Brief Description
-              CustomField(
-                textEditingController: descriptionController,
-                height: getHeight() * .1,
-                borderColor: AppColors.greyBordersColor,
-                hint: al.writeSomethingBrief,
-                label: al.briefDescription,
-                maxLines: 3,
-              ),
-            ]
-
-            // Fields for RESTAURANT/OTHERS
-            else ...[
-              CustomField(
-                textEditingController: addressController,
-                borderColor: AppColors.greyBordersColor,
-                hint: al.address,
-                label: al.address,
-              ),
-              SizedBox(height: getHeight() * .02),
-
-              // phone
-              Row(
-                children: [
-                  CustomText(
-                    text: al.phoneNumber,
-                    fontSize: sizes!.fontSize14,
-                    fontFamily: Assets.onsetMedium,
-                  ),
-                  CustomText(
-                    text: ' *',
-                    fontSize: sizes!.fontSize14,
-                    fontFamily: Assets.onsetMedium,
-                    color: AppColors.redColor,
-                  ),
-                ],
-              ),
-              SizedBox(height: getHeight() * .01),
-              PhoneFormField(
-                initialValue:
-                provider.phoneNumber ?? PhoneNumber.parse('+33'),
-                countrySelectorNavigator:
-                const CountrySelectorNavigator.page(),
-                onChanged: (phoneNumber) =>
-                    provider.setPhoneNumber(phoneNumber),
-                decoration: InputDecoration(
-                  border:
-                  buildOutlineInputBorder(AppColors.greyBordersColor),
-                  focusedBorder: buildOutlineInputBorder(
-                    AppColors.inputHintColor,
-                  ),
-                  errorBorder: buildOutlineInputBorder(AppColors.redColor),
-                  focusedErrorBorder: buildOutlineInputBorder(AppColors.redColor),
-                ),
-                validator: PhoneValidator.valid(context), // Automatic validation per country
-                enabled: true,
-                isCountrySelectionEnabled: true,
-                isCountryButtonPersistent: true,
-                countryButtonStyle: const CountryButtonStyle(
-                  showDialCode: true,
-                  showIsoCode: true,
-                  showFlag: true,
-                  flagSize: 16,
-                ),
-              ),
-              SizedBox(height: getHeight() * .02),
-
-              CustomText(
-                text: al.links,
-                fontSize: sizes!.fontSize14,
-                fontFamily: Assets.onsetMedium,
-              ),
-              SizedBox(height: getHeight() * .01),
-              CustomField(
-                textEditingController: websiteController,
-                borderColor: AppColors.greyBordersColor,
-                hint: "yoursite.io",
-                prefixIconSvg: Assets.websiteIcon,
-              ),
-              SizedBox(height: getHeight() * .02),
-              CustomField(
-                textEditingController: instagramController,
-                borderColor: AppColors.greyBordersColor,
-                hint: "https://www.instagram.com/@yourhandle",
-                prefixIconSvg: Assets.instagramIcon,
-              ),
-              SizedBox(height: getHeight() * .02),
-              CustomField(
-                textEditingController: twitterController,
-                borderColor: AppColors.greyBordersColor,
-                hint: "https://www.twitter.com/@yourhandle",
-                prefixIconSvg: Assets.xIcon,
-              ),
-              SizedBox(height: getHeight() * .02),
-              CustomField(
-                textEditingController: facebookController,
-                borderColor: AppColors.greyBordersColor,
-                hint: "https://www.facebook.com/@yourhandle",
-                prefixIconSvg: Assets.facebookIcon,
-              ),
-              SizedBox(height: getHeight() * .02),
-
-              CustomField(
-                textEditingController: descriptionController,
-                height: getHeight() * .1,
-                borderColor: AppColors.greyBordersColor,
-                hint: al.writeSomethingBrief,
-                label: al.briefDescription,
-                maxLines: 3,
               ),
             ],
-
-            SizedBox(height: getHeight() * .02),
-
-            // Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomButton(
-                  buttonText: al.cancel,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  buttonWidth: getWidth() * .42,
-                  backgroundColor: Colors.transparent,
-                  borderColor: AppColors.blackColor,
-                  textColor: AppColors.blackColor,
-                  textFontWeight: FontWeight.w700,
-                ),
-                CustomButton(
-                  buttonText: al.saveChanges,
-                  onTap: () async {
-
-                    final role = context.read<RoleProvider>().role;
-
-                    //  Only check links for restaurant / leisure / wellness
-                    if (role != UserRole.user) {
-                      String website = websiteController.text.trim();
-                      String instagram = instagramController.text.trim();
-                      String twitter = twitterController.text.trim();
-                      String facebook = facebookController.text.trim();
-
-                      //  Automatically prepend "https://" if missing
-                      website = normalizeUrl(website);
-                      instagram = normalizeUrl(instagram);
-                      twitter = normalizeUrl(twitter);
-                      facebook = normalizeUrl(facebook);
-
-                      //  Validate links properly
-                      if (website.isNotEmpty && !isValidWebsite(website)) {
-                        Toasts.getErrorToast(text: "${al.validWebsiteLink} (e.g., https://www.example.com)");
-                        return;
-                      }
-                      if (instagram.isNotEmpty && !isValidInstagram(instagram)) {
-                        Toasts.getErrorToast(text: "${al.validInstagramLink} (e.g., https://instagram.com/username)");
-                        return;
-                      }
-                      if (twitter.isNotEmpty && !isValidTwitter(twitter)) {
-                        Toasts.getErrorToast(text: "${al.validTwitterLink} (e.g., https://x.com/username)");
-                        return;
-                      }
-                      if (facebook.isNotEmpty && !isValidFacebook(facebook)) {
-                        Toasts.getErrorToast(text: "${al.validFacebookLink} (e.g., https://facebook.com/username)");
-                        return;
-                      }
-
-                      //  Update the controllers back to normalized URLs before upload
-                      websiteController.text = website;
-                      instagramController.text = instagram;
-                      twitterController.text = twitter;
-                      facebookController.text = facebook;
-                    }
-
-
-                    String? profileImageUrl;
-
-                    if (provider.profilePhoto != null) {
-                      // User selected a new image - upload it
-                      final bytes = await provider.profilePhoto!.readAsBytes();
-                      profileImageUrl = await networkProvider.getUrlForFileUpload(bytes);
-                      if (profileImageUrl == null) {
-                        Toasts.getErrorToast(text: al.failedToGetImageUrl);
-                        return;
-                      }
-                    } else if (widget.isFromSettings && provider.profileImageUrl != null) {
-                      // From settings and no new image selected - use existing URL
-                      profileImageUrl = provider.profileImageUrl;
-                    } else {
-                      // No image available
-                      Toasts.getErrorToast(text: al.selectProfileImage);
-                      return;
-                    }
-
-                    final success = await provider.updateProfile(
-                      address: roleProvider.role == UserRole.user
-                          ? ""
-                          : addressController.text,
-                      password: passwordController.text,
-                      website: roleProvider.role == UserRole.user
-                          ? ""
-                          : websiteController.text,
-                      instagram: roleProvider.role == UserRole.user
-                          ? ""
-                          : instagramController.text,
-                      twitter: roleProvider.role == UserRole.user
-                          ? ""
-                          : twitterController.text,
-                      facebook: roleProvider.role == UserRole.user
-                          ? ""
-                          : facebookController.text,
-                      description: descriptionController.text,
-                      profileImageUrl: profileImageUrl!,
-                    );
-
-                    if (success && context.mounted) {
-                      if(widget.isFromSettings) {
-                        context.pop();
-                        return;
-                      }
-
-                      if (role == UserRole.leisure) {
-                        context.push(Routes.restaurantBottomTabRoute);
-                      } else if(role == UserRole.restaurant) {
-                        context.push(Routes.restaurantAddCuisineRoute);
-                      } else if(role == UserRole.wellness) {
-                        context.push(Routes.wellnessAddServicesRoute);
-                      } else {
-                        context.push(Routes.customerHomeRoute);
-                      }
-                    }
-                  },
-                  buttonWidth: getWidth() * .42,
-                  backgroundColor:
-                  AppColors.getPrimaryColorFromContext(context),
-                  borderColor:
-                  AppColors.getPrimaryColorFromContext(context),
-                  textColor: AppColors.whiteColor,
-                  textFontWeight: FontWeight.w700,
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

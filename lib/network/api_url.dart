@@ -1,6 +1,5 @@
 const String baseUrl = "http://choice-app-prod-env.eba-wqrm9be2.eu-west-3.elasticbeanstalk.com";//production url
-const String imageBaseUrl = "https://elasticbeanstalk-us-west-1-841019700848.s3.us-west-1.amazonaws.com/";//image base url
-
+const String imageBaseUrl = "https://elasticbeanstalk-eu-west-3-838155148197.s3.eu-west-3.amazonaws.com/";//image base url
 
 const String loginApiUrl = "$baseUrl/api/producer/auth/login";
 const String userLoginApiUrl = "$baseUrl/api/app/auth/login";
@@ -101,6 +100,7 @@ const String editProducerOfferApiUrl = "$baseUrl/api/producer/maps/updateProduce
 const String getUserLiveOfferApiUrl = "$baseUrl/api/producer/maps/getUserLiveOffers";
 
 const String copilotQueryApiUrl = "$baseUrl/api/app/copilot/query";
+const String updateUserCoordinatesApiUrl = "$baseUrl/api/app/profile/updateCoordinates";
 
 const String getNearbyProducersOnMapApiUrl = "$baseUrl/api/app/maps/getNearbyProducers";
 const String getMyBlocksApiUrl = "$baseUrl/api/app/blocking/getMyBlocks";

@@ -581,7 +581,10 @@ class SwitchAccountBottomSheet extends StatelessWidget {
                       shape: BoxShape.circle
                   ),
                   child: Center(
-                    child: Icon(Icons.add, color: AppColors.getPrimaryColorFromContext(context),),
+                    child: SvgPicture.asset(
+                      Assets.switchAccountIcon,
+                      colorFilter: ColorFilter.mode(AppColors.getPrimaryColorFromContext(context), BlendMode.srcIn)
+                    ),
                   ),
                 ),
                 SizedBox(width: getWidth() * 0.02),

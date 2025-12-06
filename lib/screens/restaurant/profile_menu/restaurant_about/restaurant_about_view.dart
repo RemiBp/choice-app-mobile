@@ -79,10 +79,10 @@ class _RestaurantAboutViewState extends State<RestaurantAboutView> {
               header: al.menu,
               optionText: al.seeFullMenu,
               onAddDish: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FullMenuView()),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => FullMenuView()),
+                // );
               },
             ),
             Row(
