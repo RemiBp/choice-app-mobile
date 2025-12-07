@@ -136,7 +136,8 @@ class CustomerProfileProvider extends ChangeNotifier {
         modelName: Models.getUserDetailModel,
       );
       debugPrint(
-        "get user detail response is : ${getUserDetailResponse?.data?.toJson()}",
+        "get user detail response is : ${getUserDetailResponse?.data
+            ?.toJson()}",
       );
       _loader.hideLoader(context!);
       notifyListeners();
@@ -204,7 +205,8 @@ class CustomerProfileProvider extends ChangeNotifier {
           permission = await Geolocator.requestPermission();
         }
 
-        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever) {
           return;
         }
 
@@ -231,12 +233,52 @@ class CustomerProfileProvider extends ChangeNotifier {
         // 4. Save locally
         await PreferenceUtils.setString("latitude", pos.latitude.toString());
         await PreferenceUtils.setString("longitude", pos.longitude.toString());
-
       } catch (e) {
         debugPrint("❌ Error sending location: $e");
       }
     }
-
-
-
   }
+  Future<void> updateUserCoordinatesOnLoginOrAppStart() async {
+    try {
+      // 1. Ensure location permissions
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        return;
+      }
+
+      // 2. Get current location
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      final body = {
+        "latitude": pos.latitude,
+        "longitude": pos.longitude,
+      };
+
+      debugPrint("📍 Sending Location Update: $body");
+
+      // 3. Hit POST API — MyApi will automatically attach auth token
+      final response = await MyApi.callPostApi(
+        url: updateUserCoordinatesApiUrl,
+        body: body,
+      );
+
+      debugPrint("📍 Location Update Response: $response");
+
+      // 4. Save locally
+      await PreferenceUtils.setString("latitude", pos.latitude.toString());
+      await PreferenceUtils.setString("longitude", pos.longitude.toString());
+
+    } catch (e) {
+      debugPrint("❌ Error sending location: $e");
+    }
+  }
+}
