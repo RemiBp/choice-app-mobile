@@ -15,6 +15,7 @@ import '../../../l18n.dart';
 import '../../../userRole/role_provider.dart';
 import '../../../userRole/user_role.dart';
 import '../../restaurant/home/choice_provider.dart';
+import '../../wellness/home/home_empty_state_widget.dart';
 
 
 class LeisureHome extends StatefulWidget {
@@ -109,7 +110,7 @@ class _LeisureHomeState extends State<LeisureHome> {
                       index: index,
                     );
                   },
-                ):Center(child: const Text("No Data Available"),),
+                ):EmptyStateWidget()
               ),
             ],
           ),

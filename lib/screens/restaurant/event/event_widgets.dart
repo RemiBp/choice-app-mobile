@@ -4,6 +4,7 @@ import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/restaurant/event/eventWidgets/delete_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -91,10 +92,11 @@ class EventCard extends StatelessWidget {
 
                   Row(
                     children: [
-                      Icon(
-                        Icons.location_on,
-                        color: AppColors.getPrimaryColorFromContext(context),
-                        size: 18,
+                      SvgPicture.asset(
+                        Assets.locationIcon,
+                        colorFilter: ColorFilter.mode(AppColors.getPrimaryColorFromContext(context), BlendMode.srcIn),
+                        width: 18,
+                        height: 18,
                       ),
                       SizedBox(width: 6),
                       CustomText(
@@ -109,10 +111,11 @@ class EventCard extends StatelessWidget {
                   // Time
                   Row(
                     children: [
-                      Icon(
-                        Icons.access_time_filled,
-                        color: AppColors.getPrimaryColorFromContext(context),
-                        size: 18,
+                      SvgPicture.asset(
+                        Assets.clockSvg,
+                        colorFilter: ColorFilter.mode(AppColors.getPrimaryColorFromContext(context), BlendMode.srcIn),
+                        width: 18,
+                        height: 18,
                       ),
                       SizedBox(width: 6),
                       CustomText(

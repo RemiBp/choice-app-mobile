@@ -22,7 +22,7 @@ class Events extends StatefulWidget {
 
 class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  EventProvider _eventProvider = EventProvider();
+  late EventProvider _eventProvider;
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<EventProvider>(context);
+    _eventProvider = context.watch<EventProvider>();
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(

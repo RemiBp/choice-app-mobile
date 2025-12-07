@@ -67,6 +67,7 @@ class _CompletedBookingsState extends State<CompletedBookings> {
                         endTime: booking.endTime,
                         guests: booking.guests,
                         totalPrice: booking.totalPrice,
+                        address: booking.address,
                         isEvent: booking.isEvent,
                         bookingId: booking.bookingId,
                         onDetails: () {
@@ -130,6 +131,7 @@ class _CompletedBookingsState extends State<CompletedBookings> {
           totalPrice: booking?.totalPrice,
           bookingId: booking?.id?.toString(),
           isEvent: true,
+          address: event?.venueName ?? event?.location,
           type: event?.serviceType,
         ),
       );
@@ -161,6 +163,7 @@ class _CompletedBookingsState extends State<CompletedBookings> {
           guests: booking?.guestCount ?? 0,
           totalPrice: null,
           bookingId: booking?.id?.toString(),
+          address: entry.producer?.address ?? booking?.location,
           isEvent: false,
           type: entry.producer?.type,
         ),

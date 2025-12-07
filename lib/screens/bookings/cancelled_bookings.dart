@@ -68,6 +68,7 @@ class _CancelledBookingsState extends State<CancelledBookings> {
                         totalPrice: booking.totalPrice,
                         isEvent: booking.isEvent,
                         bookingId: booking.bookingId,
+                        address: booking.address,
                         onCancel: () {},
                         onDetails: () {
                           if (role == UserRole.user) {
@@ -130,6 +131,7 @@ class _CancelledBookingsState extends State<CancelledBookings> {
           startTime: event?.startTime ?? '',
           endTime: event?.endTime ?? '',
           guests: booking?.numberOfPersons ?? 0,
+          address: event?.venueName ?? event?.location,
           totalPrice: booking?.totalPrice,
           bookingId: booking?.id?.toString(),
           isEvent: true,
@@ -166,6 +168,7 @@ class _CancelledBookingsState extends State<CancelledBookings> {
           totalPrice: null,
           bookingId: booking?.id?.toString(),
           isEvent: false,
+          address: entry.producer?.address ?? booking?.location,
           cancelReason: booking?.cancelReason ?? "No reason provided",
           type: entry.producer?.type,
         ),

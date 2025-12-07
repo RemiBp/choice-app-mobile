@@ -619,6 +619,56 @@ class _CreateEventState extends State<CreateEvent> {
                             return;
                           }
 
+                          final now = DateTime.now();
+
+// Build DateTime values for event start and end
+                          final eventStart = DateTime(
+                            _selectedDate!.year,
+                            _selectedDate!.month,
+                            _selectedDate!.day,
+                            _startTime!.hour,
+                            _startTime!.minute,
+                          );
+
+                          final eventEnd = DateTime(
+                            _selectedDate!.year,
+                            _selectedDate!.month,
+                            _selectedDate!.day,
+                            _endTime!.hour,
+                            _endTime!.minute,
+                          );
+
+// RULE 1: DATE MUST BE TODAY OR FUTURE
+                          final today = DateTime(now.year, now.month, now.day);
+                          final selected = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day);
+
+                          if (selected.isBefore(today)) {
+                            Toasts.getErrorToast(
+                              text: "Date must be today or a future date.",
+                            );
+                            return;
+                          }
+
+// RULE 2: IF DATE == TODAY  START TIME MUST BE +1 HOUR
+                          if (selected.isAtSameMomentAs(today)) {
+                            if (eventStart.isBefore(now.add(Duration(hours: 1)))) {
+                              Toasts.getErrorToast(
+                                text: "For today's date, please select a start time at least 1 hour from now.",
+                              );
+                              return;
+                            }
+                          }
+
+// RULE 3 For future dates  ANY start time is allowed (no check needed)
+
+//  RULE 4: END TIME MUST BE AFTER START TIME
+                          if (!eventEnd.isAfter(eventStart)) {
+                            Toasts.getErrorToast(
+                              text: "End time must be after start time.",
+                            );
+                            return;
+                          }
+
                           // Upload new images (keep existing imageUrls intact)
                           List<String> newImageUrls = List.from(imageUrls);
                           for (var img in images) {

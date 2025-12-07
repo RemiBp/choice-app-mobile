@@ -96,6 +96,11 @@ class _ProfileState extends State<Profile> {
     final provider = Provider.of<ProfileProvider>(context, listen: false);
 
     if (producer != null) {
+
+      if (producer.name != null && producer.name!.isNotEmpty) {
+        globalBusinessName = producer.name!;
+        debugPrint("Loaded business name: $globalBusinessName");
+      }
       // Address
       addressController.text = producer.address ?? '';
 

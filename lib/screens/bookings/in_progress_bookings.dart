@@ -66,6 +66,7 @@ class _InProgressBookingsState extends State<InProgressBookings> {
                         guests: booking.guests,
                         totalPrice: booking.totalPrice,
                         isEvent: booking.isEvent,
+                        address: booking.address,
                         bookingId: booking.bookingId,
                         onCancel: () {},
                         onDetails: () {
@@ -126,6 +127,7 @@ class _InProgressBookingsState extends State<InProgressBookings> {
           endTime: event?.endTime ?? '',
           guests: booking?.numberOfPersons ?? 0,
           totalPrice: booking?.totalPrice,
+          address: event?.venueName ?? event?.location,
           bookingId: booking?.id?.toString(),
           isEvent: true,
           type: event?.serviceType,
@@ -159,6 +161,7 @@ class _InProgressBookingsState extends State<InProgressBookings> {
           guests: booking?.guestCount ?? 0,
           totalPrice: null,
           bookingId: booking?.id?.toString(),
+          address: entry.producer?.address ?? booking?.location,
           isEvent: false,
           type: entry.producer?.type,
         ),

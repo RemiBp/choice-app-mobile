@@ -5,6 +5,7 @@ import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/customer/home/home_widgets.dart';
 import 'package:choice_app/screens/restaurant/home/choice_provider.dart';
+import 'package:choice_app/screens/wellness/home/home_empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -285,11 +286,13 @@ class _CustomerHomeState extends State<CustomerHome> {
 
   // FEEDS TAB
   Widget _buildFeedsTab() {
-    return ListView.builder(
-      padding: EdgeInsets.only(top: getHeight() * .01),
-      itemCount: 0,
-      itemBuilder: (context, index) => PostCard(index: index),
-    );
+
+   return Expanded(child: Center(child: EmptyStateWidget(),),);
+    // return ListView.builder(
+    //   padding: EdgeInsets.only(top: getHeight() * .01),
+    //   itemCount: 0,
+    //   itemBuilder: (context, index) => PostCard(index: index),
+    // );
   }
 
   // LIVE OFFERS TAB

@@ -7,6 +7,7 @@ import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/customer/home/home_widgets.dart';
 import 'package:choice_app/screens/leisure/leisure_profile/leisure_profile_view.dart';
 import 'package:choice_app/screens/restaurant/home/choice_provider.dart';
+import 'package:choice_app/screens/wellness/home/home_empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -109,7 +110,7 @@ class _RestaurantHomeState extends State<RestaurantHome> {
                     index: index,
                   );
                 },
-              ):Center(child: const Text("No Data Available"),),
+              ): EmptyStateWidget(),
             ),
           ],
         ),

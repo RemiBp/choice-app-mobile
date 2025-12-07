@@ -27,11 +27,12 @@ class EventProvider extends ChangeNotifier {
 
     _loader.showLoader(context: context);
 
-    await Future.wait([
-      getAllEvents(showLoader: false),
-      getDraftEvents(showLoader: false),
-      getCompletedEvents(showLoader: false),
-    ]);
+    // DO NOT call notifyListeners inside these functions
+    await getAllEvents(showLoader: false, notify: false);
+    await getDraftEvents(showLoader: false, notify: false);
+    await getCompletedEvents(showLoader: false, notify: false);
+
+    notifyListeners(); // notify ONCE only
 
     _loader.hideLoader(context);
   }
@@ -167,7 +168,7 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getAllEvents({bool showLoader = true}) async {
+  Future<void> getAllEvents({bool showLoader = true, bool notify = true}) async {
     try {
       if (showLoader) _loader.showLoader(context: context);
       getAllEventsResponse = await MyApi.callGetApi(
@@ -177,15 +178,15 @@ class EventProvider extends ChangeNotifier {
       );
       debugPrint("response is : ${getAllEventsResponse.data?.length}");
       if (showLoader) _loader.hideLoader(context!);
-      notifyListeners();
+      if (notify) notifyListeners();   // ONLY when outside init()
     } catch (err) {
       debugPrint("error while getting all events : $err");
       if (showLoader) _loader.hideLoader(context!);
-      notifyListeners();
+      if (notify) notifyListeners();
     }
   }
 
-  Future<void> getDraftEvents({bool showLoader = true}) async {
+  Future<void> getDraftEvents({bool showLoader = true,bool notify = true}) async {
     try {
       if (showLoader) _loader.showLoader(context: context);
       getDraftEventsResponse = await MyApi.callGetApi(
@@ -195,15 +196,15 @@ class EventProvider extends ChangeNotifier {
       );
       debugPrint("response is : ${getDraftEventsResponse.data?.length}");
       if (showLoader) _loader.hideLoader(context!);
-      notifyListeners();
+      if (notify) notifyListeners();
     } catch (err) {
       debugPrint("error while getting draft events : $err");
       if (showLoader) _loader.hideLoader(context!);
-      notifyListeners();
+      if (notify) notifyListeners();
     }
   }
 
-  Future<void> getCompletedEvents({bool showLoader = true}) async {
+  Future<void> getCompletedEvents({bool showLoader = true, bool notify = true}) async {
     try {
       if (showLoader) _loader.showLoader(context: context);
       getCompletedEventsResponse = await MyApi.callGetApi(
@@ -213,11 +214,11 @@ class EventProvider extends ChangeNotifier {
       );
       debugPrint("response is : ${getCompletedEventsResponse.data?.length}");
       if (showLoader) _loader.hideLoader(context!);
-      notifyListeners();
+      if (notify) notifyListeners();
     } catch (err) {
       debugPrint("error while getting completed events : $err");
       if (showLoader) _loader.hideLoader(context!);
-      notifyListeners();
+      if (notify) notifyListeners();
     }
   }
 
