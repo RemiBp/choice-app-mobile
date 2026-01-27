@@ -11,11 +11,13 @@ import '../../../res/res.dart';
 class GalleryCard extends StatelessWidget {
   final bool? isMainImage;
   final String? imageFile;
-  final Function onRemoveImage;
-  final Function onSetMainImage;
+  final int imageId;
+  final Function(int) onRemoveImage;
+  final Function(int) onSetMainImage;
   const GalleryCard({
     super.key, this.isMainImage,
     required this.imageFile,
+    required this.imageId,
     required this.onRemoveImage,
     required this.onSetMainImage,
   });
@@ -23,7 +25,7 @@ class GalleryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()=> onSetMainImage(),
+      onTap: ()=> onSetMainImage(imageId),
       child: Padding(
         padding:  EdgeInsets.only(right: getWidth() * 0.02, bottom: getHeight() * 0.015),
         child: Stack(
@@ -39,26 +41,20 @@ class GalleryCard extends StatelessWidget {
                     : null,
               ),
               clipBehavior: Clip.hardEdge, // ensures the image respects borderRadius
-              child: Image.asset(
-                imageFile ?? Assets.galleryImage, // fallback asset path
+              child: Image.network(
+                imageFile??"",
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: AppColors.getPrimaryColorFromContext(context),
+                  child: Center(child: Icon(Icons.broken_image, color: Colors.white,)),
                 ),
-              )
-              // Image.network(
-              //   imageFile??"",
-              //   fit: BoxFit.cover,
-              //   errorBuilder: (context, error, stackTrace) => Container(
-              //     color: AppColors.getPrimaryColorFromContext(context),
-              //   ),
-              //   loadingBuilder: (context, child, loadingProgress) {
-              //     if (loadingProgress == null) return child;
-              //     return const Center(
-              //       child: CircularProgressIndicator(),
-              //     );
-              //   },
-              // ),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
             ),
             if(isMainImage??false)
               Positioned(
@@ -81,7 +77,7 @@ class GalleryCard extends StatelessWidget {
               right: getWidth() * 0.02,
               top: getHeight() * 0.008,
               child: GestureDetector(
-                onTap: ()=> onRemoveImage(),
+                onTap: ()=> onRemoveImage(imageId),
                 child: const Icon(Icons.clear, color: AppColors.whiteColor,),
               ),
             ),

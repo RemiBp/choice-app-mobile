@@ -1,3 +1,6 @@
+import 'package:choice_app/appColors/colors.dart';
+import 'package:choice_app/customWidgets/animations/bouncing_wrapper.dart';
+import 'package:choice_app/customWidgets/glass/glass_container.dart'; // Ensure glass_container exists
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -19,164 +22,224 @@ class _ChoiceSelectionState extends State<ChoiceSelection> {
   final choices = [
     {
       'label': 'Restaurant',
-      'subtitle': 'Lorem ipsum dolor sit amet',
-      'icon': Assets.knifeForkIcon,
-      'color': Colors.orange,
+      'subtitle': 'Share your culinary delights',
+      'icon': Assets.restaurantIcon,
+      'color1': AppColors.restaurantPrimaryColor,
+      'color2': Color(0xFFFFA726),
     },
     {
       'label': 'Events',
-      'subtitle': 'Lorem ipsum dolor sit amet',
+      'subtitle': 'Concerts, parties, & shows',
       'icon': Assets.eventIcon,
-      'color': Colors.red,
+      'color1': AppColors.redColor,
+      'color2': Color(0xFFFF5252),
     },
     {
       'label': 'Leisure',
-      'subtitle': 'Lorem ipsum dolor sit amet',
+      'subtitle': 'Activities & Fun',
       'icon': Assets.leisureIcon,
-      'color': Colors.purple,
+      'color1': AppColors.leisurePrimaryColor,
+      'color2': Color(0xFFBA68C8),
     },
     {
       'label': 'Wellness',
-      'subtitle': 'Lorem ipsum dolor sit amet',
+      'subtitle': 'Spas, gyms, & beauty',
       'icon': Assets.wellnessIcon,
-      'color': Colors.green,
+      'color1': AppColors.wellnessPrimaryColor,
+      'color2': Color(0xFF66BB6A),
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Create Choice'),
-        // leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
+        title: CustomText(
+          text: 'What are you sharing?',
+          fontFamily: Assets.onsetSemiBold,
+          fontSize: sizes?.fontSize18,
+        ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        elevation: 1,
+        elevation: 0,
+        leading: BackButton(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: CustomText(
-                text: 'What would you like to share?',
-                fontSize: sizes?.fontSize18,
-                fontFamily: Assets.onsetSemiBold,
+      body: Column(
+        children: [
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.all(20),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.85,
               ),
+              itemCount: choices.length,
+              itemBuilder: (context, index) {
+                return _buildChoiceCard(choices[index]);
+              },
             ),
-            const SizedBox(height: 20),
-            ...choices.map((choice) => _buildChoiceCard(choice)).toList(),
-            Spacer(),
-            Row(
+          ),
+          
+          // Bottom Action Bar
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 40),
+            child: Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      context.pop();
+                  child: BouncingWrapper(
+                    onTap: () {
+                       _handleNext();
                     },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.black),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [AppColors.userPrimaryColor, AppColors.vibrantBlue],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.userPrimaryColor.withOpacity(0.4),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          )
+                        ],
                       ),
-                    ),
-                    child: CustomText(
-                      text: "Cancel",
-                      fontFamily: Assets.onsetSemiBold,
-                      fontSize: sizes?.fontSize16,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // context.push(Routes.subChoiceSelectionRoute);
-                      if(selectedChoice == "Events"){
-                        return;
-                      }
-                      context.push(
-                          '/sub_choice_selection?selectedChoice=$selectedChoice',
-                          extra: selectedChoice == "Restaurant" ? {
-                            "title": "Restaurant",
-                            "icon": Assets.restaurantIcon
-                            ,
-                            "description": "Which restaurant did you visit?"}
-                              : selectedChoice == "Leisure" ? {
-                            "title": "Leisure",
-                            "icon": Assets.leisureIcon
-                            ,
-                            "description": "Which leisure event did you attend?"
-                          } : {
-                            "title": "Wellness",
-                            "icon": Assets.wellnessIcon
-                            ,
-                            "description": "Which wellness did you visit?"
-                          }
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightBlue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                      child: Center(
+                        child: CustomText(
+                          text: "Continue",
+                          color: Colors.white,
+                          fontFamily: Assets.onsetSemiBold,
+                          fontSize: sizes?.fontSize16,
+                        ),
                       ),
-                    ),
-                    child: CustomText(
-                      text: "Next",
-                      fontFamily: Assets.onsetSemiBold,
-                      fontSize: sizes?.fontSize16,
-                      color: Colors.white,
                     ),
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
+  void _handleNext() {
+      if(selectedChoice == "Events"){
+        return; // TODO: Implement Events flow
+      }
+      
+      Map<String, dynamic> extraData = {};
+      if (selectedChoice == "Restaurant") {
+        extraData = {
+          "title": "Restaurant",
+          "icon": Assets.restaurantIcon,
+          "description": "Which restaurant did you visit?"
+        };
+      } else if (selectedChoice == "Leisure") {
+        extraData = {
+          "title": "Leisure",
+          "icon": Assets.leisureIcon,
+          "description": "Which leisure event did you attend?"
+        };
+      } else {
+        extraData = {
+          "title": "Wellness",
+          "icon": Assets.wellnessIcon,
+          "description": "Which wellness did you visit?"
+        };
+      }
+
+      context.push(
+          '/sub_choice_selection?selectedChoice=$selectedChoice',
+          extra: extraData
+      );
+  }
+
   Widget _buildChoiceCard(Map<String, dynamic> choice) {
     final isSelected = selectedChoice == choice['label'];
-    return GestureDetector(
+    final Color color1 = choice['color1'] as Color;
+    final Color color2 = choice['color2'] as Color;
+
+    return BouncingWrapper(
       onTap: () => setState(() => selectedChoice = choice['label']),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(12),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.shade50 : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          gradient: isSelected 
+              ? LinearGradient(colors: [color1, color2], begin: Alignment.topLeft, end: Alignment.bottomRight)
+              : LinearGradient(colors: [Colors.white, Colors.grey.shade50]),
           border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade300,
-            width: isSelected ? 2 : 1,
+            color: isSelected ? Colors.transparent : Colors.grey.shade200,
+            width: 2,
           ),
-          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [BoxShadow(color: color1.withOpacity(0.4), blurRadius: 12, offset: Offset(0, 6))]
+              : [],
         ),
-        child: Row(
+        child: Stack(
           children: [
-            SvgPicture.asset(choice['icon']),
-            const SizedBox(width: 12),
-            Expanded(
+            // Background Pattern (Optional circle/decoration)
+            if (isSelected)
+              Positioned(
+                top: -20,
+                right: -20,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                ),
+              ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.white.withOpacity(0.2) : color1.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SvgPicture.asset(
+                      choice['icon'], 
+                      color: isSelected ? Colors.white : color1,
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
+                  Spacer(),
                   CustomText(
                     text: choice['label'],
-                    fontSize: sizes?.fontSize14,
-                    fontFamily: Assets.onsetMedium,
+                    fontSize: sizes?.fontSize18,
+                    fontFamily: Assets.onsetBold,
+                    color: isSelected ? Colors.white : Colors.black,
                   ),
+                  SizedBox(height: 4),
                   CustomText(
                     text: choice['subtitle'],
                     fontSize: sizes?.fontSize12,
+                    color: isSelected ? Colors.white.withOpacity(0.9) : Colors.grey,
+                    giveLinesAsText: true,
+                    lines: 2,
                   ),
                 ],
               ),
             ),
-            Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? Colors.blue : Colors.grey,
-            ),
+            
+            // Selection Checkmark
+            if (isSelected)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Icon(Icons.check_circle, color: Colors.white, size: 24),
+              ),
           ],
         ),
       ),

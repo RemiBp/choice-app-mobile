@@ -10,17 +10,26 @@ import '../../../customWidgets/custom_button.dart';
 import '../../../customWidgets/custom_text.dart';
 
 class EventCard extends StatelessWidget {
-  const EventCard({super.key, this.isDraft = false});
+  const EventCard({super.key, this.isDraft = false, this.event});
 
   final bool isDraft;
+  final dynamic event;
 
   @override
   Widget build(BuildContext context) {
+    final title = event != null ? event['title'] ?? "Unknown Event" : "Wine & Dine Evening";
+    final location = event != null ? event['location'] ?? "Unknown Location" : "Lyon, France";
+    final time = event != null ? "${event['startTime']} - ${event['endTime']}" : "June 20, 10:00 PM – 12:00 PM";
+    final price = event != null ? "\$${event['pricePerGuest']}" : "\$30.00";
+    final imageUrl = (event != null && event['eventImages'] != null && (event['eventImages'] as List).isNotEmpty)
+        ? event['eventImages'][0]
+        : "https://i.pinimg.com/originals/30/01/e8/3001e885d7c49f851aaa9008b2a2e562.jpg";
+
     return InkWell(
       onTap: () {
         context.push(
           Routes.restaurantEventDetailsRoute,
-          extra: {"isDraft": isDraft},
+          extra: {"isDraft": isDraft, "event": event},
         );
       },
       child: Container(
@@ -41,9 +50,7 @@ class EventCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 image: DecorationImage(
-                  image: NetworkImage(
-                    "https://i.pinimg.com/originals/30/01/e8/3001e885d7c49f851aaa9008b2a2e562.jpg",
-                  ),
+                  image: NetworkImage(imageUrl),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -56,7 +63,7 @@ class EventCard extends StatelessWidget {
 
                 children: [
                   CustomText(
-                    text: "Wine & Dine Evening",
+                    text: title,
                     fontSize: sizes?.fontSize18,
                     fontFamily: Assets.onsetSemiBold,
                   ),
@@ -67,7 +74,7 @@ class EventCard extends StatelessWidget {
                       Icon(Icons.location_on, color: AppColors.getPrimaryColorFromContext(context), size: 18, ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "Lyon, France",
+                        text: location,
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -85,7 +92,7 @@ class EventCard extends StatelessWidget {
                       ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "June 20, 10:00 PM – 12:00 PM",
+                        text: time,
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -102,7 +109,7 @@ class EventCard extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: '\$30.00',
+                              text: price,
                               style: TextStyle(
                                 color: AppColors.getPrimaryColorFromContext(context),
                                 fontFamily: Assets.onsetSemiBold,

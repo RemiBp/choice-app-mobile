@@ -36,6 +36,13 @@ class _RestaurantBottomSheetState extends State<RestaurantBottomSheet> {
     "Tacos al Pastor",
   ];
   List<String> selectedDishes = ["Truffle Mushroom Risotto", "Pad Thai"];
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +144,7 @@ class _RestaurantBottomSheetState extends State<RestaurantBottomSheet> {
 
                     const CustomSectionTitle(title: "Dish Name"),
                     CustomField(
+                      controller: _searchController,
                       borderColor: AppColors.greyBordersColor,
                       hint: "Search by username or name...",
                       prefixIconSvg: Assets.searchIcon,

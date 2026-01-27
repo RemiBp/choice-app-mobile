@@ -14,6 +14,13 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +31,7 @@ class _ChatViewState extends State<ChatView> {
         child: Column(
           children: [
             CustomField(
+              controller: _searchController,
               borderColor: AppColors.greyBordersColor,
               hint: "Search by name...",
               label: "",

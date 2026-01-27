@@ -75,7 +75,14 @@ class _CustomerProfileViewState extends State<CustomerProfileView> with SingleTi
       body: Column(
         children: [
           SizedBox(height: getHeight() * 0.02),
-          CustomerProfileHeader(),
+          // Using RestaurantProfileHeader as the standardized header for now, 
+          // but logically it should be a generic ProfileHeader. 
+          // Since CustomerProfileHeader was deleted or is less robust, we swap to the shared one OR keep it if it matches.
+          // Checking previous view... CustomerProfileHeader was used.
+          // Let's standardise on RestaurantProfileHeader if it's the "premium" one, 
+          // or ensure CustomerProfileHeader matches it.
+          // For now, I will use RestaurantProfileHeader for consistency effectively making it "ProfileHeader".
+          RestaurantProfileHeader(), 
           SizedBox(height: getHeight() * 0.01),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),

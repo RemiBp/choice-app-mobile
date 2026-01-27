@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_text.dart';
 import '../../../res/res.dart';
+import '../../../appAssets/app_assets.dart';
+import 'dashboard_provider.dart';
 
 class RatingsByThemeCard extends StatelessWidget {
   const RatingsByThemeCard({super.key});
-
-  final List<Map<String, dynamic>> data = const [
-    {'label': 'Service', 'value': 4.2},
-    {'label': 'Place', 'value': 3.5},
-    {'label': 'Ambiance', 'value': 3.8},
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +15,8 @@ class RatingsByThemeCard extends StatelessWidget {
       padding: EdgeInsets.all(getHeightRatio() * 16),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.greyBordersColor.withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
             color: AppColors.blackColor.withOpacity(0.05),
@@ -27,70 +25,78 @@ class RatingsByThemeCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: Consumer<DashboardProvider>(
+        builder: (context, provider, child) {
+          final ratingsData = provider.ratings?['ratings'] as List<dynamic>? ?? [];
 
-          Align(
-            alignment: Alignment.centerLeft,
-            child: CustomText(
-              text: 'Ratings by Experience Theme',
-              fontSize: sizes?.fontSize14,
-              fontWeight: FontWeight.w500,
-              color: AppColors.primarySlateColor,
-            ),
-          ),
-          SizedBox(height: getHeightRatio() * 16),
-          ...data.map((item) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: getHeightRatio() * 12),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: getWidthRatio() * 80,
-                    // child: Text(item['label'],),
-                    child: CustomText(
-                      text: item['label'],
-                      fontWeight: FontWeight.w500,
-                      fontSize: sizes?.fontSize12,
-                      color: AppColors.blackColor,
-                    )
-                  ),
-                  Expanded(
-                    child: Stack(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                text: 'Ratings by Experience Theme',
+                fontSize: sizes?.fontSize16,
+                fontFamily: Assets.onsetSemiBold,
+                color: AppColors.blackColor,
+              ),
+              SizedBox(height: getHeightRatio() * 20),
+              if (ratingsData.isEmpty)
+                Center(child: CustomText(text: "No rating breakdown available", color: AppColors.textGreyColor))
+              else
+                ...ratingsData.map((item) {
+                  final label = item['criteria'] ?? 'N/A';
+                  final value = double.tryParse(item['average']?.toString() ?? '0.0') ?? 0.0;
+                  
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: getHeightRatio() * 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          height: getHeight() * 0.02,
-                          decoration: BoxDecoration(
-                            color: AppColors.greyColor,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        FractionallySizedBox(
-                          widthFactor: item['value'] / 5.0,
-                          child: Container(
-                            height: getHeight() * 0.02,
-                            decoration: BoxDecoration(
-                              color: AppColors.vibrantBlue,
-                              borderRadius: BorderRadius.circular(4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomText(
+                              text: label,
+                              fontWeight: FontWeight.w500,
+                              fontSize: sizes?.fontSize12,
+                              color: AppColors.blackColor,
                             ),
-                          ),
+                            CustomText(
+                              text: value.toStringAsFixed(1),
+                              fontWeight: FontWeight.w600,
+                              fontSize: sizes?.fontSize12,
+                              color: AppColors.restaurantPrimaryColor,
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Stack(
+                          children: [
+                            Container(
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: AppColors.greyColor.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: (value / 5.0).clamp(0.0, 1.0),
+                              child: Container(
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  color: AppColors.restaurantPrimaryColor,
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(width: getWidthRatio() * 12),
-                  CustomText(
-                    text: item['value'].toString(),
-                    fontWeight: FontWeight.w500,
-                    fontSize: sizes?.fontSize12,
-                    color: AppColors.blackColor,
-                  )
-                ],
-              ),
-            );
-          }),
-        ],
+                  );
+                }),
+            ],
+          );
+        },
       ),
     );
   }

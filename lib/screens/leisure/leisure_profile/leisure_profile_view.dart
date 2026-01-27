@@ -81,8 +81,8 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
       body: Column(
         children: [
           SizedBox(height: getHeight() * 0.02),
-          // RestaurantProfileHeader(),
-          CustomerProfileHeader(),
+          RestaurantProfileHeader(),
+          // CustomerProfileHeader(),
           SizedBox(height: getHeight() * 0.01),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),

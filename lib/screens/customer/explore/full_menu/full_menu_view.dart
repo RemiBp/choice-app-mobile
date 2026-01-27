@@ -15,12 +15,14 @@ class _FullMenuViewState extends State<FullMenuView> {
 
   final List<MenuGroup> menuGroups = [
     MenuGroup(
+      id: 1,
       title: 'Brochettes',
-      dishes: List.generate(3, (_) => Dish(name: 'Al Salmone', description: 'Sauce blanche, saumon fume', price: 20)),
+      dishes: List.generate(3, (i) => Dish(id: i, name: 'Al Salmone', description: 'Sauce blanche, saumon fume', price: 20)),
     ),
     MenuGroup(
+      id: 2,
       title: 'Maki',
-      dishes: List.generate(3, (_) => Dish(name: 'Maki Saumon', description: 'Sauce blanche, saumon fume', price: 20)),
+      dishes: List.generate(3, (i) => Dish(id: i + 3, name: 'Maki Saumon', description: 'Sauce blanche, saumon fume', price: 20)),
     ),
   ];
 
@@ -41,11 +43,12 @@ class _FullMenuViewState extends State<FullMenuView> {
                 itemCount: menuGroups.length,
                 padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
                 itemBuilder: (context, index) {
-                  return MenuGroupWithoutOptionWidget(
+                  return MenuGroupWidget(
                     menuGroup: menuGroups[index],
                     showOption: false,
-                    hideBorder: true,header: "Salads",
-                    onAddDish: (){},
+                    hideBorder: true,
+                    header: "Salads",
+                    onAddDish: (int id){},
                   );
                 },
               ),

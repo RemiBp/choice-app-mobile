@@ -11,9 +11,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../userRole/role_provider.dart';
+import '../../userRole/user_role.dart';
 
 import '../../appAssets/app_assets.dart';
-import '../../l18n.dart';
+import 'package:choice_app/l18n.dart';
 import '../onboarding/add_cuisine/add_cuisine.dart';
 import 'auth_provider.dart';
 
@@ -25,6 +27,17 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
+  final TextEditingController _businessNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() { 
+    _businessNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +73,14 @@ class _SignupState extends State<Signup> {
             ),
             SizedBox(height: getHeight() * .01),
             CustomField(
+              controller: _businessNameController,
               borderColor: AppColors.greyBordersColor,
               hint: al.businessName,
               label: al.businessName,
             ),
             SizedBox(height: getHeight() * .01),
             CustomField(
+              controller: _emailController,
               borderColor: AppColors.greyBordersColor,
               hint: al.emailPlaceholder,
               label: al.emailLabel,
@@ -74,6 +89,7 @@ class _SignupState extends State<Signup> {
             Consumer<AuthProvider>(
               builder: (context, state, child) {
                 return CustomField(
+                  controller: _passwordController,
                   borderColor: AppColors.greyBordersColor,
                   hint: al.passwordLabel,
                   label: al.passwordLabel,
@@ -106,12 +122,12 @@ class _SignupState extends State<Signup> {
                       children: [
                         TextSpan(
                           text: al.termsOfService,
-                          style: TextStyle(color: AppColors.restaurantPrimaryColor),
+                          style: TextStyle(color: AppColors.getPrimaryColorFromContext(context)),
                         ),
                         TextSpan(text: " ${al.andLabel} "),
                         TextSpan(
                           text: " ${al.privacyPolicy} ",
-                          style: TextStyle(color: AppColors.restaurantPrimaryColor),
+                          style: TextStyle(color: AppColors.getPrimaryColorFromContext(context)),
                         ),
                       ],
                     ),
@@ -120,15 +136,34 @@ class _SignupState extends State<Signup> {
               ],
             ),
             SizedBox(height: getHeight() * .02),
-            CustomButton(
-              buttonText: al.signupTitle,
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   // MaterialPageRoute(builder: (context) => AddCuisine()),
-                //   MaterialPageRoute(builder: (context) => SettingView()),
-                // );
-                context.push(Routes.otpVerificationRoute);
+            Consumer<AuthProvider>(
+              builder: (context, auth, child) {
+                return CustomButton(
+                  buttonText: auth.isLoading ? "Signing up..." : al.signupTitle,
+                  onTap: auth.isLoading ? () {} : () async {
+                    if (_businessNameController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill all fields")));
+                       return;
+                    }
+                    
+                    final success = await auth.signup({
+                      'businessName': _businessNameController.text,
+                      'email': _emailController.text,
+                      'password': _passwordController.text,
+                      'role': context.read<RoleProvider>().role.name,
+                    });
+
+                    if (success) {
+                      if (context.mounted) context.push(Routes.otpVerificationRoute);
+                    } else {
+                      if (context.mounted && auth.errorMessage != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(auth.errorMessage!), backgroundColor: Colors.red),
+                        );
+                      }
+                    }
+                  },
+                );
               },
             ),
             SizedBox(height: getHeight() * .02),
@@ -167,7 +202,7 @@ class _SignupState extends State<Signup> {
                   children: [
                     TextSpan(
                       text: al.loginButton,
-                      style: TextStyle(color: AppColors.restaurantPrimaryColor),
+                      style: TextStyle(color: AppColors.getPrimaryColorFromContext(context)),
                       recognizer: TapGestureRecognizer()..onTap=(){
                         context.pushReplacement(Routes.loginRoute);
                       }

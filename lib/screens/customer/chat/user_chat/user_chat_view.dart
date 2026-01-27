@@ -1,5 +1,8 @@
+import 'package:choice_app/common/utils.dart';
+import 'package:choice_app/screens/customer/chat/chat_provider.dart';
 import 'package:choice_app/screens/customer/chat/user_new_chat/user_new_chat_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/common_app_bar.dart';
@@ -17,27 +20,18 @@ class UserChatView extends StatefulWidget {
 }
 
 class _UserChatViewState extends State<UserChatView> {
-  final List<Map<String, String>> users = const [
-    {
-      'name': 'Emelie',
-      'username': 'emelie645',
-      'image':
-      'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Olivia',
-      'username': 'olivia223',
-      'image':
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Sophia',
-      'username': 'sophia007',
-      'image':
-      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?fit=crop&w=200&q=80'
-    },
-    // ... remaining users
-  ];
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+       // Initialize socket if token exists (Assumes token is available)
+       final token = PreferenceUtils.token;
+       if (token != null) {
+          context.read<ChatProvider>().init(token);
+       }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,46 +39,44 @@ class _UserChatViewState extends State<UserChatView> {
       backgroundColor: AppColors.whiteColor,
       appBar: CommonAppBar(
         title: "Chat",
-        showBackArrow: false,
+        showBackArrow: true,
         hideBottomBorder: true,
       ),
-      body: CustomCategoryTabs(
-        categories: [
-          {'id': 1, 'label': 'Friends'},
-          {'id': 2, 'label': 'Restaurants'},
-          {'id': 3, 'label': 'Leisure'},
-          {'id': 4, 'label': 'Wellness'},
-        ],
-        builder: (category) {
-          return Column(
-            children: [
-              Padding(
-                padding:  EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
-                child: CustomField(
-                  borderColor: AppColors.greyBordersColor,
-                  hint: "Search by name...",
-                  label: "",
-                  prefixIconSvg: Assets.searchIcon,
-                ),
-              ),
-              SizedBox(height: getHeight() * 0.02),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: users.length,
+      body: Consumer<ChatProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.chats.isEmpty) {
+             return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (provider.chats.isEmpty) {
+             return Center(
+               child: Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: [
+                   Icon(Icons.chat_bubble_outline, size: 48, color: Colors.grey),
+                   SizedBox(height: 16),
+                   Text("No chats yet. Start a new conversation!"),
+                 ],
+               ),
+             );
+          }
+
+          return ListView.separated(
+                  itemCount: provider.chats.length,
                   padding:  EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
                   separatorBuilder: (_, __) => Divider(height: getHeight() * 0.025),
                   itemBuilder: (context, index) {
-                    final user = users[index];
+                    final chat = provider.chats[index];
+                    // Map backend chat object to UI
+                    // Assuming chat structure from backend: { id, chatName, latestMessage, ... }
                     return ChatTile(
-                      name: user['name']!,
-                      username: user['username']!,
-                      imageUrl: user['image']!,
+                      name: chat['chatName'] ?? "Unknown",
+                      username: "", // Customize based on data
+                      imageUrl: "https://placehold.co/200", // Placeholder or from data
+                      // onTap: () => Navigate to chat details
                     );
                   },
-                ),
-              ),
-            ],
-          );
+                );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(

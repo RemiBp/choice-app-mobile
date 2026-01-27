@@ -9,6 +9,7 @@ import 'package:choice_app/screens/wellness/home/welness_home.dart';
 import 'package:choice_app/userRole/role_provider.dart';
 import 'package:choice_app/userRole/user_role.dart';
 import 'package:choice_app/utilities/extensions.dart';
+import 'package:choice_app/screens/restaurant/profile/profile.dart'; // Added
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -79,12 +80,9 @@ class _RestaurantBottomTabState extends State<RestaurantBottomTab>
     widgets = [
       role == UserRole.wellness ? WellnessHome() : RestaurantHome(),
       HomeView(),
-      role == UserRole.user?ExploreView():Events(),
+      role == UserRole.user ? ExploreView() : Events(),
       BookingsView(),
-      if (role == UserRole.user) CustomerProfileView(),
-      if (role == UserRole.wellness) WellnessProfileView(),
-      if (role == UserRole.leisure) LeisureProfileView(),
-      if (role == UserRole.restaurant) LeisureProfileView(),
+      _getProfileView(role), // Refactored: Dynamic role-aware profile
     ];
     _fabAnimationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -124,6 +122,21 @@ class _RestaurantBottomTabState extends State<RestaurantBottomTab>
     );
   }
 
+  Widget _getProfileView(UserRole role) {
+    switch (role) {
+      case UserRole.user:
+        return const CustomerProfileView();
+      case UserRole.wellness:
+        return const WellnessProfileView();
+      case UserRole.leisure:
+        return const LeisureProfileView();
+      case UserRole.restaurant:
+        return const Profile(); // Correct profile for restaurant
+      default:
+        return const CustomerProfileView();
+    }
+  }
+
   bool onScrollNotification(ScrollNotification notification) {
     if (notification is UserScrollNotification &&
         notification.metrics.axis == Axis.vertical) {
@@ -146,7 +159,7 @@ class _RestaurantBottomTabState extends State<RestaurantBottomTab>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: false,
+      extendBody: true, // Enabled for better bottom bar integration
       resizeToAvoidBottomInset: false,
       body: NavigationScreen(widgets[_bottomNavIndex]),
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
@@ -184,7 +197,7 @@ class _RestaurantBottomTabState extends State<RestaurantBottomTab>
           );
         },
         backgroundColor: AppColors.whiteColor,
-        height: getHeight() * .1,
+        height: 80,
         activeIndex: _bottomNavIndex,
         splashColor: AppColors.getPrimaryColorFromContext(context),
         notchAndCornersAnimation: borderRadiusAnimation,

@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_text.dart';
 import '../../../res/res.dart';
+import 'dashboard_provider.dart';
+import '../../../customWidgets/filter_drop_down.dart';
 
 
 
@@ -167,145 +169,181 @@ class BookingChartCard extends StatefulWidget {
 }
 
 class _BookingChartCardState extends State<BookingChartCard> {
-  String selectedRange = 'Category';
-
-  List<double> barData = [];
-  List<String> xLabels = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchChartData(selectedRange);
-  }
-
-  void fetchChartData(String range) {
-    // Simulated backend response based on range
-    if (range == 'Category') {
-      xLabels = ['Bowl', 'Lasagna', 'Sushi', 'Burger', 'Ramen'];
-      barData = [85, 65, 28, 70,];
-    } else if (range == 'Last Month') {
-      xLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-      barData = [150, 200, 120, 100];
-    }
-    setState(() {});
-  }
+  String selectedRange = 'Last Week';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: getHeight() * 0.3,
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: getWidthRatio() * 16,
-        vertical: getHeightRatio() * 12,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.blackColor.withAlpha(20),
-            offset: Offset(0, 0),
-            blurRadius: 24,
-            spreadRadius: 0,
+    return Consumer<DashboardProvider>(
+      builder: (context, provider, child) {
+        final trends = provider.bookingTrends;
+        final isLoading = provider.isBookingLoading;
+
+        // Parse data from provider
+        List<String> xLabels = [];
+        List<double> barData = [];
+
+        if (trends != null && trends['labels'] != null && trends['values'] != null) {
+          xLabels = List<String>.from(trends['labels']);
+          barData = List<dynamic>.from(trends['values']).map((e) => (e as num).toDouble()).toList();
+        }
+
+        return Container(
+          height: getHeight() * 0.3,
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: getWidthRatio() * 16,
+            vertical: getHeightRatio() * 12,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ... header, dropdown etc. here ...
-
-          SizedBox(height: getHeightRatio() * 16),
-
-          /// Only this part scrolls horizontally
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: barData.length * getWidthRatio() * 80, // slot width per bar
-                child: BarChart(
-                  BarChartData(
-                    backgroundColor: AppColors.whiteColor,
-                    borderData: FlBorderData(
-                      show: true,
-                      border: const Border(
-                        bottom: BorderSide(color: AppColors.greyBordersColor),
-                        left: BorderSide(color: AppColors.greyBordersColor),
-                      ),
-                    ),
-                    gridData: const FlGridData(show: false),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: getWidth() * 0.08,
-                          getTitlesWidget: (value, meta) {
-                            return CustomText(
-                              text: value.toInt().toString(),
-                              fontSize: sizes?.fontSize12,
-                              fontWeight: FontWeight.w400,
-                            );
-                          },
-                        ),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: getHeight() * 0.06,
-                          getTitlesWidget: (value, meta) {
-                            if (value.toInt() >= 0 && value.toInt() < xLabels.length) {
-                              return SizedBox(
-                                width: getWidthRatio() * 40, // fixed slot for each label
-                                child: Center(
-                                  child: CustomText(
-                                    text: xLabels[value.toInt()],
-                                    fontSize: sizes?.fontSize12,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              );
-                            }
-                            return const SizedBox();
-                          },
-                        ),
-                      ),
-                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    ),
-                    barGroups: barData.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final value = entry.value;
-                      return BarChartGroupData(
-                        x: index,
-                        barRods: [
-                          BarChartRodData(
-                            toY: value,
-                            color: AppColors.restaurantPrimaryColor,
-                            width: getWidthRatio() * 18,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                    barTouchData: BarTouchData(
-                      touchTooltipData: BarTouchTooltipData(
-                        getTooltipColor: (touchedSpot) => AppColors.greyColor,
-                      ),
-                      touchCallback: (event, response) {},
-                      handleBuiltInTouches: true,
-                    ),
-                    maxY: (barData.isNotEmpty ? (barData.reduce(max) + 20) : 100),
-                    minY: 0,
-                  ),
-                ),
+          decoration: BoxDecoration(
+            color: AppColors.whiteColor,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.blackColor.withOpacity(0.05),
+                offset: Offset(0, 4),
+                blurRadius: 24,
+                spreadRadius: 0,
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-    );
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomText(
+                    text: 'Bookings',
+                    fontSize: sizes?.fontSize14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.primarySlateColor,
+                  ),
+                  SizedBox(
+                    width: getWidth() * 0.35,
+                    height: getHeightRatio() * 36,
+                    child: FilterDropDown(
+                      items: const ['Last Week', 'Last Month'],
+                      hintText: 'Select Range',
+                      selectedValue: selectedRange,
+                      bfColor: AppColors.whiteColor,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => selectedRange = value);
+                          final period = value == 'Last Week' ? 'week' : 'month';
+                          provider.fetchBookingTrends(period);
+                        }
+                      },
+                      validator: (value) => value == null ? 'Required' : null,
+                    ),
+                  ),
+                ],
+              ),
 
+              SizedBox(height: getHeightRatio() * 16),
+
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator(color: AppColors.restaurantPrimaryColor))
+                    : barData.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.bar_chart, size: 48, color: AppColors.textGreyColor.withOpacity(0.5)),
+                                SizedBox(height: 8),
+                                CustomText(text: "No booking data available", color: AppColors.textGreyColor),
+                              ],
+                            ),
+                          )
+                        : SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: SizedBox(
+                              // Ensure minimum width for the chart to look good, or fit width if items are few
+                              width: max(getWidth() - (getWidthRatio() * 32), barData.length * getWidthRatio() * 60),
+                              child: BarChart(
+                                BarChartData(
+                                  backgroundColor: AppColors.whiteColor,
+                                  borderData: FlBorderData(
+                                    show: true,
+                                    border: const Border(
+                                      bottom: BorderSide(color: AppColors.greyBordersColor),
+                                      left: BorderSide(color: AppColors.greyBordersColor),
+                                    ),
+                                  ),
+                                  gridData: const FlGridData(show: false),
+                                  titlesData: FlTitlesData(
+                                    leftTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        reservedSize: getWidth() * 0.08,
+                                        getTitlesWidget: (value, meta) {
+                                          return CustomText(
+                                            text: value.toInt().toString(),
+                                            fontSize: sizes?.fontSize12,
+                                            fontWeight: FontWeight.w400,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        reservedSize: getHeight() * 0.06,
+                                        getTitlesWidget: (value, meta) {
+                                          if (value.toInt() >= 0 && value.toInt() < xLabels.length) {
+                                            return SizedBox(
+                                              width: getWidthRatio() * 50,
+                                              child: Center(
+                                                child: CustomText(
+                                                  text: xLabels[value.toInt()],
+                                                  fontSize: sizes?.fontSize12,
+                                                  fontWeight: FontWeight.w400,
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                          return const SizedBox();
+                                        },
+                                      ),
+                                    ),
+                                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  ),
+                                  barGroups: barData.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final value = entry.value;
+                                    return BarChartGroupData(
+                                      x: index,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: value,
+                                          color: AppColors.restaurantPrimaryColor,
+                                          width: getWidthRatio() * 18,
+                                          borderRadius: BorderRadius.circular(2),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
+                                  barTouchData: BarTouchData(
+                                    touchTooltipData: BarTouchTooltipData(
+                                      getTooltipColor: (touchedSpot) => AppColors.greyColor,
+                                    ),
+                                    touchCallback: (event, response) {},
+                                    handleBuiltInTouches: true,
+                                  ),
+                                  maxY: (barData.isNotEmpty ? (barData.reduce(max) + 5) : 10),
+                                  minY: 0,
+                                ),
+                              ),
+                            ),
+                          ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 

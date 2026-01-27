@@ -18,6 +18,13 @@ class ExploreView extends StatefulWidget {
 }
 
 class _ExploreViewState extends State<ExploreView> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +82,10 @@ class _ExploreViewState extends State<ExploreView> {
                     ),
                   ),
                   SizedBox(height: getHeight() * .02),
-                  Padding(
+            Padding(
                     padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding),
                     child: CustomField(
+                      controller: _searchController,
                       borderColor: AppColors.greyBordersColor,
                       hint: "Search by username or name...",
                       prefixIconSvg: Assets.searchIcon,

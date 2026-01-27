@@ -37,7 +37,7 @@ class ExploreEventHeader extends StatelessWidget {
               backgroundColor: Colors.white30,
             ),
             onPressed: () {
-              context.pop();
+              Navigator.pop(context);
             },
             icon: Icon(Icons.arrow_back),
           ),

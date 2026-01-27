@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/common_app_bar.dart';
 import '../../../customWidgets/custom_button.dart';
@@ -6,7 +7,8 @@ import '../../../customWidgets/custom_text.dart';
 import '../../../customWidgets/multiple_selection_dropdown.dart';
 import '../../../customWidgets/text_field_label.dart';
 import '../../../res/res.dart';
-import '../add_cuisine/add_cuisine.dart';
+import '../../../data/models/cuisine_type.dart';
+import '../onboarding_provider.dart';
 
 class AddServices extends StatefulWidget {
   const AddServices({super.key});
@@ -18,24 +20,13 @@ class AddServices extends StatefulWidget {
 class _AddServicesState extends State<AddServices> {
   List<CuisineType> selectedServices = [];
 
-  final List<CuisineType> serviceOptions = [
-    CuisineType(id: 1, name: 'Aesthetic Care & Well-Being'),
-    CuisineType(id: 2, name: 'Hair Care & Hair Services'),
-    CuisineType(id: 3, name: 'Nail Care & Body Modifications'),
-    CuisineType(id: 4, name: 'Massage & Relaxation'),
-    CuisineType(id: 5, name: 'Skin Treatments & Facials'),
-    CuisineType(id: 6, name: 'Makeup & Beauty Services'),
-    CuisineType(id: 7, name: 'Waxing & Hair Removal'),
-    CuisineType(id: 8, name: 'Spa & Wellness Packages'),
-    CuisineType(id: 9, name: 'Laser Treatments'),
-    CuisineType(id: 10, name: 'Tattoo & Piercing Services'),
-    CuisineType(id: 11, name: 'Eyebrow & Eyelash Treatments'),
-    CuisineType(id: 12, name: 'Bridal & Event Packages'),
-    CuisineType(id: 13, name: 'Dermatology & Skin Care Consultation'),
-    CuisineType(id: 14, name: 'Foot & Hand Care'),
-    CuisineType(id: 15, name: 'Hair Transplant & Scalp Services'),
-  ];
-
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OnboardingProvider>().fetchServiceTypes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,28 +35,40 @@ class _AddServicesState extends State<AddServices> {
       appBar: CommonAppBar(
         title: "Services",
       ),
-      body: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: sizes!.pagePadding,
-            vertical: getHeight() * .02,
-          ),
-          child: Column(
+      body: Consumer<OnboardingProvider>(
+        builder: (context, provider, child) {
+          return Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: sizes!.pagePadding,
+              vertical: getHeight() * .02,
+            ),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: getHeight() * 0.01),
                 const TextFieldLabel(
                   label: "Services Type",
                 ),
-                MultiSelectDropdown(
-                  options: serviceOptions,
-                  selectedItems: selectedServices,
-                  hintText: 'Select services type',
-                  onSelectionChanged: (updatedList) {
-                    setState(() {
-                      selectedServices = updatedList;
-                    });
-                  },
-                ),
+                provider.isLoading && provider.serviceTypes.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : MultiSelectDropdown(
+                        options: provider.serviceTypes,
+                        selectedItems: selectedServices,
+                        hintText: 'Select services type',
+                        onSelectionChanged: (updatedList) {
+                          setState(() {
+                            selectedServices = updatedList;
+                          });
+                        },
+                      ),
+                if (provider.errorMessage != null) ...[
+                  const SizedBox(height: 8),
+                  CustomText(
+                    text: provider.errorMessage!,
+                    color: Colors.red,
+                    fontSize: sizes?.fontSize12,
+                  ),
+                ],
                 const SizedBox(height: 12),
                 Expanded(
                   child: ListView(
@@ -112,104 +115,34 @@ class _AddServicesState extends State<AddServices> {
                       textFontWeight: FontWeight.w700,
                     ),
                     CustomButton(
-                      buttonText: 'Save Changes',
-                      onTap: () {
-
-                      },
+                      buttonText: provider.isLoading ? 'Saving...' : 'Save Changes',
+                      onTap: selectedServices.isEmpty || provider.isLoading
+                          ? null
+                          : () async {
+                              final ids = selectedServices.map((s) => s.id).toList();
+                              final success = await provider.saveServiceTypes(ids);
+                              if (success && mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Services updated successfully")),
+                                );
+                                Navigator.pop(context);
+                              }
+                            },
                       buttonWidth: getWidth() * .42,
-                      backgroundColor: AppColors.getPrimaryColorFromContext(context),
+                      backgroundColor: (selectedServices.isEmpty || provider.isLoading)
+                          ? AppColors.textGreyColor
+                          : AppColors.getPrimaryColorFromContext(context),
                       borderColor: Colors.transparent,
                       textColor: Colors.white,
                       textFontWeight: FontWeight.w700,
                     ),
                   ],
                 )
-              ]
-          )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 }
-
-
-// class AddServices extends StatefulWidget {
-//   const AddServices({super.key});
-//
-//   @override
-//   State<AddServices> createState() => _AddServicesState();
-// }
-//
-// class _AddServicesState extends State<AddServices> {
-//   int? selectedCuisineId;
-//   CuisineType? selectedCuisine;
-//
-//   final List<CuisineType> dummyCuisineTypes = [
-//     CuisineType(id: 1, name: 'Italian'),
-//     CuisineType(id: 2, name: 'Chinese'),
-//     CuisineType(id: 3, name: 'Mexican'),
-//     CuisineType(id: 4, name: 'Indian'),
-//   ];
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: AppColors.whiteColor,
-//       appBar: CommonAppBar(
-//         title: "Services",
-//       ),
-//       body: Container(
-//         padding: EdgeInsets.symmetric(
-//           horizontal: sizes!.pagePadding,
-//           vertical: getHeight() * .02,
-//         ),
-//         child: SafeArea(
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               SizedBox(height: getHeight() * 0.01),
-//               const TextFieldLabel(
-//                 label: "Service Type",
-//               ),
-//               CustomDropdown(
-//                 items: [
-//                   CuisineType(id: 1, name: 'Italian'),
-//                   CuisineType(id: 2, name: 'Chinese'),
-//                   CuisineType(id: 3, name: 'Mexican'),
-//                 ].map((c) {
-//                   return DropdownMenuItem<int>(
-//                     value: c.id,
-//                     child: CustomText(
-//                       text: c.name,
-//                       fontWeight: FontWeight.w400,
-//                       fontSize: sizes?.fontSize16,
-//                       lines: 1,
-//                       textOverflow: TextOverflow.ellipsis,
-//                     ),
-//                   );
-//                 }).toList(),
-//                 selectedValue: selectedCuisineId,
-//                 hintText: 'Select Service type',
-//                 onChanged: (id) {
-//                   setState(() {
-//                     selectedCuisineId = id!;
-//                     selectedCuisine = [
-//                       CuisineType(id: 1, name: 'Italian'),
-//                       CuisineType(id: 2, name: 'Chinese'),
-//                       CuisineType(id: 3, name: 'Mexican'),
-//                     ].firstWhere((c) => c.id == id);
-//                   });
-//                 },
-//                 validator: (id) => id == null ? 'Please select cuisine type' : null,
-//               ),
-//
-//               // Show list of Service type selection here
-//
-//               Spacer(),
-//               CustomButton(buttonText: "Add Services")
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

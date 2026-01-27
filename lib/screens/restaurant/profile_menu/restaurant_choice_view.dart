@@ -27,30 +27,38 @@ class _RestaurantChoiceViewState extends State<RestaurantChoiceView> {
       ),
       itemCount: 2,
       itemBuilder: (context, index) {
+        final mockPost = {
+          'id': index,
+          'description': 'Choice post #$index',
+          'producer': {
+            'name': 'Producer #$index',
+            'location': 'Paris, France',
+          }
+        };
         return GestureDetector(
           onTap: (){
             if(widget.enableOnTap??false){
               if(role == UserRole.user){
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CustomerProfileTabBar()),
+                  MaterialPageRoute(builder: (context) => const CustomerProfileTabBar()),
                 );
               }
               else if(role == UserRole.restaurant || role == UserRole.leisure){
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LeisureProfileTabBar()),
+                  MaterialPageRoute(builder: (context) => const LeisureProfileTabBar()),
                 );
               }
               else{
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WellnessProfileTabBar()),
+                  MaterialPageRoute(builder: (context) => const WellnessProfileTabBar()),
                 );
               }
             }
           },
-          child: PostCard(),
+          child: PostCard(post: mockPost),
         );
       },
     );

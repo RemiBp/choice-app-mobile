@@ -96,6 +96,15 @@ class PreferenceUtils {
     return _prefsInstance?.getString(Strings.subscriptionStatus) == "Paid";
   }
 
+  static String get token {
+    return _prefsInstance?.getString(Strings.accessToken) ?? "";
+  }
+
+  static Future<bool> setToken(String value) async {
+    var prefs = await _instance;
+    return prefs.setString(Strings.accessToken, value);
+  }
+
   static clearPreferences() {
     _prefsInstance?.clear();
   }

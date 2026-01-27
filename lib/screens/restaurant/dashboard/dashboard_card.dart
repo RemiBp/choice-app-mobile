@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../appAssets/app_assets.dart';
@@ -21,15 +22,16 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final role = context.read<RoleProvider>().role;
     return Container(
-      padding: EdgeInsets.all(getHeightRatio() * 16),
+      padding: EdgeInsets.all(20),
       width: width,
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.greyBordersColor.withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.blackColor.withOpacity(0.05),
-            blurRadius: 24,
+            color: AppColors.blackColor.withOpacity(0.03), 
+            blurRadius: 12,
             offset: Offset(0, 4),
           ),
         ],
@@ -41,33 +43,40 @@ class DashboardCard extends StatelessWidget {
             text: header??'Profile Views',
             fontSize: sizes?.fontSize14,
             fontWeight: FontWeight.w500,
-            color: AppColors.primarySlateColor,
+            color: AppColors.textGreyColor, // Softer color
           ),
-          SizedBox(height: getHeightRatio() * 6),
+          SizedBox(height: 10),
           CustomText(
             text: price??'932',
-            fontSize: sizes?.fontSize20,
-            fontWeight: FontWeight.w600,
+            fontSize: sizes?.fontSize24, // Bigger number
+            fontFamily: Assets.onsetBold,
             color: AppColors.blackColor,
           ),
           if(!(role == UserRole.restaurant))
-          SizedBox(height: getHeightRatio() * 6),
+          SizedBox(height: 10),
           if(!(role == UserRole.restaurant))
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              CustomText(
-                text: percentage??'+16%',
-                fontSize: sizes?.fontSize12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.wellnessPrimaryColor,
+              Container(
+                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                 decoration: BoxDecoration(
+                   color: AppColors.wellnessPrimaryColor.withOpacity(0.1),
+                   borderRadius: BorderRadius.circular(6)
+                 ),
+                 child: CustomText(
+                  text: percentage??'+16%',
+                  fontSize: sizes?.fontSize12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.wellnessPrimaryColor,
+                ),
               ),
-              SizedBox(width: getWidth() * 0.02),
+              SizedBox(width: 8),
               CustomText(
                 text: 'vs ${duration??"Last Week"}',
                 fontSize: sizes?.fontSize12,
                 fontWeight: FontWeight.w400,
-                color: AppColors.primarySlateColor,
+                color: AppColors.textGreyColor,
               ),
             ],
           ),
@@ -87,73 +96,80 @@ class MostChosenDishCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(getHeightRatio() * 16),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.greyBordersColor.withOpacity(0.5)),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.blackColor.withOpacity(0.05),
-            blurRadius: 24,
+           BoxShadow(
+            color: AppColors.blackColor.withOpacity(0.03),
+            blurRadius: 12,
             offset: Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomText(
-                text: header??'Profile Views',
-                fontSize: sizes?.fontSize14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.primarySlateColor,
-              ),
-              SizedBox(height: getHeightRatio() * 6),
-              CustomText(
-                text: price??'932',
-                fontSize: sizes?.fontSize20,
-                fontWeight: FontWeight.w600,
-                color: AppColors.blackColor,
-              ),
-              SizedBox(height: getHeightRatio() * 6),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Chosen ',
-                      style: TextStyle(
-                        fontSize: sizes?.fontSize12,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.primarySlateColor,
-                        fontFamily: Assets.onsetRegular,
-                      ),
-                    ),
-                    TextSpan(
-                      text: percentage ?? '88 ',
-                      style: TextStyle(
-                        fontSize: sizes?.fontSize12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.wellnessPrimaryColor,
-                        fontFamily: Assets.onsetRegular,
-                      ),
-                    ),
-                    TextSpan(
-                      text: 'times this week',
-                      style: TextStyle(
-                        fontSize: sizes?.fontSize12,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.primarySlateColor,
-                        fontFamily: Assets.onsetRegular,
-                      ),
-                    ),
-                  ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  text: header??'Most Chosen',
+                  fontSize: sizes?.fontSize14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.primarySlateColor,
                 ),
-              )
-
-            ],
+                SizedBox(height: 8),
+                CustomText(
+                  text: price??'Crème Brûlée',
+                  fontSize: sizes?.fontSize20,
+                  fontFamily: Assets.onsetBold, // Bold font
+                  color: AppColors.blackColor,
+                ),
+                SizedBox(height: 8),
+                 RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Chosen ',
+                        style: TextStyle(
+                          fontSize: sizes?.fontSize12,
+                          color: AppColors.primarySlateColor,
+                          fontFamily: Assets.onsetRegular,
+                        ),
+                      ),
+                      TextSpan(
+                        text: percentage ?? '88 ',
+                        style: TextStyle(
+                          fontSize: sizes?.fontSize12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.wellnessPrimaryColor,
+                          fontFamily: Assets.onsetRegular,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'times this week',
+                        style: TextStyle(
+                          fontSize: sizes?.fontSize12,
+                          color: AppColors.primarySlateColor,
+                          fontFamily: Assets.onsetRegular,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
+          
+          // Add a decorative icon/badge maybe?
+          CircleAvatar(
+             radius: 20,
+             backgroundColor: AppColors.restaurantPrimaryColor.withOpacity(0.1),
+             child: Icon(Icons.restaurant_menu, color: AppColors.restaurantPrimaryColor, size: 20),
+          )
         ],
       ),
     );

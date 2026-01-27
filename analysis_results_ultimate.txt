@@ -1,0 +1,219 @@
+Analyzing Frontend...                                           
+
+   info - The imported package 'shared_preferences' isn't a dependency of the importing package - lib\common\utils.dart:3:8 - depend_on_referenced_packages
+   info - Parameter 'key' could be a super parameter - lib\customWidgets\animations\bouncing_wrapper.dart:8:9 - use_super_parameters
+   info - Invalid use of a private type in a public API - lib\customWidgets\animations\bouncing_wrapper.dart:16:3 - library_private_types_in_public_api
+   info - Parameter 'key' could be a super parameter - lib\customWidgets\animations\fade_in_up.dart:9:9 - use_super_parameters
+   info - Invalid use of a private type in a public API - lib\customWidgets\animations\fade_in_up.dart:18:3 - library_private_types_in_public_api
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\customWidgets\custom_button.dart:172:61 - deprecated_member_use
+   info - Use the '??' operator rather than '?:' when testing for 'null' - lib\customWidgets\custom_textfield.dart:120:19 - prefer_if_null_operators
+   info - Parameter 'key' could be a super parameter - lib\customWidgets\glass\glass_container.dart:12:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\customWidgets\glass\glass_container.dart:33:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\customWidgets\glass\glass_container.dart:36:62 - deprecated_member_use
+warning - Unused import: '../appAssets/app_assets.dart' - lib\customWidgets\multiple_selection_dropdown.dart:4:8 - unused_import
+warning - The receiver can't be null, so the null-aware operator '?.' is unnecessary - lib\customWidgets\terms_and_conditions_check_box.dart:131:45 - invalid_null_aware_operator
+   info - The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\customWidgets\text_field_label.dart:1:8 - unnecessary_import
+warning - Unused import: 'package:choice_app/data/services/api_service.dart' - lib\data\services\chat_service.dart:1:8 - unused_import
+   info - The prefix 'IO' isn't a lower_case_with_underscores identifier - lib\data\services\chat_service.dart:3:60 - library_prefixes
+warning - Two keys in a map literal shouldn't be equal - lib\data\services\event_service.dart:46:9 - equal_keys_in_map
+warning - Dead code - lib\data\services\event_service.dart:52:7 - dead_code
+warning - Unused import: 'package:choice_app/l18n.dart' - lib\main.dart:10:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\res\loader.dart:12:31 - deprecated_member_use
+warning - Unused import: 'package:choice_app/routes/routes.dart' - lib\screens\authentication\auth_widgets.dart:1:8 - unused_import
+warning - Unused import: 'package:go_router/go_router.dart' - lib\screens\authentication\auth_widgets.dart:5:8 - unused_import
+   info - Constructors in '@immutable' classes should be declared as 'const' - lib\screens\authentication\authentication.dart:18:3 - prefer_const_constructors_in_immutables
+warning - Unused import: 'package:choice_app/utilities/extensions.dart' - lib\screens\authentication\login.dart:9:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/authentication/passwordManagement/reset_password.dart' - lib\screens\authentication\otpVerification\otp_verification.dart:2:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/authentication/upload_docs.dart' - lib\screens\authentication\otpVerification\otp_verification.dart:3:8 - unused_import
+   info - Don't invoke 'print' in production code - lib\screens\authentication\otpVerification\otp_verification.dart:79:37 - avoid_print
+warning - Unused import: 'package:choice_app/screens/authentication/otpVerification/otp_verification.dart' - lib\screens\authentication\passwordManagement\forgot_password.dart:6:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/restaurant/setting/setting_view.dart' - lib\screens\authentication\signup.dart:8:8 - unused_import
+warning - Unused import: '../../userRole/user_role.dart' - lib\screens\authentication\signup.dart:15:8 - unused_import
+warning - Unused import: '../onboarding/add_cuisine/add_cuisine.dart' - lib\screens\authentication\signup.dart:19:8 - unused_import
+warning - The value of the local variable 'restaurant' isn't used - lib\screens\bookings\booking_provider.dart:31:11 - unused_local_variable
+warning - Unused import: 'package:choice_app/l18n.dart' - lib\screens\bookings\bookings_widgets.dart:8:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\bookings\bookings_widgets.dart:47:43 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\screens\bookings\upcoming_bookings.dart:62:48 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\bookings\upcoming_bookings.dart:91:31 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\bookings\upcoming_bookings.dart:92:38 - use_build_context_synchronously
+warning - Unused import: 'package:choice_app/common/utils.dart' - lib\screens\customer\chat\chat_provider.dart:2:8 - unused_import
+warning - Unused import: '../../../../customWidgets/custom_textfield.dart' - lib\screens\customer\chat\user_chat\user_chat_view.dart:10:8 - unused_import
+warning - Unused import: '../custom_category_tabs.dart' - lib\screens\customer\chat\user_chat\user_chat_view.dart:13:8 - unused_import
+warning - The operand can't be 'null', so the condition is always 'true' - lib\screens\customer\chat\user_chat\user_chat_view.dart:30:18 - unnecessary_null_comparison
+warning - Unused import: 'package:go_router/go_router.dart' - lib\screens\customer\explore\restaurant_explore_details\restaurant_explore_widgets.dart:2:8 - unused_import
+warning - Unused import: 'package:choice_app/customWidgets/glass/glass_container.dart' - lib\screens\customer\home\choiceWidgets\choice_selection.dart:3:8 - unused_import
+   info - Invalid use of a private type in a public API - lib\screens\customer\home\choiceWidgets\choice_selection.dart:16:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\choiceWidgets\choice_selection.dart:106:63 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\choiceWidgets\choice_selection.dart:182:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\choiceWidgets\choice_selection.dart:194:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\choiceWidgets\choice_selection.dart:207:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\choiceWidgets\choice_selection.dart:207:82 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\customer\home\choiceWidgets\choice_selection.dart:212:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\choiceWidgets\choice_selection.dart:228:54 - deprecated_member_use
+   info - Invalid use of a private type in a public API - lib\screens\customer\home\choiceWidgets\share_experience.dart:12:3 - library_private_types_in_public_api
+   info - Invalid use of a private type in a public API - lib\screens\customer\home\choiceWidgets\sub_choice_selection.dart:18:3 - library_private_types_in_public_api
+warning - The left operand can't be null, so the right operand is never executed - lib\screens\customer\home\choiceWidgets\sub_choice_selection.dart:176:31 - dead_null_aware_expression
+warning - The declaration '_buildSearchField' isn't referenced - lib\screens\customer\home\choiceWidgets\sub_choice_selection.dart:206:10 - unused_element
+warning - Unused import: 'package:choice_app/screens/customer/home/choiceWidgets/share_experience.dart' - lib\screens\customer\home\create_choice.dart:2:8 - unused_import
+warning - Unused import: '../../../utilities/extensions.dart' - lib\screens\customer\home\create_choice.dart:13:8 - unused_import
+   info - Invalid use of a private type in a public API - lib\screens\customer\home\create_choice.dart:19:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\create_choice.dart:194:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\create_choice.dart:246:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\create_choice.dart:302:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\create_choice.dart:350:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\create_choice.dart:411:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\create_choice.dart:431:58 - deprecated_member_use
+warning - Unused import: '../../onboarding/onboarding_provider.dart' - lib\screens\customer\home\customer_home.dart:9:8 - unused_import
+  error - Target of URI doesn't exist: '../dashboard/dashboard_provider.dart' - lib\screens\customer\home\customer_home.dart:10:8 - uri_does_not_exist
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\customer_home.dart:58:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\customer_home.dart:103:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\customer_home.dart:159:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\home_widgets.dart:44:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\home_widgets.dart:109:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\customer\home\home_widgets.dart:151:39 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\customer\maps\customer_maps\customer_maps_view.dart:67:25 - deprecated_member_use
+warning - Unused import: 'package:another_xlider/another_xlider.dart' - lib\screens\customer\maps\customer_maps\customer_maps_widgets.dart:2:8 - unused_import
+warning - Unused import: '../../../restaurant/profile_menu/chat_view.dart' - lib\screens\customer\profile\customer_profile_tab_bar\customer_profile_tab_bar.dart:11:8 - unused_import
+   info - Invalid use of a private type in a public API - lib\screens\languageSelection\language_selection.dart:21:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\languageSelection\language_selection.dart:146:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\languageSelection\language_selection.dart:153:62 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\leisure\leisure_about\leisure_about_view.dart:80:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\leisure\leisure_about\leisure_about_view.dart:91:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\leisure\leisure_about\leisure_about_view.dart:102:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\leisure\leisure_about\leisure_about_view.dart:113:23 - deprecated_member_use
+warning - Unused import: 'package:choice_app/data/models/cuisine_type.dart' - lib\screens\onboarding\add_cuisine\add_cuisine.dart:2:8 - unused_import
+warning - Unused import: 'package:choice_app/customWidgets/animations/fade_in_up.dart' - lib\screens\onboarding\add_cuisine\add_cuisine.dart:6:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\add_cuisine\add_cuisine.dart:108:56 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\add_cuisine\add_cuisine.dart:111:49 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\add_services\add_services.dart:125:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\add_services\add_services.dart:128:47 - use_build_context_synchronously
+  error - The getter 'indexInfo' isn't defined for the type 'Assets' - lib\screens\onboarding\business_hours\edit_business_hours\edit_operational_hours.dart:125:32 - undefined_getter
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\business_hours\edit_business_hours\edit_operational_hours.dart:375:48 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\business_hours\edit_business_hours\edit_operational_hours.dart:378:41 - use_build_context_synchronously
+warning - Unused import: 'package:choice_app/screens/restaurant/dashboard/home_view.dart' - lib\screens\onboarding\day_off\days_off_view.dart:1:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\day_off\days_off_view.dart:190:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\day_off\days_off_view.dart:193:47 - use_build_context_synchronously
+warning - The declaration '_togglePasswordVisibility' isn't referenced - lib\screens\onboarding\day_off\days_off_widgets.dart:36:8 - unused_element
+warning - The left operand can't be null, so the right operand is never executed - lib\screens\onboarding\day_off\days_off_widgets.dart:203:58 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\screens\onboarding\day_off\days_off_widgets.dart:203:105 - dead_null_aware_expression
+   info - Type could be non-nullable - lib\screens\onboarding\gallery\gallery_view.dart:33:24 - unnecessary_nullable_for_final_variable_declarations
+warning - The value of the local variable 'index' isn't used - lib\screens\onboarding\gallery\gallery_view.dart:66:41 - unused_local_variable
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\gallery\gallery_view.dart:75:64 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\gallery\gallery_view.dart:101:66 - use_build_context_synchronously
+warning - Unused import: 'package:choice_app/appAssets/app_assets.dart' - lib\screens\onboarding\gallery\gallery_widgets.dart:1:8 - unused_import
+   info - The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\screens\onboarding\gallery\gallery_widgets.dart:3:8 - unnecessary_import
+warning - Duplicate import - lib\screens\onboarding\gallery\gallery_widgets.dart:5:8 - duplicate_import
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\menu\menu_widgets.dart:234:47 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\menu\menu_widgets.dart:370:45 - use_build_context_synchronously
+   info - The imported package 'path' isn't a dependency of the importing package - lib\screens\onboarding\onboarding_provider.dart:5:8 - depend_on_referenced_packages
+   info - Don't invoke 'print' in production code - lib\screens\onboarding\onboarding_provider.dart:437:7 - avoid_print
+warning - Unused import: '../../../appAssets/app_assets.dart' - lib\screens\onboarding\payment_methods\payment_methods_view.dart:7:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\onboarding\payment_methods\payment_methods_view.dart:106:80 - deprecated_member_use
+warning - Unused import: '../day_off/days_off_view.dart' - lib\screens\onboarding\slot_management\slot_management_view.dart:12:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\slot_management\slot_management_view.dart:109:50 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\slot_management\slot_management_view.dart:246:56 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\onboarding\slot_management\slot_management_view.dart:249:49 - use_build_context_synchronously
+warning - The left operand can't be null, so the right operand is never executed - lib\screens\onboarding\slot_management\slot_management_widgets.dart:153:62 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\screens\onboarding\slot_management\slot_management_widgets.dart:153:107 - dead_null_aware_expression
+warning - This default clause is covered by the previous cases - lib\screens\restaurant\bottomTab\bottom_tab.dart:135:7 - unreachable_switch_default
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\bottomTab\bottom_tab.dart:174:17 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\booking_chart_card.dart:202:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\booking_chart_card.dart:252:96 - deprecated_member_use
+warning - Unused import: 'package:intl/intl.dart' - lib\screens\restaurant\dashboard\customers_chart_card.dart:4:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\customers_chart_card.dart:242:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\customers_chart_card.dart:291:97 - deprecated_member_use
+   info - The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\screens\restaurant\dashboard\dashboard_card.dart:1:8 - unnecessary_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\dashboard_card.dart:30:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\dashboard_card.dart:33:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\dashboard_card.dart:64:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\dashboard_card.dart:103:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\dashboard_card.dart:106:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\dashboard_card.dart:170:64 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\screens\restaurant\dashboard\dashboard_provider.dart:92:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\restaurant\dashboard\dashboard_provider.dart:115:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\dish_drop_alert_cart.dart:19:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\rating_by_theme_card.dart:19:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\rating_by_theme_card.dart:22:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\rating_by_theme_card.dart:77:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\repeat_customers_card.dart:53:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\repeat_customers_card.dart:56:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\repeat_customers_card.dart:102:110 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\repeat_customers_card.dart:123:102 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\repeat_customers_card.dart:141:84 - deprecated_member_use
+warning - Unused import: '../../../userRole/user_role.dart' - lib\screens\restaurant\dashboard\user_origin_map_card.dart:9:8 - unused_import
+warning - The value of the local variable 'role' isn't used - lib\screens\restaurant\dashboard\user_origin_map_card.dart:18:11 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\dashboard\user_origin_map_card.dart:26:41 - deprecated_member_use
+warning - Unused import: 'package:go_router/go_router.dart' - lib\screens\restaurant\event\create_event.dart:7:8 - unused_import
+  error - Target of URI doesn't exist: '../../onboarding_provider.dart' - lib\screens\restaurant\event\create_event.dart:11:8 - uri_does_not_exist
+warning - Unused import: '../../onboarding/onboarding_provider.dart' - lib\screens\restaurant\event\create_event.dart:18:8 - unused_import
+warning - Unused import: '../dashboard/dashboard_provider.dart' - lib\screens\restaurant\event\create_event.dart:19:8 - unused_import
+warning - Unused import: '../../../customWidgets/filter_drop_down.dart' - lib\screens\restaurant\event\create_event.dart:20:8 - unused_import
+   info - Invalid use of a private type in a public API - lib\screens\restaurant\event\create_event.dart:28:3 - library_private_types_in_public_api
+   info - The private field _images could be 'final' - lib\screens\restaurant\event\create_event.dart:46:15 - prefer_final_fields
+  error - The name 'RoleProvider' isn't a type, so it can't be used as a type argument - lib\screens\restaurant\event\create_event.dart:55:33 - non_type_as_type_argument
+  error - The name 'RoleProvider' isn't a type, so it can't be used as a type argument - lib\screens\restaurant\event\create_event.dart:119:31 - non_type_as_type_argument
+warning - The value of the local variable 'startStr' isn't used - lib\screens\restaurant\event\create_event.dart:132:11 - unused_local_variable
+  error - The name 'RoleProvider' isn't a type, so it can't be used as a type argument - lib\screens\restaurant\event\create_event.dart:189:32 - non_type_as_type_argument
+   info - Constructors for public widgets should have a named 'key' parameter - lib\screens\restaurant\event\create_event.dart:474:7 - use_key_in_widget_constructors
+   info - The imported package 'path' isn't a dependency of the importing package - lib\screens\restaurant\event\event_provider.dart:7:8 - depend_on_referenced_packages
+   info - Invalid use of a private type in a public API - lib\screens\restaurant\event\events.dart:17:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\event\events.dart:129:38 - deprecated_member_use
+   info - Invalid use of a private type in a public API - lib\screens\restaurant\home\create_post.dart:17:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\home\restaurant_home.dart:71:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\home\restaurant_home.dart:113:35 - deprecated_member_use
+   info - The private field _catalogItems could be 'final' - lib\screens\restaurant\maps\producer_map_screen.dart:23:16 - prefer_final_fields
+warning - The value of the field '_isLoadingCatalog' isn't used - lib\screens\restaurant\maps\producer_map_screen.dart:24:8 - unused_field
+   info - 'setMapStyle' is deprecated and shouldn't be used. Use GoogleMap.style instead - lib\screens\restaurant\maps\producer_map_screen.dart:134:30 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\screens\restaurant\maps\producer_map_screen.dart:204:45 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\restaurant\maps\producer_map_screen.dart:205:48 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\restaurant\maps\producer_map_screen.dart:206:20 - curly_braces_in_flow_control_structures
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\maps\producer_map_screen.dart:262:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\maps\producer_map_screen.dart:376:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\notifications\notifications_widgets.dart:56:43 - deprecated_member_use
+warning - Unused import: 'package:choice_app/customWidgets/animations/bouncing_wrapper.dart' - lib\screens\restaurant\profile\profile.dart:5:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/restaurant/profile/profile_widgets.dart' - lib\screens\restaurant\profile\profile.dart:9:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\profile\profile.dart:77:67 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\profile\profile.dart:97:81 - deprecated_member_use
+warning - Unused import: 'package:image_cropper/image_cropper.dart' - lib\screens\restaurant\profile\profile_provider.dart:4:8 - unused_import
+warning - Unused import: '../../../appColors/colors.dart' - lib\screens\restaurant\profile\profile_provider.dart:7:8 - unused_import
+   info - The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\screens\restaurant\profile_menu\blocked_users\blocked_users_view.dart:2:8 - unnecessary_import
+warning - Unused import: '../../../../appAssets/app_assets.dart' - lib\screens\restaurant\profile_menu\blocked_users\blocked_users_view.dart:5:8 - unused_import
+warning - Unused import: '../../../../customWidgets/custom_textfield.dart' - lib\screens\restaurant\profile_menu\blocked_users\blocked_users_view.dart:8:8 - unused_import
+   info - The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\screens\restaurant\profile_menu\bookmarked\bookmarked_view.dart:2:8 - unnecessary_import
+   info - The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\screens\restaurant\profile_menu\follower\follower_view.dart:2:8 - unnecessary_import
+   info - The import of 'package:flutter/cupertino.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\screens\restaurant\profile_menu\following\following_view.dart:2:8 - unnecessary_import
+warning - Unused import: '../../../customWidgets/custom_textfield.dart' - lib\screens\restaurant\profile_menu\profile_menu_widgets.dart:9:8 - unused_import
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\profile_menu\profile_menu_widgets.dart:470:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\profile_menu\profile_menu_widgets.dart:1180:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\restaurant\profile_menu\profile_menu_widgets.dart:1217:40 - deprecated_member_use
+warning - Unused import: '../../../onboarding/gallery/gallery_widgets.dart' - lib\screens\restaurant\profile_menu\restaurant_about\restaurant_about_view.dart:11:8 - unused_import
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\profile_menu\restaurant_about\restaurant_about_view.dart:193:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\profile_menu\restaurant_about\restaurant_about_view.dart:204:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\profile_menu\restaurant_about\restaurant_about_view.dart:215:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\profile_menu\restaurant_about\restaurant_about_view.dart:226:23 - deprecated_member_use
+warning - Unused import: 'package:choice_app/screens/languageSelection/language_selection.dart' - lib\screens\restaurant\setting\setting_view.dart:2:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/onboarding/add_cuisine/add_cuisine.dart' - lib\screens\restaurant\setting\setting_view.dart:3:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/onboarding/add_services/add_services.dart' - lib\screens\restaurant\setting\setting_view.dart:4:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/onboarding/day_off/days_off_view.dart' - lib\screens\restaurant\setting\setting_view.dart:5:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/onboarding/gallery/gallery_view.dart' - lib\screens\restaurant\setting\setting_view.dart:6:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/onboarding/slot_management/slot_management_view.dart' - lib\screens\restaurant\setting\setting_view.dart:7:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/restaurant/profile_menu/blocked_users/blocked_users_view.dart' - lib\screens\restaurant\setting\setting_view.dart:8:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/restaurant/profile_menu/bookmarked/bookmarked_view.dart' - lib\screens\restaurant\setting\setting_view.dart:9:8 - unused_import
+warning - Unused import: 'package:choice_app/screens/restaurant/profile_menu/chat_view.dart' - lib\screens\restaurant\setting\setting_view.dart:10:8 - unused_import
+warning - Unused import: '../../onboarding/business_hours/edit_business_hours/edit_operational_hours.dart' - lib\screens\restaurant\setting\setting_view.dart:24:8 - unused_import
+warning - Unused import: '../../onboarding/menu/menu_view.dart' - lib\screens\restaurant\setting\setting_view.dart:25:8 - unused_import
+warning - Unused import: '../profile/profile.dart' - lib\screens\restaurant\setting\setting_view.dart:26:8 - unused_import
+warning - Unused import: '../profile_menu/badges/badges_view.dart' - lib\screens\restaurant\setting\setting_view.dart:27:8 - unused_import
+warning - Unused import: '../profile_menu/profile_menu_widgets.dart' - lib\screens\restaurant\setting\setting_view.dart:28:8 - unused_import
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\restaurant\setting\setting_widgets.dart:134:19 - deprecated_member_use
+warning - Unused import: 'package:choice_app/appColors/colors.dart' - lib\screens\splash\splash.dart:1:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps - lib\screens\splash\splash.dart:38:7 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness\home\welness_home.dart:72:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness\home\welness_home.dart:114:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness\home\welness_home.dart:174:55 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\wellness\wellness_about\wellness_about_view.dart:186:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\wellness\wellness_about\wellness_about_view.dart:197:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\wellness\wellness_about\wellness_about_view.dart:208:23 - deprecated_member_use
+   info - 'color' is deprecated and shouldn't be used. Use colorFilter instead - lib\screens\wellness\wellness_about\wellness_about_view.dart:219:23 - deprecated_member_use
+   info - The file name 'wellness_Profile_tab_bar.dart' isn't a lower_case_with_underscores identifier - lib\screens\wellness\wellness_profile_tab_bar\wellness_Profile_tab_bar.dart:1:1 - file_names
+

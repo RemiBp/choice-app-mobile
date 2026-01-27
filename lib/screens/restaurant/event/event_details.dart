@@ -9,6 +9,8 @@ import '../../../customWidgets/custom_text.dart';
 import '../../../res/res.dart';
 import 'eventWidgets/delete_event.dart';
 import 'eventWidgets/event_info.dart';
+import '../../customer/home/suggest_time_view.dart';
+import '../../../../customWidgets/animations/bouncing_wrapper.dart';
 
 class EventDetails extends StatelessWidget {
   const EventDetails({super.key,});
@@ -47,7 +49,7 @@ class EventDetails extends StatelessWidget {
                       backgroundColor: Colors.white30,
                     ),
                     onPressed: () {
-                      context.pop();
+                      Navigator.pop(context);
                     },
                     icon: Icon(Icons.arrow_back),
                   ),
@@ -197,6 +199,56 @@ class EventDetails extends StatelessWidget {
                     ],
                   ),
                 ],
+              ),
+            ),
+            SizedBox(height: getHeight() * .02),
+            // Social Planning Trigger
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: getWidth() * .05),
+              child: BouncingWrapper(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SuggestTimeView(
+                        post: {
+                          'id': extra?['id'],
+                          'producer': extra?['producer'] ?? {'name': 'The Wholesome Fork'},
+                        },
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)], // Violet Gradient
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF4A00E0).withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.star, color: Colors.white, size: 20),
+                      const SizedBox(width: 8),
+                      CustomText(
+                        text: "Show Interest & Post a Choice",
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: Assets.onsetBold,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             SizedBox(height: getHeight() * .02),

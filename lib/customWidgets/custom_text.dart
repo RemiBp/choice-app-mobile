@@ -17,6 +17,7 @@ class CustomText extends StatelessWidget {
   final int? lines;
   final bool? giveLinesAsText;
   final Color? decorationColor;
+  final double? height;
 
   const CustomText({
     super.key,
@@ -31,8 +32,13 @@ class CustomText extends StatelessWidget {
     this.textAlign = TextAlign.start,
     this.textDecoration = TextDecoration.none,
     this.lines,
-    this.giveLinesAsText, this.decorationColor,
+    this.giveLinesAsText, 
+    this.decorationColor,
+    this.height,
+    this.shadows,
   });
+
+  final List<Shadow>? shadows;
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +49,14 @@ class CustomText extends StatelessWidget {
         text,
         textAlign: textAlign,
         style: TextStyle(
+          height: height,
           fontSize: fontSize,
           fontWeight: fontWeight,
           color: color ?? Colors.black,
           fontFamily: fontFamily ?? _resolveFontFamily(),
           decoration: textDecoration,
           decorationColor:decorationColor?? AppColors.restaurantPrimaryColor,
+          shadows: shadows,
         ),
         overflow:
             giveLinesAsText == true

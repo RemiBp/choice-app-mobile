@@ -12,6 +12,9 @@ import 'package:choice_app/screens/restaurant/setting/setting_widgets.dart';
 import 'package:choice_app/userRole/user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../routes/routes.dart';
+import '../profile/profile_provider.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/common_app_bar.dart';
@@ -54,20 +57,14 @@ class _SettingViewState extends State<SettingView> {
                   title: al.editProfile,
                   leadingAssetPath: Assets.editProfileIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Profile()),
-                    );
+                    context.push(Routes.restaurantProfileRoute);
                   },
                 ),
                 ProfileOptionButton(
                   title: al.changePassword,
                   leadingAssetPath: Assets.passwordManagerIcon,
                   onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => BookingsView()),
-                    // );
+                    context.push(Routes.resetPasswordRoute);
                   },
                 ),
                 if(role == UserRole.user)
@@ -75,10 +72,7 @@ class _SettingViewState extends State<SettingView> {
                     title: "Badge & XP",
                     leadingAssetPath: Assets.badgeIcon,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BadgesView()),
-                      );
+                      context.push(Routes.badgesRoute);
                     },
                   ),
                 if(role == UserRole.user)
@@ -86,10 +80,7 @@ class _SettingViewState extends State<SettingView> {
                     title: "Bookmarked",
                     leadingAssetPath: Assets.bookmarkIcon,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BookmarkedView()),
-                      );
+                      context.push(Routes.bookmarkedRoute);
                     },
                   ),
                 if(role == UserRole.user)
@@ -97,29 +88,16 @@ class _SettingViewState extends State<SettingView> {
                     title: "Blocked List",
                     leadingAssetPath: Assets.blockUserIcon,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BlockedUsersView()),
-                      );
+                      context.push(Routes.blockedUsersRoute);
                     },
                   ),
-                if(!(role == UserRole.user))
-                ProfileOptionButton(
-                  title: al.documents,
-                  leadingAssetPath: Assets.documentsIcon,
-                  onTap: () {},
-                ),
+// ...
                 if(role == UserRole.restaurant || role == UserRole.wellness)
                 ProfileOptionButton(
                   title: al.businessHours,
                   leadingAssetPath: Assets.businessHourIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => EditOperationalHours(
-                        operationalHoursList: [],
-                      )),
-                    );
+                    context.push(Routes.restaurantEditBusinessHoursRoute);
                   },
                 ),
                 if(role == UserRole.restaurant || role == UserRole.wellness)
@@ -127,13 +105,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.manageSlots,
                   leadingAssetPath: Assets.slotsIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SlotManagementView(
-                        isHomeFlow: false,
-                        isEdit: true,
-                      )),
-                    );
+                    context.push(Routes.restaurantSlotManagementRoute);
                   },
                 ),
                 if(role == UserRole.restaurant)
@@ -141,10 +113,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.menu,
                   leadingAssetPath: Assets.menuIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MenuView()),
-                    );
+                    context.push(Routes.restaurantMenuRoute);
                   },
                 ),
                 if(role == UserRole.wellness)
@@ -152,10 +121,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.services,
                   leadingAssetPath: Assets.businessHourIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddServices()),
-                    );
+                    context.push(Routes.restaurantServicesRoute);
                   },
                 ),
                 if(role == UserRole.restaurant || role == UserRole.wellness)
@@ -163,10 +129,7 @@ class _SettingViewState extends State<SettingView> {
                   title: "Gallery",
                   leadingAssetPath: Assets.galleryIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GalleryView()),
-                    );
+                    context.push(Routes.restaurantGalleryRoute);
                   },
                 ),
                 if(role == UserRole.restaurant || role == UserRole.wellness)
@@ -174,10 +137,15 @@ class _SettingViewState extends State<SettingView> {
                   title: al.unavailability,
                   leadingAssetPath: Assets.unavailabilityIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DaysOffView()),
-                    );
+                    context.push(Routes.restaurantUnavailabilityRoute);
+                  },
+                ),
+                if(role == UserRole.restaurant)
+                ProfileOptionButton(
+                  title: "Payment Methods", // Localize later
+                  leadingAssetPath: Assets.menuIcon, // Ideally use a payment icon
+                  onTap: () {
+                    context.push(Routes.restaurantPaymentMethodsRoute);
                   },
                 ),
                 if(role == UserRole.restaurant)
@@ -185,34 +153,41 @@ class _SettingViewState extends State<SettingView> {
                   title: al.cuisine,
                   leadingAssetPath: Assets.businessHourIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddCuisine()),
-                    );
+                    context.push(Routes.restaurantCuisineRoute);
                   },
                 ),
                 ProfileOptionButton(
                   title: al.language,
                   leadingAssetPath: Assets.languageIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LanguageSelection(isFromProfile: true,)),
-                    );
+                    context.push(Routes.languageSelectionRoute);
                   },
                 ),
                 ProfileOptionButton(
                   title: al.logout,
                   leadingAssetPath: Assets.logoutIcon,
                   onTap: () {
+                    // TODO: Clear Token from Storage
+                    // final storage = const FlutterSecureStorage();
+                    // await storage.deleteAll();
+                    context.go(Routes.loginRoute);
                   },
                 ),
-                CustomButton(
-                  buttonText: al.deleteAccount,
-                  onTap: () {
-
-                  },
-                  backgroundColor: Colors.transparent,
+                  CustomButton(
+                    buttonText: al.deleteAccount,
+                    onTap: () async {
+                       // Confirm dialog could be good, but for now wire the API
+                       final provider = context.read<ProfileProvider>();
+                       final success = await provider.deleteAccount();
+                       if (success && context.mounted) {
+                          context.go(Routes.signupRoute);
+                       } else if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                             const SnackBar(content: Text("Failed to delete account")),
+                          );
+                       }
+                    },
+                    backgroundColor: Colors.transparent,
                   borderColor: AppColors.redColor,
                   textColor: AppColors.redColor,
                   textFontWeight: FontWeight.w700,

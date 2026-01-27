@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../appAssets/app_assets.dart';
-import '../../../l18n.dart';
+import 'package:choice_app/l18n.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});
@@ -20,6 +20,16 @@ class ResetPassword extends StatefulWidget {
 }
 
 class _ResetPasswordState extends State<ResetPassword> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +65,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             Consumer<PasswordProvider>(
               builder: (context, state, child) {
                 return CustomField(
+                  controller: _passwordController,
                   borderColor: AppColors.greyBordersColor,
                   hint: al.newPasswordLabel,
                   label: al.newPasswordLabel,
@@ -71,6 +82,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             Consumer<PasswordProvider>(
               builder: (context, state, child) {
                 return CustomField(
+                  controller: _confirmPasswordController,
                   borderColor: AppColors.greyBordersColor,
                   hint: al.confirmPasswordLabel,
                   label: al.confirmPasswordLabel,
@@ -89,7 +101,7 @@ class _ResetPasswordState extends State<ResetPassword> {
               buttonText: al.verifyButton,
               onTap: () {
                 // while (context.canPop()) {
-                //   context.pop();
+                   Navigator.pop(context);
                 // }
                 // context.pushReplacement(Routes.loginRoute);
                 Navigator.pushAndRemoveUntil(

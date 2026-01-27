@@ -1,0 +1,309 @@
+"fr": 14 untranslated message(s).
+To see a detailed report, use the untranslated-messages-file 
+option in the l10n.yaml file:
+untranslated-messages-file: desiredFileName.txt
+<other option>: <other selection> 
+
+
+This will generate a JSON format file containing all messages that 
+need to be translated.
+Launching lib\main.dart on SM A047F in debug mode...
+Running Gradle task 'assembleDebug'...                             22,7s
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           7,6s
+I/flutter ( 5263): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(60)] Using the Impeller rendering backend (Vulkan).
+Syncing files to device SM A047F...                             
+I/flutter ( 5263): preference locale is : 
+I/flutter ( 5263): local name is : fr
+Syncing files to device SM A047F...                                228ms
+
+Flutter run key commands.
+r Hot reload. 
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on SM A047F is available at: http://127.0.0.1:52511/bzvcC60doSA=/
+I/flutter ( 5263): WARNING: AppLocalizations.of(context) returned null. Localization might be broken.
+The Flutter DevTools debugger and profiler on SM A047F is available at: http://127.0.0.1:9100?uri=http://127.0.0.1:52511/bzvcC60doSA=/
+I/IDS_TAG ( 5263): Closing IDS observe window
+I/IDS_TAG ( 5263): Getting Shared Preference for android.app.Application@9cfc79c uid = 10278
+I/IDS_TAG ( 5263): IDS count updated to 1 for android.app.Application@9cfc79c
+I/Choreographer( 5263): Skipped 302 frames!  The application may be doing too much work on its main thread.
+I/SurfaceView@b8d8f28( 5263): onWindowVisibilityChanged(0) true io.flutter.embedding.android.FlutterSurfaceView{b8d8f28 V.E...... ......I. 0,0-0,0} of ViewRootImpl@e0b46b3[MainActivity]
+D/SurfaceView@b8d8f28( 5263): 193826600 updateSurface: has no frame
+I/.app.choice_app( 5263): Compiler allocated 6763KB to compile void android.view.ViewRootImpl.performTraversals()
+I/BLASTBufferQueue_Java( 5263): new BLASTBufferQueue, mName= ViewRootImpl@e0b46b3[MainActivity] mNativeObject= 0xb4000070a0414300 sc.mNativeObject= 0xb40000707177e740 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10133 android.view.ViewRootImpl.performTraversals:4112 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11346 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 
+I/BLASTBufferQueue_Java( 5263): update, w= 720 h= 1600 mName = ViewRootImpl@e0b46b3[MainActivity] mNativeObject= 0xb4000070a0414300 sc.mNativeObject= 0xb40000707177e740 format= -3 caller= android.graphics.BLASTBufferQueue.<init>:89 android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10133 android.view.ViewRootImpl.performTraversals:4112 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11346 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) relayoutAsync=false req=(720,1600)0 dur=21 res=0x403 s={true 0xb40000710312d000} ch=true seqId=0
+D/ViewRootImpl@e0b46b3[MainActivity]( 5263): mThreadedRenderer.initialize() mSurface={isValid=true 0xb40000710312d000} hwInitialized=true
+D/SurfaceView@b8d8f28( 5263): 193826600 updateSurface: has no frame
+I/SurfaceView@b8d8f28( 5263): windowStopped(false) true io.flutter.embedding.android.FlutterSurfaceView{b8d8f28 V.E...... ......ID 0,0-720,1510} of ViewRootImpl@e0b46b3[MainActivity]
+D/SurfaceView@b8d8f28( 5263): 193826600 updateSurface: has no frame
+D/ViewRootImpl@e0b46b3[MainActivity]( 5263): reportNextDraw android.view.ViewRootImpl.performTraversals:4720 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11346 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 
+I/SurfaceView( 5263): 193826600 Changes: creating=true format=true size=true visible=true alpha=true hint=false visible=true left=true top=true z=false attached=true lifecycleStrategy=false
+I/BLASTBufferQueue_Java( 5263): update, w= 720 h= 1510 mName = null mNativeObject= 0xb4000070a0414600 sc.mNativeObject= 0xb40000707177eb00 format= 4 caller= android.view.SurfaceView.createBlastSurfaceControls:1517 android.view.SurfaceView.updateSurface:1193 android.view.SurfaceView.lambda$new$0:258 android.view.SurfaceView.$r8$lambda$cm3nmzErr-srXoT_KjIYQgdhFN0:0 android.view.SurfaceView$$ExternalSyntheticLambda2.onPreDraw:2 android.view.ViewTreeObserver.dispatchOnPreDraw:1204 
+I/SurfaceView@b8d8f28( 5263): 193826600 Cur surface: Surface(name=null)/@0x3f3e5ce
+I/SurfaceView@b8d8f28( 5263): pST: sr = Rect(0, 0 - 720, 1510) sw = 720 sh = 1510
+D/SurfaceView@b8d8f28( 5263): 193826600 performSurfaceTransaction RenderWorker position = [0, 0, 720, 1510] surfaceSize = 720x1510
+I/SurfaceView@b8d8f28( 5263): updateSurface: mVisible = true mSurface.isValid() = true
+I/SurfaceView@b8d8f28( 5263): updateSurface: mSurfaceCreated = false surfaceChanged = true visibleChanged = true
+I/SurfaceView( 5263): 193826600 visibleChanged -- surfaceCreated
+I/SurfaceView@b8d8f28( 5263): surfaceCreated 1 #8 io.flutter.embedding.android.FlutterSurfaceView{b8d8f28 V.E...... ......ID 0,0-720,1510}
+E/gralloc4( 5263): ERROR: Format allocation info not found for format: 3b
+E/gralloc4( 5263): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 5263): Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+E/gralloc4( 5263): ERROR: Unrecognized and/or unsupported format 0x3b and usage 0xb00
+E/Gralloc4( 5263): isSupported(1, 1, 59, 1, ...) failed with 5
+E/GraphicBufferAllocator( 5263): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 5
+E/AHardwareBuffer( 5263): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+E/gralloc4( 5263): ERROR: Format allocation info not found for format: 3b
+E/gralloc4( 5263): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 5263): Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+E/gralloc4( 5263): ERROR: Unrecognized and/or unsupported format 0x3b and usage 0xb00
+E/Gralloc4( 5263): isSupported(1, 1, 59, 1, ...) failed with 5
+E/GraphicBufferAllocator( 5263): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 5
+E/AHardwareBuffer( 5263): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+I/SurfaceView( 5263): 193826600 surfaceChanged -- format=4 w=720 h=1510
+I/SurfaceView@b8d8f28( 5263): surfaceChanged (720,1510) 1 #8 io.flutter.embedding.android.FlutterSurfaceView{b8d8f28 V.E...... ......ID 0,0-720,1510}
+I/SurfaceView( 5263): 193826600 surfaceRedrawNeeded
+I/SurfaceView( 5263): 193826600 finishedDrawing
+V/SurfaceView@b8d8f28( 5263): Layout: x=0 y=0 w=720 h=1510, frame=Rect(0, 0 - 720, 1510)
+I/BLASTBufferQueue( 5263): [SurfaceView[com.choice.app.choice_app/com.choice.app.choice_app.MainActivity]@0#1](f:0,a:0,s:0) onFrameAvailable the first frame is available
+D/SurfaceView@b8d8f28( 5263): 193826600 setAlpha: alpha=1.0
+I/SurfaceView( 5263): 193826600 Changes: creating=false format=false size=false visible=false alpha=true hint=false visible=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView@b8d8f28( 5263): 193826600 Cur surface: Surface(name=null)/@0x3f3e5ce
+I/SurfaceView@b8d8f28( 5263): updateSurface: mVisible = true mSurface.isValid() = true
+I/SurfaceView@b8d8f28( 5263): updateSurface: mSurfaceCreated = true surfaceChanged = false visibleChanged = false
+I/SurfaceView( 5263): 193826600 surfaceRedrawNeeded
+I/SurfaceView( 5263): 193826600 finishedDrawing
+V/SurfaceView@b8d8f28( 5263): Layout: x=0 y=0 w=720 h=1510, frame=Rect(0, 0 - 720, 1510)
+D/OpenGLRenderer( 5263): HWUI - treat SMPTE_170M as sRGB
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Setup new sync=wmsSync-ViewRootImpl@e0b46b3[MainActivity]#2
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Creating new active sync group ViewRootImpl@e0b46b3[MainActivity]#3
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): registerCallbacksForSync syncBuffer=false
+D/SurfaceView( 5263): 193826600 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 720, 1510] surfaceSize = 720x1510
+I/SurfaceView@b8d8f28( 5263): uSP: rtp = Rect(0, 0 - 720, 1510) rtsw = 720 rtsh = 1510
+I/SurfaceView@b8d8f28( 5263): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
+I/SurfaceView@b8d8f28( 5263): aOrMT: ViewRootImpl@e0b46b3[MainActivity] t = android.view.SurfaceControl$Transaction@f6c90da fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1666 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:369 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071478780 mBlastBufferQueue=0xb4000070a0414300 fn= 1 mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1598 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1666 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Received frameDrawingCallback syncResult=0 frameNum=1.
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071479c80 mBlastBufferQueue=0xb4000070a0414300 fn= 1 mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$8.onFrameDraw:13843 android.view.ThreadedRenderer$1.onFrameDraw:792 <bottom of call stack> 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Setting up sync and frameCommitCallback
+I/BLASTBufferQueue( 5263): [ViewRootImpl@e0b46b3[MainActivity]#0](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+D/OpenGLRenderer( 5263): CFMS:: SetUp Pid : 5263    Tid : 5324
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): reportDrawFinished seqId=0
+I/BLASTBufferQueue_Java( 5263): update, w= 720 h= 1600 mName = ViewRootImpl@e0b46b3[MainActivity] mNativeObject= 0xb4000070a0414300 sc.mNativeObject= 0xb40000707177e740 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3017 android.view.ViewRootImpl.relayoutWindow:10133 android.view.ViewRootImpl.performTraversals:4112 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11346 android.view.Choreographer$CallbackRecord.run:1689 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) relayoutAsync=true req=(720,1600)0 dur=0 res=0x0 s={true 0xb40000710312d000} ch=false seqId=0
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): updateBoundsLayer: t=android.view.SurfaceControl$Transaction@f3ece83 sc=Surface(name=Bounds for - com.choice.app.choice_app/com.choice.app.choice_app.MainActivity@0)/@0xcfc0800 frame=2
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): registerCallbackForPendingTransactions
+I/InsetsSourceConsumer( 5263): applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity
+I/InsetsSourceConsumer( 5263): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070f9a09280 mBlastBufferQueue=0xb4000070a0414300 fn= 2 mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$6.onFrameDraw:5637 android.view.ViewRootImpl$2.onFrameDraw:2146 android.view.ThreadedRenderer$1.onFrameDraw:792 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): handleWindowFocusChanged: 1 0 call from android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged:0
+D/ViewRootImpl@e0b46b3[MainActivity]( 5263): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb40000710312d000}
+D/InputMethodManagerUtils( 5263): startInputInner - Id : 0
+I/InputMethodManager( 5263): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): onDisplayChanged oldDisplayState=2 newDisplayState=2
+D/InputMethodManagerUtils( 5263): startInputInner - Id : 0
+I/InsetsController( 5263): onStateChanged: host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7211, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 720, 1600), mDisplayCutout=DisplayCutout{insets=Rect(0, 45 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(272, 0 - 448, 45), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=720 displayHeight=1600 physicalDisplayWidth=720 physicalDisplayHeight=1600 density={1.875} cutoutSpec={M 0,0 H -46.93333333333333 V 24 H 46.93333333333333 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 720, 1600), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(637, 0 - 720, 48) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=720 displayHeight=1600 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {8cf40001 mType=navigationBars mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {8cf40005 mType=mandatorySystemGestures mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40006 mType=tappableElement mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {ab2c0000 mType=statusBars mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {ab2c0005 mType=mandatorySystemGestures mFrame=[0,0][720,68] mVisible=true mFlags=[]}, InsetsSource: {ab2c0006 mType=tappableElement mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][720,45] mVisible=true mFlags=[]} }
+I/InsetsSourceConsumer( 5263): applyRequestedVisibilityToControl: visible=false, type=ime, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity
+I/flutter ( 5263): ERROR: Accessed 'al' before initialization or initialization failed.
+
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
+The following _Exception was thrown building Authentication(dirty):
+Exception: AppLocalizations not initialized
+
+The relevant error-causing widget was:
+  Authentication
+  Authentication:file:///C:/Users/remib/JinnByte_Choice/Frontend/lib/routes/routes.dart:56:63
+
+When the exception was thrown, this was the stack:
+#0      al (package:choice_app/l18n.dart:32:5)
+#1      Authentication.build (package:choice_app/screens/authentication/authentication.dart:29:21)
+#2      StatelessElement.build (package:flutter/src/widgets/framework.dart:5799:49)
+#3      ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5733:15)
+#4      Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#5      ComponentElement._firstBuild (package:flutter/src/widgets/framework.dart:5715:5)
+#6      ComponentElement.mount (package:flutter/src/widgets/framework.dart:5709:5)
+...     Normal element mounting (234 frames)
+#240    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4555:16)
+#241    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7178:36)
+#242    Element.updateChild (package:flutter/src/widgets/framework.dart:4020:18)
+#243    Element.updateChildren (package:flutter/src/widgets/framework.dart:4217:11)
+#244    MultiChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7211:17)
+#245    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#246    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#247    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5892:11)
+#248    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#249    StatefulElement.update (package:flutter/src/widgets/framework.dart:5917:5)
+#250    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#251    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#252    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#253    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#254    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#255    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#256    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#257    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#258    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#259    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#260    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#261    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5892:11)
+#262    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#263    StatefulElement.update (package:flutter/src/widgets/framework.dart:5917:5)
+#264    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#265    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#266    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#267    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#268    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#269    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#270    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#271    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5892:11)
+#272    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#273    StatefulElement.update (package:flutter/src/widgets/framework.dart:5917:5)
+#274    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#275    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#276    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5892:11)
+#277    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#278    StatefulElement.update (package:flutter/src/widgets/framework.dart:5917:5)
+#279    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#280    SingleChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7034:14)
+#281    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#282    SingleChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7034:14)
+#283    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#284    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#285    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#286    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#287    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#288    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#289    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#290    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#291    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#292    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#293    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5892:11)
+#294    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#295    StatefulElement.update (package:flutter/src/widgets/framework.dart:5917:5)
+#296    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#297    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#298    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#299    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#300    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#301    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#302    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#303    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#304    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#305    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#306    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#307    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5892:11)
+#308    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#309    StatefulElement.update (package:flutter/src/widgets/framework.dart:5917:5)
+#310    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#311    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#312    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#313    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#314    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#315    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#316    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#317    StatelessElement.update (package:flutter/src/widgets/framework.dart:5805:5)
+#318    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#319    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#320    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#321    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#322    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#323    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#324    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#325    ProxyElement.update (package:flutter/src/widgets/framework.dart:6059:5)
+#326    Element.updateChild (package:flutter/src/widgets/framework.dart:3998:15)
+#327    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5756:16)
+#328    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5892:11)
+#329    Element.rebuild (package:flutter/src/widgets/framework.dart:5445:7)
+#330    BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2704:15)
+#331    BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2762:11)
+#332    BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3066:18)
+#333    WidgetsBinding.drawFrame (package:flutter/src/widgets/binding.dart:1229:21)
+#334    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:482:5)
+#335    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1442:15)
+#336    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1355:9)
+#337    SchedulerBinding._handleDrawFrame (package:flutter/src/scheduler/binding.dart:1208:5)
+#338    _invoke (dart:ui/hooks.dart:316:13)
+#339    PlatformDispatcher._drawFrame (dart:ui/platform_dispatcher.dart:428:5)
+#340    _drawFrame (dart:ui/hooks.dart:288:31)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+W/WindowOnBackDispatcher( 5263): sendCancelIfRunning: isInProgress=falsecallback=io.flutter.embedding.android.FlutterActivity$1@eaabf56
+D/ProfileInstaller( 5263): Installing profile for com.choice.app.choice_app
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): onDisplayChanged oldDisplayState=2 newDisplayState=2
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): onDisplayChanged oldDisplayState=2 newDisplayState=2
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): onDisplayChanged oldDisplayState=2 newDisplayState=2
+
+Performing hot restart...                                       
+Restarted application in 4 425ms.
+I/flutter ( 5263): preference locale is : 
+I/flutter ( 5263): local name is : fr
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): onDisplayChanged oldDisplayState=2 newDisplayState=2
+W/WindowOnBackDispatcher( 5263): sendCancelIfRunning: isInProgress=falsecallback=io.flutter.embedding.android.FlutterActivity$1@eaabf56
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): onDisplayChanged oldDisplayState=2 newDisplayState=2
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): onDisplayChanged oldDisplayState=2 newDisplayState=2
+I/Choreographer( 5263): Skipped 77 frames!  The application may be doing too much work on its main thread.
+I/InputMethodManager_LC( 5263): showSoftInput(View,I)
+I/ImeTracker( 5263): com.choice.app.choice_app:b02e56fd: onRequestShow at ORIGIN_CLIENT_SHOW_SOFT_INPUT reason SHOW_SOFT_INPUT
+I/InputMethodManager_LC( 5263): ssi(): flags=0 view=com.choice.app.choice_app reason = SHOW_SOFT_INPUT
+I/InputMethodManager_LC( 5263): ssi() view is not EditText
+D/InputMethodManagerUtils( 5263): startInputInner - Id : 0
+I/InputMethodManager( 5263): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InputMethodManager( 5263): showSoftInput() view=io.flutter.embedding.android.FlutterView{5a80f65 VFE...... .F....ID 0,0-720,1510 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor( 5263): The input method toggled cursor monitoring on
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Resizing android.view.ViewRootImpl@6f728eb: frame = [0,0][720,1600] reportDraw = false forceLayout = false syncSeqId = -1
+I/InsetsController( 5263): onStateChanged: host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7198, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 720, 1600), mDisplayCutout=DisplayCutout{insets=Rect(0, 45 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(272, 0 - 448, 45), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=720 displayHeight=1600 physicalDisplayWidth=720 physicalDisplayHeight=1600 density={1.875} cutoutSpec={M 0,0 H -46.93333333333333 V 24 H 46.93333333333333 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 720, 1600), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(637, 0 - 720, 48) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=720 displayHeight=1600 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {8cf40001 mType=navigationBars mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {8cf40005 mType=mandatorySystemGestures mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40006 mType=tappableElement mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {ab2c0000 mType=statusBars mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {ab2c0005 mType=mandatorySystemGestures mFrame=[0,0][720,68] mVisible=true mFlags=[]}, InsetsSource: {ab2c0006 mType=tappableElement mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,928][720,1600] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][720,45] mVisible=true mFlags=[]} }
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][720,1600] display=[0,0][720,1600] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+D/InsetsController( 5263): show(ime(), fromIme=true)
+I/InsetsController( 5263): setRequestedVisibleTypes: visible=true, mask=ime, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1445 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968 android.view.InsetsController.show:1309 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7235 android.view.ViewRootImpl$ViewRootHandler.handleMessage:7168 android.os.Handler.dispatchMessage:106 android.os.Looper.loopOnce:230 android.os.Looper.loop:319 android.app.ActivityThread.main:8919 
+I/InsetsController( 5263): controlAnimationUncheckedInner: Added types=ime, animType=0, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1449 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Resizing android.view.ViewRootImpl@6f728eb: frame = [0,0][720,1600] reportDraw = false forceLayout = false syncSeqId = -1
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070a048cc80 mBlastBufferQueue=0xb4000070a0414300 fn= 4 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007114f69180 mBlastBufferQueue=0xb4000070a0414300 fn= 5 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/InsetsController( 5263): onStateChanged: host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7211, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 720, 1600), mDisplayCutout=DisplayCutout{insets=Rect(0, 45 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(272, 0 - 448, 45), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=720 displayHeight=1600 physicalDisplayWidth=720 physicalDisplayHeight=1600 density={1.875} cutoutSpec={M 0,0 H -46.93333333333333 V 24 H 46.93333333333333 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 720, 1600), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(637, 0 - 720, 48) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=720 displayHeight=1600 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {8cf40001 mType=navigationBars mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {8cf40005 mType=mandatorySystemGestures mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40006 mType=tappableElement mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {ab2c0000 mType=statusBars mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {ab2c0005 mType=mandatorySystemGestures mFrame=[0,0][720,68] mVisible=true mFlags=[]}, InsetsSource: {ab2c0006 mType=tappableElement mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,928][720,1600] mVisible=true mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][720,45] mVisible=true mFlags=[]} }
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][720,1600] display=[0,0][720,1600] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007114f69300 mBlastBufferQueue=0xb4000070a0414300 fn= 6 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070714edb80 mBlastBufferQueue=0xb4000070a0414300 fn= 7 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070714edd00 mBlastBufferQueue=0xb4000070a0414300 fn= 8 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070714ede80 mBlastBufferQueue=0xb4000070a0414300 fn= 9 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/Choreographer( 5263): Skipped 53 frames!  The application may be doing too much work on its main thread.
+I/InsetsController( 5263): cancelAnimation: types=ime, animType=0, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.InsetsController.notifyFinished:1748 android.view.InsetsAnimationControlImpl.applyChangeInsets:312 android.view.InsetsController.lambda$new$3:918 
+I/ImeTracker( 5263): com.choice.app.choice_app:b02e56fd: onShown
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071544300 mBlastBufferQueue=0xb4000070a0414300 fn= 10 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071544480 mBlastBufferQueue=0xb4000070a0414300 fn= 10 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ImeTracker( 5263): com.choice.app.choice_app:47799efb: onRequestHide at ORIGIN_CLIENT_HIDE_SOFT_INPUT reason HIDE_SOFT_INPUT
+I/InputMethodManager_LC( 5263): hsifw() - flag : 0
+I/InputMethodManager_LC( 5263): hsifw() - mService.hideSoftInput
+D/InputConnectionAdaptor( 5263): The input method toggled cursor monitoring off
+I/InsetsController( 5263): setRequestedVisibleTypes: visible=false, mask=ime, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1445 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968 android.view.InsetsController.hide:1403 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7242 android.view.ViewRootImpl$ViewRootHandler.handleMessage:7168 android.os.Handler.dispatchMessage:106 android.os.Looper.loopOnce:230 android.os.Looper.loop:319 android.app.ActivityThread.main:8919 
+I/InsetsController( 5263): controlAnimationUncheckedInner: Added types=ime, animType=1, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1449 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071478f00 mBlastBufferQueue=0xb4000070a0414300 fn= 11 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/InsetsController( 5263): onStateChanged: host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7211, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 720, 1600), mDisplayCutout=DisplayCutout{insets=Rect(0, 45 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(272, 0 - 448, 45), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=720 displayHeight=1600 physicalDisplayWidth=720 physicalDisplayHeight=1600 density={1.875} cutoutSpec={M 0,0 H -46.93333333333333 V 24 H 46.93333333333333 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 720, 1600), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(637, 0 - 720, 48) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=720 displayHeight=1600 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {8cf40001 mType=navigationBars mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {8cf40005 mType=mandatorySystemGestures mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40006 mType=tappableElement mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {ab2c0000 mType=statusBars mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {ab2c0005 mType=mandatorySystemGestures mFrame=[0,0][720,68] mVisible=true mFlags=[]}, InsetsSource: {ab2c0006 mType=tappableElement mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,928][720,1600] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][720,45] mVisible=true mFlags=[]} }
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Resizing android.view.ViewRootImpl@6f728eb: frame = [0,0][720,1600] reportDraw = false forceLayout = false syncSeqId = -1
+I/InsetsSourceConsumer( 5263): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071544f00 mBlastBufferQueue=0xb4000070a0414300 fn= 12 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][720,1600] display=[0,0][720,1600] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071545080 mBlastBufferQueue=0xb4000070a0414300 fn= 13 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070714ed580 mBlastBufferQueue=0xb4000070a0414300 fn= 14 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070714ed880 mBlastBufferQueue=0xb4000070a0414300 fn= 15 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071545200 mBlastBufferQueue=0xb4000070a0414300 fn= 16 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071545500 mBlastBufferQueue=0xb4000070a0414300 fn= 17 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007114f69300 mBlastBufferQueue=0xb4000070a0414300 fn= 18 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb4000070714ed280 mBlastBufferQueue=0xb4000070a0414300 fn= 19 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071545800 mBlastBufferQueue=0xb4000070a0414300 fn= 20 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007071545b00 mBlastBufferQueue=0xb4000070a0414300 fn= 21 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/InsetsController( 5263): cancelAnimation: types=ime, animType=1, host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.InsetsController.notifyFinished:1748 android.view.InsetsAnimationControlImpl.applyChangeInsets:312 android.view.InsetsController.lambda$new$3:918 
+I/ImeTracker( 5263): com.choice.app.choice_app:a236d389: onRequestHide at ORIGIN_CLIENT_HIDE_SOFT_INPUT reason HIDE_SOFT_INPUT_BY_INSETS_API
+I/InputMethodManager_LC( 5263): notifyImeHidden: IInputMethodManagerGlobalInvoker.hideSoftInput
+I/ImeTracker( 5263): com.choice.app.choice_app:47799efb: onHidden
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): mWNT: t=0xb400007114f69180 mBlastBufferQueue=0xb4000070a0414300 fn= 22 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0 
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): Resizing android.view.ViewRootImpl@6f728eb: frame = [0,0][720,1600] reportDraw = false forceLayout = false syncSeqId = -1
+I/InsetsController( 5263): onStateChanged: host=com.choice.app.choice_app/com.choice.app.choice_app.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7198, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 720, 1600), mDisplayCutout=DisplayCutout{insets=Rect(0, 45 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(272, 0 - 448, 45), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=720 displayHeight=1600 physicalDisplayWidth=720 physicalDisplayHeight=1600 density={1.875} cutoutSpec={M 0,0 H -46.93333333333333 V 24 H 46.93333333333333 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 720, 1600), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(637, 0 - 720, 48) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=720 displayHeight=1600 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {8cf40001 mType=navigationBars mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {8cf40005 mType=mandatorySystemGestures mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40006 mType=tappableElement mFrame=[0,1510][720,1600] mVisible=true mFlags=[]}, InsetsSource: {8cf40024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {ab2c0000 mType=statusBars mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {ab2c0005 mType=mandatorySystemGestures mFrame=[0,0][720,68] mVisible=true mFlags=[]}, InsetsSource: {ab2c0006 mType=tappableElement mFrame=[0,0][720,48] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][720,45] mVisible=true mFlags=[]} }
+I/ViewRootImpl@e0b46b3[MainActivity]( 5263): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][720,1600] display=[0,0][720,1600] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+Lost connection to device.

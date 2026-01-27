@@ -5,7 +5,7 @@ import '../../common/formatter.dart';
 import '../../customWidgets/custom_button.dart';
 import '../../customWidgets/custom_text.dart';
 import '../../customWidgets/custom_textfield.dart';
-import '../../l18n.dart';
+import 'package:choice_app/l18n.dart';
 import '../../res/res.dart';
 
 class BookingCard extends StatelessWidget {
@@ -349,6 +349,7 @@ class CancelConfirmationAlert extends StatelessWidget {
             ),
             SizedBox(height: getHeightRatio() * 16,),
             CustomField(
+              controller: controller, // Pass the controller
               height: getHeight() * .1,
               borderColor: AppColors.greyBordersColor,
               hint: "Share your reason here...",

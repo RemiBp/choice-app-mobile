@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../appAssets/app_assets.dart';
-import '../../../l18n.dart';
+import 'package:choice_app/l18n.dart';
 import '../../../routes/routes.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -19,6 +19,14 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +60,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             ),
             SizedBox(height: getHeight() * .01),
             CustomField(
+              controller: _emailController,
               borderColor: AppColors.greyBordersColor,
               hint: al.emailPlaceholder,
               label: al.emailLabel,

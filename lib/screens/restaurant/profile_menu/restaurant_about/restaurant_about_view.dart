@@ -32,8 +32,9 @@ class _RestaurantAboutViewState extends State<RestaurantAboutView> {
 
   final List<MenuGroup> menuGroups = [
     MenuGroup(
+      id: 1,
       title: 'Brochettes',
-      dishes: List.generate(3, (_) => Dish(name: 'Al Salmone', description: 'Sauce blanche, saumon fume', price: 20)),
+      dishes: List.generate(3, (i) => Dish(id: i, name: 'Al Salmone', description: 'Sauce blanche, saumon fume', price: 20)),
     ),
   ];
 
@@ -77,10 +78,10 @@ class _RestaurantAboutViewState extends State<RestaurantAboutView> {
               menuGroup: menuGroups[0],
               header: "Menu",
               optionText: "See Full Menu",
-              onAddDish: (){
+              onAddDish: (int id){
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FullMenuView()),
+                  MaterialPageRoute(builder: (context) => const FullMenuView()),
                 );
               },
             ),

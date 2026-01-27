@@ -76,11 +76,11 @@ class _WellnessBottomSheetState extends State<WellnessBottomSheet> {
                           child: SliderTheme(
                             data: SliderTheme.of(context).copyWith(
                               trackHeight: getHeightRatio() * 10,
-                              activeTrackColor: AppColors.userPrimaryColor,
+                              activeTrackColor: AppColors.wellnessPrimaryColor,
                               inactiveTrackColor: AppColors.greyColor,
                               thumbColor: AppColors.whiteColor,
-                              overlayColor: AppColors.userPrimaryColor.withAlpha(40),
-                              valueIndicatorColor: AppColors.userPrimaryColor,
+                              overlayColor: AppColors.wellnessPrimaryColor.withAlpha(40),
+                              valueIndicatorColor: AppColors.wellnessPrimaryColor,
                             ),
                             child: Slider(
                               value: distance,
@@ -158,7 +158,7 @@ class _WellnessBottomSheetState extends State<WellnessBottomSheet> {
 
                     },
                     buttonWidth: getWidth() * .43,
-                    backgroundColor: AppColors.userPrimaryColor,
+                    backgroundColor: AppColors.wellnessPrimaryColor,
                     borderColor: Colors.transparent,
                     textColor: Colors.white,
                     textFontWeight: FontWeight.w700,
@@ -197,7 +197,7 @@ class _WellnessBottomSheetState extends State<WellnessBottomSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.userPrimaryColor : Colors.transparent,
+                        color: isSelected ? AppColors.wellnessPrimaryColor : Colors.transparent,
                         borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
                       ),
                       child: CustomText(
@@ -219,7 +219,7 @@ class _WellnessBottomSheetState extends State<WellnessBottomSheet> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.userPrimaryColor : Colors.transparent,
+                      color: isSelected ? AppColors.wellnessPrimaryColor : Colors.transparent,
                       border: Border(
                         left: BorderSide(color: AppColors.greyBordersColor),
                       ),

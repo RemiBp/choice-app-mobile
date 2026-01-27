@@ -16,6 +16,14 @@ class FollowerView extends StatefulWidget {
 }
 
 class _FollowerViewState extends State<FollowerView> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +34,7 @@ class _FollowerViewState extends State<FollowerView> {
         child: Column(
           children: [
             CustomField(
+              controller: _searchController,
               borderColor: AppColors.greyBordersColor,
               hint: "Search by name...",
               label: "",

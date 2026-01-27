@@ -1,8 +1,8 @@
 import 'package:choice_app/appColors/colors.dart';
 import 'package:choice_app/customWidgets/custom_text.dart';
+import 'package:choice_app/customWidgets/animations/bouncing_wrapper.dart';
 import 'package:choice_app/l18n.dart';
 import 'package:choice_app/res/res.dart';
-import 'package:choice_app/screens/authentication/signup.dart';
 import 'package:choice_app/screens/languageSelection/language_selection_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -44,124 +44,130 @@ class _LanguageSelectionState extends State<LanguageSelection> {
   Widget build(BuildContext context) {
     final provider = Provider.of<LanguageSelectionProvider>(context);
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: getWidth() * .05,
-          vertical: getHeight() * .1,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CustomText(
-              text: al.selectLanguage,
-              fontSize: sizes?.fontSize28,
-              fontFamily: Assets.onsetSemiBold,
-            ),
-            SizedBox(height: getHeight() * .01),
-            CustomText(
-              text: al.choosePreferredLanguage,
-              fontSize: sizes?.fontSize16,
-              giveLinesAsText: true,
-            ),
-
-            SizedBox(height: getHeight() * .03),
-
-            languageOption(label: 'English', flagPath: Assets.ukFlagIcon),
-
-            const SizedBox(height: 12),
-
-            languageOption(label: 'French', flagPath: Assets.franceFlagIcon),
-
-            const SizedBox(height: 32),
-            Spacer(),
-            widget.isFromProfile??false?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomButton(
-                  buttonText: 'Cancel',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  buttonWidth: getWidth() * .42,
-                  backgroundColor: Colors.transparent,
-                  borderColor: AppColors.blackColor,
-                  textColor: AppColors.blackColor,
-                  textFontWeight: FontWeight.w700,
+      backgroundColor: Colors.white,
+      appBar: widget.isFromProfile == true 
+          ? AppBar(
+              title: CustomText(text: al.selectLanguage, fontFamily: Assets.onsetSemiBold),
+              backgroundColor: Colors.white,
+              elevation: 0,
+              iconTheme: IconThemeData(color: Colors.black),
+            )
+          : null,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getWidth() * .05,
+            vertical: getHeight() * .05,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+               if(widget.isFromProfile != true) ...[
+                 SizedBox(height: getHeight() * 0.05),
+                 CustomText(
+                  text: al.selectLanguage,
+                  fontSize: sizes?.fontSize28,
+                  fontFamily: Assets.onsetBold,
                 ),
-                CustomButton(
-                  buttonText: 'Save Changes',
-                  onTap: () {
-
-                  },
-                  buttonWidth: getWidth() * .42,
-                  backgroundColor: AppColors.getPrimaryColorFromContext(context),
-                  borderColor: Colors.transparent,
-                  textColor: Colors.white,
-                  textFontWeight: FontWeight.w700,
-                ),
-              ],
-            ):
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final locale = selectedLanguage == "English" ? "en" : "fr";
-                  //
-                  provider.changeLocale(locale);
-                  context.go(Routes.signupRoute);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.getPrimaryColorFromContext(context),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: CustomText(
-                  text: al.update,
+                SizedBox(height: 10),
+                CustomText(
+                  text: al.choosePreferredLanguage,
                   fontSize: sizes?.fontSize16,
-                  fontFamily: Assets.onsetSemiBold,
-                  color: Colors.white,
+                  color: AppColors.textGreyColor,
+                  giveLinesAsText: true,
                 ),
+                SizedBox(height: 40),
+               ],
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildLanguageCard('English', Assets.ukFlagIcon),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: _buildLanguageCard('French', Assets.franceFlagIcon),
+                  ),
+                ],
               ),
-            ),
-          ],
+              
+              Spacer(),
+              
+              widget.isFromProfile == true
+                  ? Row(
+                      children: [
+                        Expanded(
+                          child: CustomButton(
+                            buttonText: 'Cancel',
+                            onTap: () => Navigator.pop(context),
+                            backgroundColor: Colors.grey.shade100,
+                            textColor: Colors.black,
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: CustomButton(
+                            buttonText: 'Save',
+                            onTap: () {
+                               _save(provider);
+                               Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  : CustomButton(
+                      buttonText: al.update,
+                      onTap: () {
+                        _save(provider);
+                        context.go(Routes.signupRoute);
+                      },
+                    ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget languageOption({required String label, required String flagPath}) {
-    bool isSelected = selectedLanguage == label;
+  void _save(LanguageSelectionProvider provider) {
+      final locale = selectedLanguage == "English" ? "en" : "fr";
+      provider.changeLocale(locale);
+  }
 
-    return InkWell(
+  Widget _buildLanguageCard(String label, String flagPath) {
+    bool isSelected = selectedLanguage == label;
+    return BouncingWrapper(
       onTap: () => selectLanguage(label),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.getPrimaryColorFromContext(context).withAlpha(20) : Colors.white,
+          color: isSelected ? AppColors.userPrimaryColor.withOpacity(0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            // color: isSelected ? Colors.lightBlue : Colors.grey.shade300,
-            color: isSelected ? AppColors.getPrimaryColorFromContext(context) : AppColors.greyBordersColor,
-            width: 1.5,
+            color: isSelected ? AppColors.userPrimaryColor : AppColors.greyBordersColor,
+            width: 2,
           ),
-          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected 
+              ? [BoxShadow(color: AppColors.userPrimaryColor.withOpacity(0.2), blurRadius: 10, offset: Offset(0, 4))] 
+              : [],
         ),
-        child: Row(
+        child: Column(
           children: [
-            SvgPicture.asset(flagPath, height: getHeight() * .02),
-            const SizedBox(width: 12),
+            SvgPicture.asset(flagPath, height: 40),
+            SizedBox(height: 16),
             CustomText(
               text: label,
               fontSize: sizes?.fontSize16,
-              fontFamily: Assets.onsetMedium,
+              fontFamily: isSelected ? Assets.onsetBold : Assets.onsetMedium,
+              color: isSelected ? AppColors.userPrimaryColor : Colors.black,
             ),
-            const Spacer(),
-            if (isSelected)
-              Icon(Icons.check, color: AppColors.getPrimaryColorFromContext(context), size: 20),
+            SizedBox(height: 8),
+            Icon(
+              isSelected ? Icons.check_circle : Icons.circle_outlined,
+              color: isSelected ? AppColors.userPrimaryColor : AppColors.greyBordersColor,
+            ),
           ],
         ),
       ),

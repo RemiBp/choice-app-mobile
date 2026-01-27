@@ -11,7 +11,7 @@ import '../res/res.dart';
 class CustomField extends StatelessWidget {
   const CustomField({
     super.key,
-    this.textEditingController,
+    TextEditingController? controller,
     this.hint,
     this.textInputType,
     this.width,
@@ -35,7 +35,9 @@ class CustomField extends StatelessWidget {
     this.borderRadius,
     this.suffixIcon,
     this.prefixIconSvg, this.suffixIconSvg,
-  });
+    this.textColor,
+    this.prefixIcon,
+  }) : textEditingController = controller;
 
   final TextEditingController? textEditingController;
   final String? hint;
@@ -56,12 +58,14 @@ class CustomField extends StatelessWidget {
   final Color? hintColor;
   final bool enabled;
   final List<TextInputFormatter>? inputFormatters;
+  final Color? textColor;
   final int? maxLines;
   final Function(String)? onChanged;
   final double? borderRadius;
   final IconData? suffixIcon;
   final String? prefixIconSvg;
   final String? suffixIconSvg;
+  final Widget? prefixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +91,7 @@ class CustomField extends StatelessWidget {
             validator: validate,
             inputFormatters: inputFormatters,
             textAlignVertical: TextAlignVertical.center,
-            expands: maxLines != null ? false : true,
+            expands: (maxLines != null || hidePassword) ? false : true,
             controller: textEditingController,
             obscureText: hidePassword,
             obscuringCharacter: "●",
@@ -96,7 +100,7 @@ class CustomField extends StatelessWidget {
             keyboardType: textInputType ?? TextInputType.text,
             style: Theme.of(
               context,
-            ).textTheme.displaySmall?.copyWith(fontSize: sizes!.fontSize15),
+            ).textTheme.displaySmall?.copyWith(fontSize: sizes!.fontSize15, color: textColor),
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               constraints:
@@ -113,9 +117,11 @@ class CustomField extends StatelessWidget {
               errorBorder: InputBorder.none,
               focusedErrorBorder: InputBorder.none,
               prefixIcon:
-                  prefixIconSvg != null
-                      ? SvgPicture.asset(prefixIconSvg!)
-                      : null,
+                  prefixIcon != null 
+                     ? prefixIcon 
+                     : (prefixIconSvg != null
+                        ? SvgPicture.asset(prefixIconSvg!)
+                        : null),
               prefixIconConstraints: BoxConstraints(
                 maxHeight: getHeight() * .03,
                 minHeight: getHeight() * .02,
@@ -127,7 +133,7 @@ class CustomField extends StatelessWidget {
                 left: getWidth() * .05,
                 right: getWidth() * .02,
                 bottom: getHeight() * .01,
-                top: obscure ? getHeight() * .038 : getHeight() * .01,
+                top: getHeight() * .01,
               ),
               hintText: hint,
               hintStyle: Theme.of(context).textTheme.displaySmall?.copyWith(
@@ -234,7 +240,7 @@ class CustomField2 extends StatelessWidget {
         validator: validate,
         inputFormatters: inputFormatters,
         textAlignVertical: TextAlignVertical.center,
-        expands: maxLines != null ? false : true,
+        expands: (maxLines != null || hidePassword) ? false : true,
         controller: textEditingController,
         obscureText: hidePassword,
         obscuringCharacter: "●",

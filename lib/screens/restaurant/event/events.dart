@@ -4,9 +4,11 @@ import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/restaurant/event/event_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
+import 'event_provider.dart';
 
 class Events extends StatefulWidget {
   const Events({super.key});
@@ -22,6 +24,9 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventProvider>().fetchMyEvents();
+    });
   }
 
   @override
@@ -40,53 +45,54 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
           fontFamily: Assets.onsetSemiBold,
         ),
       ),
-      body: Column(
-        children: [
-          TabBar(
-            controller: _tabController,
-            indicatorColor:AppColors.getPrimaryColorFromContext(context),
-            indicatorSize: TabBarIndicatorSize.tab,
-            labelColor:AppColors.getPrimaryColorFromContext(context),
-            unselectedLabelColor: Colors.grey,
-            labelStyle: TextStyle(
-              fontSize: sizes?.fontSize14,
-              fontFamily: Assets.onsetMedium,
-            ),
-            tabs: [
-              Tab(text: 'Active'),
-              Tab(text: 'Draft'),
-              Tab(text: 'Completed'),
+      body: Consumer<EventProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.myEvents.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.myEvents.isEmpty) {
+            return buildEmptyState();
+          }
+
+          final events = provider.myEvents;
+          final activeEvents = events.where((e) => e['status'] == 'active').toList();
+          final draftEvents = events.where((e) => e['status'] == 'draft').toList();
+          final completedEvents = events.where((e) => e['status'] == 'completed').toList();
+
+          return Column(
+            children: [
+              TabBar(
+                controller: _tabController,
+                indicatorColor:AppColors.getPrimaryColorFromContext(context),
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelColor:AppColors.getPrimaryColorFromContext(context),
+                unselectedLabelColor: Colors.grey,
+                labelStyle: TextStyle(
+                  fontSize: sizes?.fontSize14,
+                  fontFamily: Assets.onsetMedium,
+                ),
+                tabs: [
+                  Tab(text: 'Active (${activeEvents.length})'),
+                  Tab(text: 'Draft (${draftEvents.length})'),
+                  Tab(text: 'Completed (${completedEvents.length})'),
+                ],
+              ),
+
+              // Content
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildEventList(activeEvents),
+                    _buildEventList(draftEvents),
+                    _buildEventList(completedEvents),
+                  ],
+                ),
+              ),
             ],
-          ),
-
-          // Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard();
-                  },
-                ),
-
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard(isDraft: true);
-                  },
-                ),
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard();
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+          );
+        },
       ),
 
       floatingActionButton: FloatingActionButton.extended(
@@ -175,6 +181,25 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildEventList(List<dynamic> events) {
+    if (events.isEmpty) {
+      return Center(child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CustomText(text: "No events found"),
+        ],
+      ));
+    }
+    return ListView.builder(
+      itemCount: events.length,
+      padding: EdgeInsets.all(16),
+      itemBuilder: (context, index) {
+        final event = events[index];
+        return EventCard(event: event); 
+      },
     );
   }
 }

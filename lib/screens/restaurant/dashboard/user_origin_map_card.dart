@@ -7,6 +7,8 @@ import '../../../customWidgets/custom_text.dart';
 import '../../../res/res.dart';
 import '../../../userRole/role_provider.dart';
 import '../../../userRole/user_role.dart';
+import '../../../routes/routes.dart';
+import 'package:go_router/go_router.dart';
 
 class UserOriginMapCard extends StatelessWidget {
   const UserOriginMapCard({super.key});
@@ -37,10 +39,18 @@ class UserOriginMapCard extends StatelessWidget {
             color: AppColors.primarySlateColor,
           ),
           SizedBox(height: getHeightRatio() * 16),
-          // if(!(role == UserRole.restaurant))
-            role == UserRole.restaurant?
-            Image.asset(Assets.originMapImage, fit: BoxFit.cover):
-          Image.asset(Assets.originMapImage, fit: BoxFit.cover),
+          GestureDetector(
+            onTap: () => context.push(Routes.restaurantProducerMapRoute),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                Assets.originMapImage,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 180,
+              ),
+            ),
+          ),
 
         ],
       ),

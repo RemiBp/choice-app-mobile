@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../appAssets/app_assets.dart';
 import '../../customWidgets/custom_text.dart';
-import '../../l18n.dart';
+import 'package:choice_app/l18n.dart';
 import '../../res/res.dart';
 
 class AuthSelectionCard extends StatelessWidget {

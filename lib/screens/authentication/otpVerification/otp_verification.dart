@@ -2,6 +2,7 @@ import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/authentication/passwordManagement/reset_password.dart';
 import 'package:choice_app/screens/authentication/upload_docs.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 // import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
@@ -10,7 +11,7 @@ import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_button.dart';
 import '../../../customWidgets/custom_text.dart';
-import '../../../l18n.dart';
+import 'package:choice_app/l18n.dart';
 import '../../../res/res.dart';
 
 class OtpVerification extends StatelessWidget {
@@ -88,7 +89,7 @@ class OtpVerification extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: al.resendCode,
-                    style: TextStyle(color: AppColors.restaurantPrimaryColor),
+                    style: TextStyle(color: AppColors.getPrimaryColorFromContext(context)),
                   ),
                 ],
               ),
@@ -98,16 +99,10 @@ class OtpVerification extends StatelessWidget {
               buttonText: al.verifyButton,
               onTap: () {
                 if (isResetPassFlow) {
-                  Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (_) => ResetPassword()));
-                  // context.push(Routes.resetPasswordRoute);
+                  context.push(Routes.resetPasswordRoute);
                   return;
                 }
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => UploadDocs()));
-                // context.push(Routes.uploadDocsRoute);
+                context.push(Routes.uploadDocsRoute);
               },
             ),
           ],

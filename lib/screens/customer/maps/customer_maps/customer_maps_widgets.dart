@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:another_xlider/another_xlider.dart';
 
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_text.dart';
