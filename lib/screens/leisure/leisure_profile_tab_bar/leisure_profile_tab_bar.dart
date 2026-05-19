@@ -1,3 +1,4 @@
+import 'package:choice_app/providers/producer_provider.dart';
 import 'package:choice_app/screens/leisure/leisure_about/leisure_about_view.dart';
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_about/restaurant_about_view.dart';
 import 'package:choice_app/userRole/user_role.dart';
@@ -96,16 +97,24 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
           SizedBox(height: getHeight() * 0.02),
           CustomerProfileHeader(),
           SizedBox(height: getHeight() * 0.01),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: CustomText(
-              text: 'Lorem ipsum dolor sit amet consectetur. Nunc aliquam eu risus nibh quis consectetur.',
-              textOverflow: TextOverflow.ellipsis,
-              fontSize: sizes?.fontSize16,
-              color: AppColors.primarySlateColor,
-              fontWeight: FontWeight.w400,
-              giveLinesAsText: true,
-            ),
+          Consumer<ProducerProvider>(
+            builder: (context, producer, _) {
+              final desc = producer.profile?['details'] as String? ??
+                  producer.profile?['description'] as String? ??
+                  '';
+              if (desc.isEmpty) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: CustomText(
+                  text: desc,
+                  textOverflow: TextOverflow.ellipsis,
+                  fontSize: sizes?.fontSize16,
+                  color: AppColors.primarySlateColor,
+                  fontWeight: FontWeight.w400,
+                  giveLinesAsText: true,
+                ),
+              );
+            },
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: sizes!.pagePadding, vertical: getHeight() * 0.02),

@@ -219,8 +219,11 @@ class _ExploreViewState extends State<ExploreView> {
                                       onTap: () {
                                         _searchController.clear();
                                         customerProvider.clearProducerSearch();
-                                        final tag = (p['role'] as String? ?? 'Restaurant');
-                                        context.push('/event_details', extra: tag);
+                                        final tag = p['role'] as String? ?? 'Restaurant';
+                                        context.push('/event_details', extra: {
+                                          'tag': tag,
+                                          'producerId': p['id'],
+                                        });
                                       },
                                     );
                                   },

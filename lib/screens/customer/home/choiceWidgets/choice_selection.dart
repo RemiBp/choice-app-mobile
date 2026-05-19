@@ -92,28 +92,31 @@ class _ChoiceSelectionState extends State<ChoiceSelection> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // context.push(Routes.subChoiceSelectionRoute);
-                      if(selectedChoice == "Events"){
+                      if (selectedChoice == "Events") {
+                        context.push('/customer_home');
                         return;
                       }
                       context.push(
-                          '/sub_choice_selection?selectedChoice=$selectedChoice',
-                          extra: selectedChoice == "Restaurant" ? {
-                            "title": "Restaurant",
-                            "icon": Assets.restaurantIcon
-                            ,
-                            "description": "Which restaurant did you visit?"}
-                              : selectedChoice == "Leisure" ? {
-                            "title": "Leisure",
-                            "icon": Assets.leisureIcon
-                            ,
-                            "description": "Which leisure event did you attend?"
-                          } : {
-                            "title": "Wellness",
-                            "icon": Assets.wellnessIcon
-                            ,
-                            "description": "Which wellness did you visit?"
-                          }
+                        '/sub_choice_selection?selectedChoice=$selectedChoice',
+                        extra: selectedChoice == "Restaurant"
+                            ? {
+                                "title": "Restaurant",
+                                "icon": Assets.restaurantIcon,
+                                "description": "Which restaurant did you visit?"
+                              }
+                            : selectedChoice == "Leisure"
+                                ? {
+                                    "title": "Leisure",
+                                    "icon": Assets.leisureIcon,
+                                    "description":
+                                        "Which leisure event did you attend?"
+                                  }
+                                : {
+                                    "title": "Wellness",
+                                    "icon": Assets.wellnessIcon,
+                                    "description":
+                                        "Which wellness did you visit?"
+                                  },
                       );
                     },
                     style: ElevatedButton.styleFrom(

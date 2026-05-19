@@ -8,10 +8,14 @@ import '../../../../res/res.dart';
 
 
 class ExploreEventHeader extends StatelessWidget {
-  const ExploreEventHeader({super.key});
+  final String? photoUrl;
+  const ExploreEventHeader({super.key, this.photoUrl});
 
   @override
   Widget build(BuildContext context) {
+    final url = photoUrl?.isNotEmpty == true
+        ? photoUrl!
+        : "https://i.pinimg.com/originals/49/7e/e8/497ee84d017ffca00fd23bf78d3ebe39.jpg";
     return Stack(
       children: [
         Container(
@@ -19,9 +23,7 @@ class ExploreEventHeader extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(
-                "https://i.pinimg.com/originals/49/7e/e8/497ee84d017ffca00fd23bf78d3ebe39.jpg",
-              ),
+              image: NetworkImage(url),
               fit: BoxFit.cover,
             ),
           ),

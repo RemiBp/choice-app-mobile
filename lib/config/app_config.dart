@@ -1,7 +1,12 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppConfig {
+  // Override with: flutter run --dart-define=BACKEND_URL=https://your-backend.railway.app
+  static const String _envUrl =
+      String.fromEnvironment('BACKEND_URL', defaultValue: '');
+
   static String get baseUrl {
+    if (_envUrl.isNotEmpty) return _envUrl;
     if (kIsWeb) return 'http://localhost:6543';
     return 'http://10.0.2.2:6543';
   }

@@ -148,8 +148,18 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/event_details',
       builder: (context, state) {
-        final tag = state.extra as String? ?? 'Restaurant';
-        return RestaurantExploreDetails(tag: tag);
+        final extra = state.extra;
+        String tag = 'Restaurant';
+        int? producerId;
+        if (extra is String) {
+          tag = extra.isEmpty ? 'Restaurant' : extra;
+        } else if (extra is Map<String, dynamic>) {
+          tag = extra['tag'] as String? ?? 'Restaurant';
+          producerId = extra['producerId'] is int
+              ? extra['producerId'] as int
+              : int.tryParse(extra['producerId']?.toString() ?? '');
+        }
+        return RestaurantExploreDetails(tag: tag, producerId: producerId);
       },
     ),
     // Book now
@@ -161,8 +171,17 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/customer_gallery',
       builder: (context, state) {
-        final id = state.extra as String? ?? '0';
-        return ImageGalleryScreen(restaurantId: id);
+        final extra = state.extra;
+        List<String> photos = [];
+        String id = '0';
+        if (extra is Map<String, dynamic>) {
+          id = extra['id'] as String? ?? '0';
+          final p = extra['photos'];
+          if (p is List) photos = p.map((e) => e.toString()).toList();
+        } else if (extra is String) {
+          id = extra;
+        }
+        return ImageGalleryScreen(restaurantId: id, photos: photos);
       },
     ),
     // Fullscreen image viewer
