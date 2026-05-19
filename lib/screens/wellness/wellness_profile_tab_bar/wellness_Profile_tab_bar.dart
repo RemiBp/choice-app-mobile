@@ -1,16 +1,15 @@
 import 'package:choice_app/screens/wellness/wellness_about/wellness_about_view.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_button.dart';
 import '../../../customWidgets/custom_text.dart';
 import '../../../res/res.dart';
 import '../../restaurant/event/event_widgets.dart';
-import '../../restaurant/profile_menu/chat_view.dart';
 import '../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../../restaurant/profile_menu/restaurant_choice_view.dart';
 import '../../restaurant/profile_menu/restaurant_posts_view.dart';
-import '../../restaurant/setting/setting_view.dart';
 
 class WellnessProfileTabBar extends StatefulWidget {
   const WellnessProfileTabBar({super.key});
@@ -72,10 +71,7 @@ class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with Sing
           );
         },
         onSetting: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SettingView()),
-          );
+          context.push('/setting');
         },
       ),
       body: Column(
@@ -113,10 +109,7 @@ class _WellnessProfileTabBarState extends State<WellnessProfileTabBar> with Sing
                   child: CardButton(
                     buttonText: 'Message',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ChatView()),
-                      );
+                      context.push('/chat');
                     },
                     backgroundColor: AppColors.greyColor,
                     textColor: AppColors.blackColor,

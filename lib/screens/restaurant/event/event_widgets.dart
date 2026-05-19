@@ -10,9 +10,38 @@ import '../../../customWidgets/custom_button.dart';
 import '../../../customWidgets/custom_text.dart';
 
 class EventCard extends StatelessWidget {
-  const EventCard({super.key, this.isDraft = false});
+  const EventCard({super.key, this.isDraft = false, this.event});
 
   final bool isDraft;
+  final Map<String, dynamic>? event;
+
+  String get _title => event?['title'] as String? ?? 'Wine & Dine Evening';
+  String get _location => event?['venue'] as String? ?? event?['address'] as String? ?? 'Lyon, France';
+  String get _price {
+    final p = event?['price'];
+    if (p == null) return '\$0.00';
+    return '\$${p.toString()}';
+  }
+  String get _imageUrl =>
+      (event?['images'] as List?)?.firstOrNull?.toString() ??
+      event?['imageUrl'] as String? ??
+      'https://i.pinimg.com/originals/30/01/e8/3001e885d7c49f851aaa9008b2a2e562.jpg';
+  String get _dateTime {
+    final start = event?['startTime'] as String?;
+    final end = event?['endTime'] as String?;
+    if (start == null) return 'TBD';
+    try {
+      final s = DateTime.parse(start);
+      final fmt = '${s.month}/${s.day}, ${s.hour}:${s.minute.toString().padLeft(2, '0')}';
+      if (end != null) {
+        final e = DateTime.parse(end);
+        return '$fmt – ${e.hour}:${e.minute.toString().padLeft(2, '0')}';
+      }
+      return fmt;
+    } catch (_) {
+      return start;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +70,7 @@ class EventCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 image: DecorationImage(
-                  image: NetworkImage(
-                    "https://i.pinimg.com/originals/30/01/e8/3001e885d7c49f851aaa9008b2a2e562.jpg",
-                  ),
+                  image: NetworkImage(_imageUrl),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -56,7 +83,7 @@ class EventCard extends StatelessWidget {
 
                 children: [
                   CustomText(
-                    text: "Wine & Dine Evening",
+                    text: _title,
                     fontSize: sizes?.fontSize18,
                     fontFamily: Assets.onsetSemiBold,
                   ),
@@ -67,7 +94,7 @@ class EventCard extends StatelessWidget {
                       Icon(Icons.location_on, color: AppColors.getPrimaryColorFromContext(context), size: 18, ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "Lyon, France",
+                        text: _location,
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -85,7 +112,7 @@ class EventCard extends StatelessWidget {
                       ),
                       SizedBox(width: 6),
                       CustomText(
-                        text: "June 20, 10:00 PM – 12:00 PM",
+                        text: _dateTime,
                         fontSize: sizes?.fontSize12,
                         fontFamily: Assets.onsetMedium,
                       ),
@@ -102,7 +129,7 @@ class EventCard extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: '\$30.00',
+                              text: _price,
                               style: TextStyle(
                                 color: AppColors.getPrimaryColorFromContext(context),
                                 fontFamily: Assets.onsetSemiBold,
@@ -123,8 +150,8 @@ class EventCard extends StatelessWidget {
 
                       Stack(
                         children: [
-                          Container(width: getWidth() * .3),
-                          CircleAvatar(backgroundColor: Colors.transparent),
+                          const SizedBox(width: 120),
+                          const CircleAvatar(backgroundColor: Colors.transparent),
                           Positioned(
                             right: 60,
                             child: _buildAvatar(

@@ -275,7 +275,7 @@ class _CustomersChartCardState extends State<CustomersChartCard> {
                 color: AppColors.primarySlateColor,
               ),
               SizedBox(
-                width: getWidth() * 0.3,
+                width: 200,
                 height: getHeightRatio() * 36,
                 child: FilterDropDown(
                   items: months,
@@ -314,7 +314,7 @@ class _CustomersChartCardState extends State<CustomersChartCard> {
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: getWidth() * 0.08,
+                      reservedSize: 40,
                       getTitlesWidget: (value, meta) {
                         return CustomText(
                           text: value.toInt().toString(),
@@ -328,7 +328,7 @@ class _CustomersChartCardState extends State<CustomersChartCard> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       interval: 1,
-                      reservedSize: getHeight() * 0.05,
+                      reservedSize: 40,
                       getTitlesWidget: (value, meta) {
                         final int index = value.toInt();
                         if (index < 0 || index >= xLabels.length) {

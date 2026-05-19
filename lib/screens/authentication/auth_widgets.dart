@@ -52,8 +52,7 @@ class AuthSelectionCard extends StatelessWidget {
               child: SvgPicture.asset(svgString),
             ),
             SizedBox(width: getWidth() * .03),
-            SizedBox(
-              width: getWidth() * .6,
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -65,15 +64,15 @@ class AuthSelectionCard extends StatelessWidget {
                   ),
                   SizedBox(height: getHeight() * .005),
                   CustomText(
-                    text: al.userAccountDescription,
+                    text: description,
                     fontSize: sizes?.fontSize14,
                     giveLinesAsText: true,
                   ),
                 ],
               ),
             ),
-            Spacer(),
-            Icon(Icons.arrow_forward_ios_rounded, size: getHeight() * .02),
+            SizedBox(width: 8),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16),
           ],
         ),
       ),
@@ -97,7 +96,7 @@ class SocialButton extends StatelessWidget {
           color: Colors.black
         )
         ),
-        fixedSize: Size(getWidth() * .42, getHeight() * .06),
+        fixedSize: const Size(150, 48),
       ),
       onPressed: onPress,
       child: Row(

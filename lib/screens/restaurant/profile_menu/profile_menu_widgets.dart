@@ -1,8 +1,7 @@
 import 'package:choice_app/appColors/colors.dart';
-import 'package:choice_app/screens/restaurant/profile_menu/follower/follower_view.dart';
-import 'package:choice_app/screens/restaurant/profile_menu/following/following_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../customWidgets/custom_button.dart';
 import '../../../customWidgets/custom_text.dart';
@@ -224,23 +223,17 @@ class CustomerProfileHeader extends StatelessWidget {
                     _buildStatItem("98", "Choices"),
                     Image.asset(Assets.verticalLine, height: getHeight() * 0.03),
                     GestureDetector(
-                      onTap: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FollowerView()),
-                        );
+                      onTap: () {
+                        context.push('/followers');
                       },
                       child: _buildStatItem("34", "Followers"),
                     ),
                     Image.asset(Assets.verticalLine, height: getHeight() * 0.03),
                     GestureDetector(
-                      onTap: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FollowingView()),
-                        );
+                      onTap: () {
+                        context.push('/following');
                       },
-                      child: _buildStatItem("02", "Followers"),
+                      child: _buildStatItem("02", "Following"),
                     ),
                   ],
                 ),

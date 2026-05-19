@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:choice_app/customWidgets/custom_text.dart';
+import 'package:choice_app/providers/producer_provider.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
@@ -14,7 +17,9 @@ import '../../../customWidgets/custom_textfield.dart';
 import '../../../res/res.dart';
 
 class CreateEvent extends StatefulWidget {
-  const CreateEvent({super.key});
+  /// Pass an existing event map to pre-fill the form for editing.
+  final Map<String, dynamic>? existingEvent;
+  const CreateEvent({super.key, this.existingEvent});
 
   @override
   _CreateEventState createState() => _CreateEventState();
@@ -37,6 +42,39 @@ class _CreateEventState extends State<CreateEvent> {
 
   List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
+  bool _isSubmitting = false;
+  String? _errorMessage;
+
+  bool get _isEditing => widget.existingEvent != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existingEvent;
+    if (e != null) {
+      _eventNameController.text = e['title'] as String? ?? '';
+      _descriptionController.text = e['description'] as String? ?? '';
+      _venueController.text = e['venue'] as String? ?? '';
+      _addressController.text = e['address'] as String? ?? '';
+      _capacityController.text = (e['capacity'] ?? '').toString();
+      _priceController.text = (e['price'] ?? '').toString();
+      final start = e['startTime'] as String?;
+      if (start != null) {
+        try {
+          final dt = DateTime.parse(start);
+          _selectedDate = DateTime(dt.year, dt.month, dt.day);
+          _startTime = TimeOfDay(hour: dt.hour, minute: dt.minute);
+        } catch (_) {}
+      }
+      final end = e['endTime'] as String?;
+      if (end != null) {
+        try {
+          final dt = DateTime.parse(end);
+          _endTime = TimeOfDay(hour: dt.hour, minute: dt.minute);
+        } catch (_) {}
+      }
+    }
+  }
 
   // Function to pick images
   Future<void> _pickImages() async {
@@ -86,6 +124,59 @@ class _CreateEventState extends State<CreateEvent> {
     }
   }
 
+  Future<void> _submit({required bool isDraft}) async {
+    if (_eventNameController.text.trim().isEmpty) {
+      setState(() => _errorMessage = 'Event name is required');
+      return;
+    }
+    setState(() {
+      _isSubmitting = true;
+      _errorMessage = null;
+    });
+
+    String? startIso;
+    String? endIso;
+    if (_selectedDate != null && _startTime != null) {
+      final s = DateTime(
+        _selectedDate!.year, _selectedDate!.month, _selectedDate!.day,
+        _startTime!.hour, _startTime!.minute,
+      );
+      startIso = s.toIso8601String();
+    }
+    if (_selectedDate != null && _endTime != null) {
+      final e = DateTime(
+        _selectedDate!.year, _selectedDate!.month, _selectedDate!.day,
+        _endTime!.hour, _endTime!.minute,
+      );
+      endIso = e.toIso8601String();
+    }
+
+    final body = {
+      'title': _eventNameController.text.trim(),
+      'description': _descriptionController.text.trim(),
+      'venue': _venueController.text.trim(),
+      'address': _addressController.text.trim(),
+      'capacity': int.tryParse(_capacityController.text.trim()) ?? 0,
+      'price': double.tryParse(_priceController.text.trim()) ?? 0,
+      if (startIso != null) 'startTime': startIso,
+      if (endIso != null) 'endTime': endIso,
+      'status': isDraft ? 'draft' : 'active',
+    };
+
+    final provider = context.read<ProducerProvider>();
+    final result = _isEditing
+        ? await provider.updateEvent(widget.existingEvent!['id'] as int, body)
+        : await provider.createEvent(body);
+    setState(() => _isSubmitting = false);
+
+    if (result.success) {
+      if (mounted) context.pop();
+    } else {
+      setState(
+          () => _errorMessage = result.message ?? (_isEditing ? 'Failed to update event' : 'Failed to create event'));
+    }
+  }
+
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -118,7 +209,7 @@ class _CreateEventState extends State<CreateEvent> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: BackButton(color: Colors.black),
-        title: Text("Create Event", style: TextStyle(color: Colors.black)),
+        title: Text(_isEditing ? "Edit Event" : "Create Event", style: TextStyle(color: Colors.black)),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
@@ -138,6 +229,7 @@ class _CreateEventState extends State<CreateEvent> {
                       borderColor: AppColors.greyBordersColor,
                       hint: "E.g: Brochette boeuf...",
                       label: "Event Name",
+                      textEditingController: _eventNameController,
                     ),
                     SizedBox(height: getHeight() * .02),
                     CustomField(
@@ -145,6 +237,7 @@ class _CreateEventState extends State<CreateEvent> {
                       borderColor: AppColors.greyBordersColor,
                       hint: "Describe your event...",
                       label: "Description",
+                      textEditingController: _descriptionController,
                     ),
                   ],
                 ),
@@ -221,12 +314,14 @@ class _CreateEventState extends State<CreateEvent> {
                       borderColor: AppColors.greyBordersColor,
                       hint: "Restaurant name or venue",
                       label: "Venue Name",
+                      textEditingController: _venueController,
                     ),
                     SizedBox(height: getHeight() * .02),
                     CustomField(
                       borderColor: AppColors.greyBordersColor,
                       hint: "Address of venue",
                       label: "Address",
+                      textEditingController: _addressController,
                     ),
                   ],
                 ),
@@ -243,12 +338,14 @@ class _CreateEventState extends State<CreateEvent> {
                       borderColor: AppColors.greyBordersColor,
                       hint: "Maximum number of persons",
                       label: "Maximum Capacity",
+                      textEditingController: _capacityController,
                     ),
                     SizedBox(height: getHeight() * .02),
                     CustomField(
                       borderColor: AppColors.greyBordersColor,
                       hint: "\$ 0.00",
                       label: "Price per person",
+                      textEditingController: _priceController,
                     ),
                   ],
                 ),
@@ -324,9 +421,15 @@ class _CreateEventState extends State<CreateEvent> {
                 ),
               ),
 
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(_errorMessage!,
+                      style: const TextStyle(color: Colors.red)),
+                ),
               // Action Buttons
               Padding(
-                padding:  EdgeInsets.symmetric(vertical: getHeight()*.03),
+                padding: EdgeInsets.symmetric(vertical: getHeight() * .03),
                 child: Row(
                   children: [
                     Expanded(
@@ -335,12 +438,15 @@ class _CreateEventState extends State<CreateEvent> {
                         buttonText: "Save as Draft",
                         textColor: Colors.black,
                         borderColor: Colors.black,
-                        onTap: () {},
+                        onTap: _isSubmitting ? null : () => _submit(isDraft: true),
                       ),
                     ),
                     SizedBox(width: 12),
                     Expanded(
-                      child: CustomButton(buttonText: "Publish", onTap: () {}),
+                      child: CustomButton(
+                        buttonText: _isSubmitting ? '...' : (_isEditing ? "Update" : "Publish"),
+                        onTap: _isSubmitting ? null : () => _submit(isDraft: false),
+                      ),
                     ),
                   ],
                 ),

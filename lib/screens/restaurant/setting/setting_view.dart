@@ -1,16 +1,11 @@
 import 'package:choice_app/l18n.dart';
-import 'package:choice_app/screens/languageSelection/language_selection.dart';
-import 'package:choice_app/screens/onboarding/add_cuisine/add_cuisine.dart';
-import 'package:choice_app/screens/onboarding/add_services/add_services.dart';
-import 'package:choice_app/screens/onboarding/day_off/days_off_view.dart';
-import 'package:choice_app/screens/onboarding/gallery/gallery_view.dart';
-import 'package:choice_app/screens/onboarding/slot_management/slot_management_view.dart';
-import 'package:choice_app/screens/restaurant/profile_menu/blocked_users/blocked_users_view.dart';
-import 'package:choice_app/screens/restaurant/profile_menu/bookmarked/bookmarked_view.dart';
-import 'package:choice_app/screens/restaurant/profile_menu/chat_view.dart';
+import 'package:choice_app/providers/producer_provider.dart';
+import 'package:choice_app/routes/routes.dart';
+import 'package:choice_app/services/auth_service.dart';
 import 'package:choice_app/screens/restaurant/setting/setting_widgets.dart';
 import 'package:choice_app/userRole/user_role.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
@@ -18,11 +13,6 @@ import '../../../customWidgets/common_app_bar.dart';
 import '../../../customWidgets/custom_button.dart';
 import '../../../res/res.dart';
 import '../../../userRole/role_provider.dart';
-import '../../onboarding/business_hours/edit_business_hours/edit_operational_hours.dart';
-import '../../onboarding/menu/menu_view.dart';
-import '../profile/profile.dart';
-import '../profile_menu/badges/badges_view.dart';
-import '../profile_menu/profile_menu_widgets.dart';
 
 class SettingView extends StatefulWidget {
   const SettingView({super.key});
@@ -33,7 +23,21 @@ class SettingView extends StatefulWidget {
 
 class _SettingViewState extends State<SettingView> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProducerProvider>().loadProfile();
+    });
+  }
+
+  Future<void> _logout() async {
+    await AuthService.logout();
+    if (mounted) context.go(Routes.authRoute);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    AppTranslations.init(context);
     final role = context.read<RoleProvider>().role;
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
@@ -54,10 +58,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.editProfile,
                   leadingAssetPath: Assets.editProfileIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Profile()),
-                    );
+                    context.push(Routes.restaurantProfileRoute);
                   },
                 ),
                 ProfileOptionButton(
@@ -75,10 +76,7 @@ class _SettingViewState extends State<SettingView> {
                     title: "Badge & XP",
                     leadingAssetPath: Assets.badgeIcon,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BadgesView()),
-                      );
+                      context.push('/badges');
                     },
                   ),
                 if(role == UserRole.user)
@@ -86,10 +84,7 @@ class _SettingViewState extends State<SettingView> {
                     title: "Bookmarked",
                     leadingAssetPath: Assets.bookmarkIcon,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BookmarkedView()),
-                      );
+                      context.push('/bookmarked');
                     },
                   ),
                 if(role == UserRole.user)
@@ -97,10 +92,7 @@ class _SettingViewState extends State<SettingView> {
                     title: "Blocked List",
                     leadingAssetPath: Assets.blockUserIcon,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BlockedUsersView()),
-                      );
+                      context.push('/blocked_users');
                     },
                   ),
                 if(!(role == UserRole.user))
@@ -114,12 +106,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.businessHours,
                   leadingAssetPath: Assets.businessHourIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => EditOperationalHours(
-                        operationalHoursList: [],
-                      )),
-                    );
+                    context.push('/edit_business_hours');
                   },
                 ),
                 if(role == UserRole.restaurant || role == UserRole.wellness)
@@ -127,13 +114,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.manageSlots,
                   leadingAssetPath: Assets.slotsIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SlotManagementView(
-                        isHomeFlow: false,
-                        isEdit: true,
-                      )),
-                    );
+                    context.push('/slot_management');
                   },
                 ),
                 if(role == UserRole.restaurant)
@@ -141,10 +122,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.menu,
                   leadingAssetPath: Assets.menuIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MenuView()),
-                    );
+                    context.push('/menu');
                   },
                 ),
                 if(role == UserRole.wellness)
@@ -152,10 +130,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.services,
                   leadingAssetPath: Assets.businessHourIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddServices()),
-                    );
+                    context.push('/add_services');
                   },
                 ),
                 if(role == UserRole.restaurant || role == UserRole.wellness)
@@ -163,10 +138,7 @@ class _SettingViewState extends State<SettingView> {
                   title: "Gallery",
                   leadingAssetPath: Assets.galleryIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GalleryView()),
-                    );
+                    context.push('/gallery');
                   },
                 ),
                 if(role == UserRole.restaurant || role == UserRole.wellness)
@@ -174,10 +146,7 @@ class _SettingViewState extends State<SettingView> {
                   title: al.unavailability,
                   leadingAssetPath: Assets.unavailabilityIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DaysOffView()),
-                    );
+                    context.push('/days_off');
                   },
                 ),
                 if(role == UserRole.restaurant)
@@ -185,27 +154,20 @@ class _SettingViewState extends State<SettingView> {
                   title: al.cuisine,
                   leadingAssetPath: Assets.businessHourIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddCuisine()),
-                    );
+                    context.push('/add_cuisine');
                   },
                 ),
                 ProfileOptionButton(
                   title: al.language,
                   leadingAssetPath: Assets.languageIcon,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LanguageSelection(isFromProfile: true,)),
-                    );
+                    context.push(Routes.languageSelectionRoute);
                   },
                 ),
                 ProfileOptionButton(
                   title: al.logout,
                   leadingAssetPath: Assets.logoutIcon,
-                  onTap: () {
-                  },
+                  onTap: _logout,
                 ),
                 CustomButton(
                   buttonText: al.deleteAccount,

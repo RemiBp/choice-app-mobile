@@ -1,16 +1,59 @@
 import 'package:choice_app/customWidgets/no_item_found.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:choice_app/providers/producer_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'booking_details.dart';
+import 'bookings_widgets.dart';
 
-class InProgressBookings extends StatefulWidget {
+class InProgressBookings extends StatelessWidget {
   const InProgressBookings({super.key});
 
   @override
-  State<InProgressBookings> createState() => _InProgressBookingsState();
-}
-
-class _InProgressBookingsState extends State<InProgressBookings> {
-  @override
   Widget build(BuildContext context) {
-    return NoItemFound();
+    return Consumer<ProducerProvider>(
+      builder: (context, provider, _) {
+        final items = provider.bookings
+            .where((b) =>
+                (b['status'] as String? ?? '').toLowerCase() ==
+                'in_progress')
+            .toList();
+
+        if (provider.isLoadingBookings && items.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (items.isEmpty) {
+          return NoItemFound(
+            title: 'No in-progress bookings',
+            subTitle: 'No guests are currently checked in.',
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => provider.loadBookings(),
+          child: ListView.builder(
+            padding: const EdgeInsets.only(bottom: 16),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final b = items[index];
+              final user = b['user'] as Map<String, dynamic>? ?? {};
+              return BookingCard(
+                booking: b,
+                name: user['fullName'] as String? ?? '—',
+                imageUrl: user['profileImage'] as String? ?? '',
+                date: b['startTime'] as String?,
+                startTime: b['startTime'] as String?,
+                endTime: b['endTime'] as String?,
+                guests: (b['guests'] as num?)?.toInt() ?? 1,
+                onDetails: () => context.push(
+                  '/booking_details',
+                  extra: {'booking': b, 'isCancelled': false},
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }

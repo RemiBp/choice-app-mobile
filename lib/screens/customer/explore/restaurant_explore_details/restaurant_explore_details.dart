@@ -2,8 +2,10 @@ import 'package:choice_app/screens/customer/explore/book_now/book_now_view.dart'
 import 'package:choice_app/screens/customer/explore/full_menu/full_menu_view.dart';
 import 'package:choice_app/screens/customer/explore/participants/participants_screen.dart';
 import 'package:choice_app/screens/customer/explore/restaurant_explore_details/restaurant_explore_widgets.dart';
+import 'package:choice_app/screens/customer/explore/customer_gallery/customer_gallery_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:readmore/readmore.dart';
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
@@ -13,7 +15,6 @@ import '../../../../customWidgets/shadow_icon.dart';
 import '../../../../res/res.dart';
 import '../../../onboarding/menu/menu_widgets.dart';
 import '../../../restaurant/profile_menu/profile_menu_widgets.dart';
-import '../customer_gallery/customer_gallery_screen.dart';
 
 class RestaurantExploreDetails extends StatefulWidget {
   final String tag;
@@ -54,11 +55,8 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ImageGalleryScreen(restaurantId: "3",)),
-                );
+              onTap: () {
+                context.push('/customer_gallery', extra: '3');
               },
               child: ExploreEventHeader(),
             ),
@@ -123,10 +121,7 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ParticipantsScreen()),
-                      );
+                      context.push('/participants');
                     },
                     child: CustomText(
                       text: "Show All",
@@ -145,7 +140,7 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
                 children: [
                   Stack(
                     children: [
-                      Container(width: getWidth() * .23),
+                      const SizedBox(width: 100),
                       CircleAvatar(backgroundColor: Colors.transparent),
                       Positioned(
                         right: 60,
@@ -195,12 +190,9 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
                 header: "Menu",
                 optionText: "See Full Menu",
                 hideBorder: true,
-                onAddDish: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FullMenuView()),
-                  );
-                },
+                onAddDish: () {
+                context.push('/full_menu');
+              },
               ),
             ),
             Divider(color: AppColors.greyColor,),
@@ -395,20 +387,19 @@ class _RestaurantExploreDetailsState extends State<RestaurantExploreDetails> {
                       ),
                     ],
                   ),
-                  CustomButton(
-                    buttonText: 'Book Now',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BookNowScreen()),
-                      );
-                    },
-                    buttonWidth: getWidth() * .38,
-                    height: getHeight() * 0.06,
-                    backgroundColor: AppColors.userPrimaryColor,
-                    borderColor: Colors.transparent,
-                    textColor: Colors.white,
-                    textFontWeight: FontWeight.w700,
+                  SizedBox(
+                    width: 160,
+                    height: 48,
+                    child: CustomButton(
+                      buttonText: 'Book Now',
+                      onTap: () {
+                        context.push('/book_now');
+                      },
+                      backgroundColor: AppColors.userPrimaryColor,
+                      borderColor: Colors.transparent,
+                      textColor: Colors.white,
+                      textFontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),

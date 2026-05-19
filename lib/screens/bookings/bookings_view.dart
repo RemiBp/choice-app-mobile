@@ -1,8 +1,10 @@
+import 'package:choice_app/providers/producer_provider.dart';
 import 'package:choice_app/screens/bookings/cancelled_bookings.dart';
 import 'package:choice_app/screens/bookings/completed_bookings.dart';
 import 'package:choice_app/screens/bookings/in_progress_bookings.dart';
 import 'package:choice_app/screens/bookings/upcoming_bookings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../appAssets/app_assets.dart';
 import '../../appColors/colors.dart';
 import '../../customWidgets/common_app_bar.dart';
@@ -20,7 +22,10 @@ class _BookingsViewState extends State<BookingsView> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this,initialIndex: 0);
+    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProducerProvider>().loadBookings();
+    });
   }
 
   @override

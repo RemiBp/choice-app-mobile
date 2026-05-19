@@ -3,13 +3,15 @@ import 'package:choice_app/customWidgets/custom_button.dart';
 import 'package:choice_app/customWidgets/custom_text.dart';
 import 'package:choice_app/customWidgets/custom_textfield.dart';
 import 'package:choice_app/res/res.dart';
-import 'package:choice_app/screens/authentication/otpVerification/otp_verification.dart';
+import 'package:choice_app/routes/routes.dart';
+import 'package:choice_app/screens/authentication/auth_provider.dart';
+import 'package:choice_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../../appAssets/app_assets.dart';
 import '../../../l18n.dart';
-import '../../../routes/routes.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -19,8 +21,44 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
+  final _emailController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onSendOtp() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      setState(() => _errorMessage = 'Please enter your email.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final result = await AuthService.producerForgotPassword(email: email);
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (result.success) {
+      context.read<AuthProvider>().setPendingEmail(email, forgotFlow: true);
+      context.push(Routes.otpVerificationRoute, extra: {'isResetPassFlow': true});
+    } else {
+      setState(() => _errorMessage = result.message ?? 'Failed to send OTP.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    AppTranslations.init(context);
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
@@ -32,7 +70,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           children: [
             Row(
               children: [
-                if (context.canPop()) ...[
+                if (Navigator.of(context).canPop()) ...[
                   CustomBackButton(),
                   SizedBox(width: getWidth() * .02),
                 ],
@@ -52,20 +90,24 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             ),
             SizedBox(height: getHeight() * .01),
             CustomField(
+              textEditingController: _emailController,
               borderColor: AppColors.greyBordersColor,
               hint: al.emailPlaceholder,
               label: al.emailLabel,
+              textInputType: TextInputType.emailAddress,
             ),
-
+            if (_errorMessage != null) ...[
+              SizedBox(height: getHeight() * .01),
+              Text(
+                _errorMessage!,
+                style: TextStyle(
+                    color: Colors.red, fontSize: sizes?.fontSize12),
+              ),
+            ],
             SizedBox(height: getHeight() * .04),
             CustomButton(
-              buttonText: al.sendOtpButton,
-              onTap: () {
-
-                context.push(Routes.otpVerificationRoute, extra: {
-                  "isResetPassFlow":true
-                });
-              },
+              buttonText: _isLoading ? '...' : al.sendOtpButton,
+              onTap: _isLoading ? null : _onSendOtp,
             ),
             SizedBox(height: getHeight() * .02),
           ],

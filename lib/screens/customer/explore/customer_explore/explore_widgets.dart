@@ -197,7 +197,7 @@ class ExploreEventsCard extends StatelessWidget {
                 // Avatars (static for now)
                 Stack(
                   children: [
-                    Container(width: getWidth() * .3),
+                    const SizedBox(width: 120),
                     Positioned(
                       right: 60,
                       child: _buildAvatar(

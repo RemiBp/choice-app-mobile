@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../../common/utils.dart';
@@ -23,9 +24,13 @@ class LanguageSelectionProvider extends ChangeNotifier{
     String locale = PreferenceUtils.getString(Strings.selectedLocale) ?? "";
     debugPrint("preference locale is : $locale");
     if (locale.trim().isEmpty) {
-      final deviceLocale = Platform.localeName.contains("_")
-          ? Platform.localeName.split("_")[0]
-          : Platform.localeName;
+      String raw;
+      if (kIsWeb) {
+        raw = 'en';
+      } else {
+        raw = Platform.localeName;
+      }
+      final deviceLocale = raw.contains("_") ? raw.split("_")[0] : raw;
       debugPrint('local name is : $deviceLocale');
       locale = deviceLocale;
     }

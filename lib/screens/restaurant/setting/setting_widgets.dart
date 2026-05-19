@@ -1,5 +1,7 @@
+import 'package:choice_app/providers/producer_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_text.dart';
@@ -102,6 +104,13 @@ class SettingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profile = context.watch<ProducerProvider>().profile;
+    final name = profile?['businessName'] as String? ??
+        profile?['fullName'] as String? ??
+        'My Profile';
+    final email = profile?['email'] as String? ?? '';
+    final avatarUrl = profile?['profileImage'] as String?;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.025, vertical: getHeight() * 0.02),
       decoration: BoxDecoration(
@@ -122,18 +131,15 @@ class SettingHeader extends StatelessWidget {
               CircleAvatar(
                 radius: getHeight() * .03,
                 backgroundColor: AppColors.greyColor,
-                // backgroundImage:
-                // provider.profileImage != null
-                //     ? FileImage(provider.profileImage!)
-                //     : null,
-                child:
-                // provider.profileImage == null?
-                SvgPicture.asset(
-                  Assets.userIcon,
-                  height: getHeight() * .02,
-                  color: Colors.grey.shade600,
-                )
-                    // : null,
+                backgroundImage:
+                    avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                child: avatarUrl == null
+                    ? SvgPicture.asset(
+                        Assets.userIcon,
+                        height: getHeight() * .02,
+                        color: Colors.grey.shade600,
+                      )
+                    : null,
               ),
               SizedBox(width: getWidth() * 0.02),
               Expanded(
@@ -141,13 +147,13 @@ class SettingHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: "The Wholesome Fork",
+                        text: name,
                         fontSize: sizes?.fontSize14,
                         fontWeight: FontWeight.w500,
                         color: AppColors.blackColor,
                       ),
                       CustomText(
-                        text: "example@thewholesomefork.com",
+                        text: email,
                         fontSize: sizes?.fontSize12,
                         fontWeight: FontWeight.w400,
                         color: AppColors.inputHintColor,

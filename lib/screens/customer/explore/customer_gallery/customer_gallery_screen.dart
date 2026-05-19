@@ -1,6 +1,7 @@
 import 'package:choice_app/appColors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../customWidgets/common_app_bar.dart';
 
@@ -43,16 +44,10 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // 🔍 On tap you can open a full screen lightbox (dummy for now)
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => FullscreenImageViewer(
-                    images: dummyImages,
-                    initialIndex: index,
-                  ),
-                ),
-              );
+              context.push('/image_viewer', extra: {
+                'images': dummyImages,
+                'initialIndex': index,
+              });
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),

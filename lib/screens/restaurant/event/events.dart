@@ -1,9 +1,11 @@
 import 'package:choice_app/customWidgets/custom_text.dart';
+import 'package:choice_app/providers/producer_provider.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/restaurant/event/event_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
@@ -22,6 +24,9 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProducerProvider>().loadEvents();
+    });
   }
 
   @override
@@ -61,29 +66,41 @@ class _EventsState extends State<Events> with SingleTickerProviderStateMixin {
 
           // Content
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard();
-                  },
-                ),
+            child: Consumer<ProducerProvider>(
+              builder: (context, provider, _) {
+                if (provider.isLoadingEvents && provider.events.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard(isDraft: true);
-                  },
-                ),
-                ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return EventCard();
-                  },
-                ),
-              ],
+                List<Map<String, dynamic>> byStatus(String status) =>
+                    provider.events
+                        .where((e) =>
+                            (e['status'] as String? ?? 'active').toLowerCase() ==
+                            status.toLowerCase())
+                        .toList();
+
+                Widget buildList(List<Map<String, dynamic>> items,
+                    {bool isDraft = false}) {
+                  if (items.isEmpty) return buildEmptyState();
+                  return RefreshIndicator(
+                    onRefresh: () => provider.loadEvents(),
+                    child: ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) =>
+                          EventCard(event: items[index], isDraft: isDraft),
+                    ),
+                  );
+                }
+
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    buildList(byStatus('active')),
+                    buildList(byStatus('draft'), isDraft: true),
+                    buildList(byStatus('completed')),
+                  ],
+                );
+              },
             ),
           ),
         ],

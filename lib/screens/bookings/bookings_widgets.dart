@@ -5,10 +5,10 @@ import '../../common/formatter.dart';
 import '../../customWidgets/custom_button.dart';
 import '../../customWidgets/custom_text.dart';
 import '../../customWidgets/custom_textfield.dart';
-import '../../l18n.dart';
 import '../../res/res.dart';
 
 class BookingCard extends StatelessWidget {
+  final Map<String, dynamic>? booking;
   final String name;
   final String imageUrl;
   final String? date;
@@ -21,6 +21,7 @@ class BookingCard extends StatelessWidget {
 
   const BookingCard({
     super.key,
+    this.booking,
     required this.name,
     required this.imageUrl,
     this.date,
@@ -56,14 +57,14 @@ class BookingCard extends StatelessWidget {
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomText(
-                  text: "Booking ID: #3956839",
+                  text: "Booking ID: #${booking?['id']?.toString() ?? '—'}",
                   fontSize: sizes?.fontSize14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.blackColor,
                 ),
                 Spacer(),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: getWidth() * 0.035, vertical: getHeight() * 0.01),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.redColor.withAlpha(40),
                     borderRadius: BorderRadius.circular(40),
@@ -77,7 +78,7 @@ class BookingCard extends StatelessWidget {
                 ),
                 if(onCheckIn == null  && onCancel== null)
                 Padding(
-                  padding: EdgeInsets.only(left: getWidth() * 0.015),
+                  padding: const EdgeInsets.only(left: 6),
                   child: Icon(Icons.check_circle, color: AppColors.wellnessPrimaryColor,),
                 )
               ],
@@ -187,7 +188,7 @@ class BookingCard extends StatelessWidget {
                           SizedBox(width: getWidthRatio() * 4),
                           Expanded(
                             child: CustomText(
-                              text: "\$90",
+                              text: booking?['amount'] != null ? '\$${booking!['amount']}' : '\$—',
                               fontSize: sizes?.fontSize12,
                               fontWeight: FontWeight.w500,
                               color: AppColors.primarySlateColor,
@@ -219,9 +220,7 @@ class BookingCard extends StatelessWidget {
                   ),
                   CustomButton(
                     buttonText: 'Check-In',
-                    onTap: () {
-
-                    },
+                    onTap: () => onCheckIn!(),
                     buttonWidth: getWidth() * .38,
                     height: getHeight() * 0.06,
                     backgroundColor: AppColors.getPrimaryColorFromContext(context),
@@ -375,7 +374,8 @@ class CancelConfirmationAlert extends StatelessWidget {
                 CustomButton(
                   buttonText: 'Yes',
                   onTap: () {
-
+                    Navigator.pop(context);
+                    onConfirm();
                   },
                   buttonWidth: getWidth() * .38,
                   height: getHeight() * 0.06,

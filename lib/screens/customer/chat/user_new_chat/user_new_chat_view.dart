@@ -1,6 +1,5 @@
-import 'package:choice_app/screens/customer/chat/new_group/new_group_view.dart';
-import 'package:choice_app/screens/customer/chat/messages_view/messages_view.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/common_app_bar.dart';
@@ -28,11 +27,8 @@ class _UserNewChatViewState extends State<UserNewChatView> {
           children: [
             SizedBox(height: getHeight() * 0.02),
             GestureDetector(
-              onTap: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NewGroupView()),
-                );
+              onTap: () {
+                context.push('/new_group');
               },
               child: Row(
                 children: [
@@ -90,11 +86,12 @@ class _UserNewChatViewState extends State<UserNewChatView> {
                 itemBuilder: (context, index) {
                   final user = users[index];
                   return GestureDetector(
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MessagesView()),
-                      );
+                    onTap: () {
+                      context.push('/messages', extra: {
+                        'chatId': 0,
+                        'chatName': user['name']!,
+                        'avatarUrl': user['image']!,
+                      });
                     },
                     child: UserTile(
                       name: user['name']!,

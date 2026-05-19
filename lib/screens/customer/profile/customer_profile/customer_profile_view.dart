@@ -1,8 +1,8 @@
 import 'package:choice_app/screens/restaurant/profile_menu/profile_menu_widgets.dart';
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_choice_view.dart';
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_posts_view.dart';
-import 'package:choice_app/screens/restaurant/setting/setting_view.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_text.dart';
@@ -66,10 +66,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView> with SingleTi
           );
         },
         onSetting: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SettingView()),
-          );
+          context.push('/setting');
         },
       ),
       body: Column(

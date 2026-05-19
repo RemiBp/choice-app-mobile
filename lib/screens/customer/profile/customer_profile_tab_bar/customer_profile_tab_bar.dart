@@ -1,14 +1,13 @@
-import 'package:choice_app/screens/customer/chat/user_chat/user_chat_view.dart';
 import 'package:choice_app/screens/restaurant/profile_menu/profile_menu_widgets.dart';
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_choice_view.dart';
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_posts_view.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_button.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../res/res.dart';
-import '../../../restaurant/profile_menu/chat_view.dart';
 
 class CustomerProfileTabBar extends StatefulWidget {
   const CustomerProfileTabBar({super.key});
@@ -120,10 +119,7 @@ class _CustomerProfileTabBarState extends State<CustomerProfileTabBar> with Sing
                   child: CardButton(
                     buttonText: 'Message',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => UserChatView()),
-                      );
+                      context.push('/user_chat');
                     },
                     backgroundColor: AppColors.greyColor,
                     textColor: AppColors.blackColor,

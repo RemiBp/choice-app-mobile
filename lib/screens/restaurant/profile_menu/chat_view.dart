@@ -1,8 +1,11 @@
-import 'package:choice_app/screens/restaurant/profile_menu/profile_menu_widgets.dart';
+import 'package:choice_app/screens/customer/chat/messages_view/messages_view.dart';
+import 'package:choice_app/services/socket_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/common_app_bar.dart';
+import '../../../customWidgets/custom_text.dart';
 import '../../../customWidgets/custom_textfield.dart';
 import '../../../res/res.dart';
 
@@ -14,6 +17,68 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
+  List<Map<String, dynamic>> _chats = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSocket();
+  }
+
+  Future<void> _initSocket() async {
+    await SocketService.connect();
+    SocketService.onChats((data) {
+      if (!mounted) return;
+      final list = data is List ? data : (data['chats'] as List? ?? []);
+      setState(() {
+        _chats = List<Map<String, dynamic>>.from(
+          list.map((e) => Map<String, dynamic>.from(e as Map)),
+        );
+        _isLoading = false;
+      });
+    });
+    SocketService.getChats();
+    // fallback: stop loading after 3s even if no response
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted && _isLoading) setState(() => _isLoading = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    SocketService.off('chats');
+    super.dispose();
+  }
+
+  String _chatName(Map<String, dynamic> chat) {
+    final members = chat['chatMembers'] as List? ?? [];
+    if (members.isNotEmpty) {
+      final other = members.first as Map?;
+      return other?['fullName'] as String? ??
+          other?['email'] as String? ??
+          'User';
+    }
+    return chat['name'] as String? ?? 'Chat';
+  }
+
+  String _lastMessage(Map<String, dynamic> chat) {
+    final msgs = chat['messages'] as List?;
+    if (msgs != null && msgs.isNotEmpty) {
+      return (msgs.last as Map)['content'] as String? ?? '';
+    }
+    return chat['lastMessage'] as String? ?? '';
+  }
+
+  String _avatar(Map<String, dynamic> chat) {
+    final members = chat['chatMembers'] as List? ?? [];
+    if (members.isNotEmpty) {
+      final other = members.first as Map?;
+      return other?['avatarUrl'] as String? ?? '';
+    }
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,22 +93,41 @@ class _ChatViewState extends State<ChatView> {
               hint: "Search by name...",
               label: "",
               prefixIconSvg: Assets.searchIcon,
-              // obscure: true,
             ),
             SizedBox(height: getHeight() * 0.02),
             Expanded(
-              child: ListView.separated(
-                itemCount: users.length,
-                separatorBuilder: (_, __) => Divider(height: getHeight() * 0.025),
-                itemBuilder: (context, index) {
-                  final user = users[index];
-                  return ChatTile(
-                    name: user['name']!,
-                    username: user['username']!,
-                    imageUrl: user['image']!,
-                  );
-                },
-              ),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _chats.isEmpty
+                      ? Center(
+                          child: CustomText(
+                            text: "No conversations yet.",
+                            color: AppColors.primarySlateColor,
+                            fontSize: sizes?.fontSize14,
+                          ),
+                        )
+                      : ListView.separated(
+                          itemCount: _chats.length,
+                          separatorBuilder: (_, __) =>
+                              Divider(height: getHeight() * 0.025),
+                          itemBuilder: (context, index) {
+                            final chat = _chats[index];
+                            final chatId = (chat['id'] as num?)?.toInt() ?? 0;
+                            return _ChatTile(
+                              name: _chatName(chat),
+                              lastMessage: _lastMessage(chat),
+                              avatarUrl: _avatar(chat),
+                              onTap: () => context.push(
+                                '/messages',
+                                extra: {
+                                  'chatId': chatId,
+                                  'chatName': _chatName(chat),
+                                  'avatarUrl': _avatar(chat),
+                                },
+                              ),
+                            );
+                          },
+                        ),
             ),
             SizedBox(height: getHeight() * 0.02),
           ],
@@ -51,74 +135,49 @@ class _ChatViewState extends State<ChatView> {
       ),
     );
   }
+}
 
-  final List<Map<String, String>> users = const [
-    {
-      'name': 'Emelie',
-      'username': 'emelie645',
-      'image':
-      'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Olivia',
-      'username': 'olivia223',
-      'image':
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Sophia',
-      'username': 'sophia007',
-      'image':
-      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Liam',
-      'username': 'liam_88',
-      'image':
-      'https://images.unsplash.com/photo-1527980965255-d3b416303d12?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Noah',
-      'username': 'noah_the_one',
-      'image':
-      'https://images.unsplash.com/photo-1541233349642-6e425fe6190e?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Ava',
-      'username': 'ava123',
-      'image':
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Isabella',
-      'username': 'bella_91',
-      'image':
-      'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Mason',
-      'username': 'mason_co',
-      'image':
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Lucas',
-      'username': 'lucas_light',
-      'image':
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Mia',
-      'username': 'mia_2000',
-      'image':
-      'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?fit=crop&w=200&q=80'
-    },
-    {
-      'name': 'Ethan',
-      'username': 'ethan_the_guy',
-      'image':
-      'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?fit=crop&w=200&q=80'
-    },
-  ];
+class _ChatTile extends StatelessWidget {
+  final String name;
+  final String lastMessage;
+  final String avatarUrl;
+  final VoidCallback onTap;
 
+  const _ChatTile({
+    required this.name,
+    required this.lastMessage,
+    required this.avatarUrl,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: onTap,
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        radius: getHeight() * 0.025,
+        backgroundImage:
+            avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+        backgroundColor: AppColors.greyColor,
+        child: avatarUrl.isEmpty
+            ? const Icon(Icons.person, color: Colors.grey)
+            : null,
+      ),
+      title: CustomText(
+        text: name,
+        fontWeight: FontWeight.w600,
+        fontSize: sizes?.fontSize14,
+      ),
+      subtitle: lastMessage.isNotEmpty
+          ? CustomText(
+              text: lastMessage,
+              fontSize: sizes?.fontSize12,
+              color: AppColors.primarySlateColor,
+              textOverflow: TextOverflow.ellipsis,
+            )
+          : null,
+      trailing: const Icon(Icons.chevron_right, color: AppColors.greyColor),
+    );
+  }
 }

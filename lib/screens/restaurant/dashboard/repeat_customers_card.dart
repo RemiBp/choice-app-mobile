@@ -69,7 +69,7 @@ class _RepeatCustomersCardState extends State<RepeatCustomersCard> {
                             shape: BoxShape.circle
                         ),
                       ),
-                      SizedBox(width: getWidth() * 0.03),
+                      const SizedBox(width: 8),
                       CustomText(
                         // text: "New Visitors  (${provider.repeatCustomersResponse.newVisitors})",
                         text: "Rated  (12)",
@@ -90,7 +90,7 @@ class _RepeatCustomersCardState extends State<RepeatCustomersCard> {
                             shape: BoxShape.circle
                         ),
                       ),
-                      SizedBox(width: getWidth() * 0.03),
+                      const SizedBox(width: 8),
                       CustomText(
                         text: "Not Rated  (4)",
                         // text: "Repeat  (${provider.repeatCustomersResponse.repeatCustomers})",
@@ -102,26 +102,23 @@ class _RepeatCustomersCardState extends State<RepeatCustomersCard> {
                   )
                 ],
               ),
-              Container(
+              SizedBox(
                 height: getHeight() * 0.13,
-                width: getWidth() * 0.3,
-                margin: EdgeInsets.symmetric(vertical: getHeight() * 0.02, horizontal: getWidth() * 0.02),
+                width: 110,
                 child: PieChart(
                   PieChartData(
                     sections: [
                       PieChartSectionData(
-                        // value: provider.repeatCustomersResponse.repeatCustomers?.toDouble(),
                         value: 40,
                         title: "",
                         color: AppColors.softBlue,
-                        radius: getWidth() * 0.1,
+                        radius: 36,
                       ),
                       PieChartSectionData(
-                        // value: provider.repeatCustomersResponse.newVisitors?.toDouble(),
                         value: 70,
                         title: "",
                         color: AppColors.vibrantBlue,
-                        radius: getWidth() * 0.1,
+                        radius: 36,
                       ),
                     ],
                     pieTouchData: PieTouchData(

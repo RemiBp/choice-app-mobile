@@ -103,8 +103,8 @@ class EventDetails extends StatelessWidget {
                     children: [
                       Stack(
                         children: [
-                          Container(width: getWidth() * .3),
-                          CircleAvatar(backgroundColor: Colors.transparent),
+                          const SizedBox(width: 120),
+                          const CircleAvatar(backgroundColor: Colors.transparent),
                           Positioned(
                             right: 60,
                             child: _buildAvatar(
@@ -230,7 +230,9 @@ class EventDetails extends StatelessWidget {
                     child: CustomButton(
                       height: getHeight() * .055,
                       buttonText: "Edit",
-                      onTap: () {},
+                      onTap: () {
+                        context.push('/restaurant_create_events', extra: extra);
+                      },
                     ),
                   ),
                 ],

@@ -2,6 +2,7 @@ import 'package:choice_app/screens/leisure/leisure_about/leisure_about_view.dart
 import 'package:choice_app/screens/restaurant/profile_menu/restaurant_about/restaurant_about_view.dart';
 import 'package:choice_app/userRole/user_role.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
@@ -10,7 +11,6 @@ import '../../../customWidgets/custom_text.dart';
 import '../../../res/res.dart';
 import '../../../userRole/role_provider.dart';
 import '../../restaurant/event/event_widgets.dart';
-import '../../restaurant/profile_menu/chat_view.dart';
 import '../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../../restaurant/profile_menu/restaurant_choice_view.dart';
 import '../../restaurant/profile_menu/restaurant_posts_view.dart';
@@ -126,10 +126,7 @@ class _LeisureProfileTabBarState extends State<LeisureProfileTabBar> with Single
                   child: CardButton(
                     buttonText: 'Message',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ChatView()),
-                      );
+                      context.push('/chat');
                     },
                     backgroundColor: AppColors.greyColor,
                     textColor: AppColors.blackColor,

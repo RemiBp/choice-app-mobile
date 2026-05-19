@@ -1,6 +1,10 @@
-import 'package:choice_app/screens/bookings/booking_details.dart';
+import 'package:choice_app/customWidgets/no_item_found.dart';
+import 'package:choice_app/providers/producer_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../customWidgets/blurry_back_ground.dart';
+import 'booking_details.dart';
 import 'bookings_widgets.dart';
 
 class UpcomingBookings extends StatefulWidget {
@@ -11,49 +15,72 @@ class UpcomingBookings extends StatefulWidget {
 }
 
 class _UpcomingBookingsState extends State<UpcomingBookings> {
-  TextEditingController reasonController = TextEditingController();
+  final TextEditingController _reasonController = TextEditingController();
+
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.only(bottom: 16),
-              itemCount: 5, // Number of dummy bookings
-              itemBuilder: (context, index) {
-                return BookingCard(
-                  name: 'John Doe #${index + 1}',
-                  imageUrl: '',
-                  date: '2025-08-01',
-                  startTime: '2025-08-01 14:00:00',
-                  endTime: '2025-08-01 15:30:00',
-                  guests: 2 + index,
-                  onDetails: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => BookingDetails()),
-                    );
-                  },
-                  onCheckIn: () {},
-                  onCancel: () {
-                    showCancelConfirmationAlert(context: context, id: 0);
-                  },
-                );
-              },
-            ),
+  void dispose() {
+    _reasonController.dispose();
+    super.dispose();
+  }
+
+  void _showCancelDialog(BuildContext context, int bookingId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => BlurryBackground(
+        child: CancelConfirmationAlert(
+          controller: _reasonController,
+          onConfirm: () =>
+              context.read<ProducerProvider>().cancelBooking(bookingId),
         ),
-      ],
+      ),
     );
   }
 
-  void showCancelConfirmationAlert({required BuildContext context, required int id}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context){
-        return BlurryBackground(
-          child: CancelConfirmationAlert(
-            controller: reasonController,
-            onConfirm: () async{},
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ProducerProvider>(
+      builder: (context, provider, _) {
+        final items = provider.bookings
+            .where((b) =>
+                (b['status'] as String? ?? '').toLowerCase() == 'upcoming')
+            .toList();
+
+        if (provider.isLoadingBookings && items.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (items.isEmpty) {
+          return NoItemFound(
+            title: 'No upcoming bookings',
+            subTitle: 'You have no upcoming bookings yet.',
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => provider.loadBookings(),
+          child: ListView.builder(
+            padding: const EdgeInsets.only(bottom: 16),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final b = items[index];
+              final user = b['user'] as Map<String, dynamic>? ?? {};
+              return BookingCard(
+                booking: b,
+                name: user['fullName'] as String? ?? '—',
+                imageUrl: user['profileImage'] as String? ?? '',
+                date: b['startTime'] as String?,
+                startTime: b['startTime'] as String?,
+                endTime: b['endTime'] as String?,
+                guests: (b['guests'] as num?)?.toInt() ?? 1,
+                onDetails: () => context.push(
+                  '/booking_details',
+                  extra: {'booking': b, 'isCancelled': false},
+                ),
+                onCheckIn: () =>
+                    provider.checkIn((b['id'] as num).toInt()),
+                onCancel: () =>
+                    _showCancelDialog(context, (b['id'] as num).toInt()),
+              );
+            },
           ),
         );
       },

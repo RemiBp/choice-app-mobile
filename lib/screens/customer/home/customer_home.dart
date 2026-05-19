@@ -1,17 +1,40 @@
 import 'package:choice_app/appAssets/app_assets.dart';
 import 'package:choice_app/customWidgets/custom_button.dart';
 import 'package:choice_app/customWidgets/custom_text.dart';
+import 'package:choice_app/providers/producer_provider.dart';
 import 'package:choice_app/res/res.dart';
 import 'package:choice_app/routes/routes.dart';
 import 'package:choice_app/screens/customer/home/home_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_textfield.dart';
 
-class CustomerHome extends StatelessWidget {
+class CustomerHome extends StatefulWidget {
   const CustomerHome({super.key});
+
+  @override
+  State<CustomerHome> createState() => _CustomerHomeState();
+}
+
+class _CustomerHomeState extends State<CustomerHome> {
+  final _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProducerProvider>().loadPosts(refresh: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +53,7 @@ class CustomerHome extends StatelessWidget {
                   fontSize: sizes?.fontSize28,
                   fontFamily: Assets.onsetSemiBold,
                 ),
-                Spacer(),
+                const Spacer(),
                 CustomIconButton(svgString: Assets.mapIcon),
                 SizedBox(width: getWidth() * .02),
                 CustomIconButton(svgString: Assets.chatIcon),
@@ -43,15 +66,42 @@ class CustomerHome extends StatelessWidget {
               borderColor: AppColors.greyBordersColor,
               hint: "Search by username or name...",
               prefixIconSvg: Assets.searchIcon,
+              textEditingController: _searchController,
             ),
             Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.only(
-                  top: getHeight()*.03
-                ),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return PostCard();
+              child: Consumer<ProducerProvider>(
+                builder: (context, provider, _) {
+                  if (provider.isLoadingPosts && provider.posts.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (provider.posts.isEmpty) {
+                    return Center(
+                      child: CustomText(
+                        text: 'No posts yet.',
+                        fontSize: sizes?.fontSize14,
+                        color: AppColors.primarySlateColor,
+                      ),
+                    );
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () => provider.loadPosts(refresh: true),
+                    child: ListView.builder(
+                      padding: EdgeInsets.only(top: getHeight() * .03),
+                      itemCount: provider.posts.length +
+                          (provider.hasMorePosts ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == provider.posts.length) {
+                          provider.loadPosts();
+                          return const Padding(
+                            padding: EdgeInsets.all(16),
+                            child:
+                                Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        return PostCard(post: provider.posts[index]);
+                      },
+                    ),
+                  );
                 },
               ),
             ),
@@ -59,23 +109,22 @@ class CustomerHome extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100)
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        backgroundColor: AppColors.userPrimaryColor,
+        onPressed: () => context.push(Routes.choiceSelectionRoute),
+        label: Row(
+          children: [
+            const Icon(Icons.add, color: Colors.white),
+            CustomText(
+              text: "Create",
+              fontSize: sizes?.fontSize12,
+              fontFamily: Assets.onsetMedium,
+              color: Colors.white,
+            ),
+          ],
         ),
-          backgroundColor: AppColors.userPrimaryColor,
-          onPressed: (){
-          context.push(Routes.choiceSelectionRoute);
-          }, label: Row(
-        children: [
-          Icon(Icons.add, color: Colors.white,),
-          CustomText(
-            text: "Create",
-            fontSize: sizes?.fontSize12,
-            fontFamily: Assets.onsetMedium,
-            color: Colors.white,
-          ),
-        ],
-      )),
+      ),
     );
   }
 }

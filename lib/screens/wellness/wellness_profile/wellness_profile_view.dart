@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
 import '../../../customWidgets/custom_text.dart';
@@ -6,7 +7,6 @@ import '../../../res/res.dart';
 import '../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../../restaurant/profile_menu/restaurant_choice_view.dart';
 import '../../restaurant/profile_menu/restaurant_posts_view.dart';
-import '../../restaurant/setting/setting_view.dart';
 import '../wellness_about/wellness_about_view.dart';
 
 class WellnessProfileView extends StatefulWidget {
@@ -68,10 +68,7 @@ class _WellnessProfileViewState extends State<WellnessProfileView> with SingleTi
           );
         },
         onSetting: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SettingView()),
-          );
+          context.push('/setting');
         },
       ),
       body: Column(

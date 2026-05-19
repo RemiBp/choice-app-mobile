@@ -1,13 +1,12 @@
 import 'package:choice_app/screens/restaurant/profile_menu/profile_menu_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:readmore/readmore.dart';
 import '../../../../appAssets/app_assets.dart';
 import '../../../../appColors/colors.dart';
 import '../../../../customWidgets/custom_text.dart';
 import '../../../../res/res.dart';
-import '../../../customer/explore/customer_gallery/customer_gallery_screen.dart';
-import '../../../customer/explore/full_menu/full_menu_view.dart';
 import '../../../onboarding/gallery/gallery_widgets.dart';
 import '../../../onboarding/menu/menu_widgets.dart';
 
@@ -77,11 +76,8 @@ class _RestaurantAboutViewState extends State<RestaurantAboutView> {
               menuGroup: menuGroups[0],
               header: "Menu",
               optionText: "See Full Menu",
-              onAddDish: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FullMenuView()),
-                );
+              onAddDish: () {
+                context.push('/full_menu');
               },
             ),
             Row(
@@ -94,11 +90,8 @@ class _RestaurantAboutViewState extends State<RestaurantAboutView> {
                   color: AppColors.blackColor,
                 ),
                 GestureDetector(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ImageGalleryScreen(restaurantId: "3",)),
-                    );
+                  onTap: () {
+                    context.push('/customer_gallery', extra: '3');
                   },
                   child: CustomText(
                     text: "See Full Gallery",

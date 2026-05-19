@@ -53,6 +53,16 @@ dependencies:
   animated_bottom_navigation_bar: ^1.4.0
   cached_network_image: ^3.4.1
   flutter_xlider: ^3.5.0
+  # Networking & storage
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.3.3
+  # Location
+  geolocator: ^13.0.2
+  # Real-time
+  socket_io_client: ^3.0.2
+  # Toast / snackbar
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:

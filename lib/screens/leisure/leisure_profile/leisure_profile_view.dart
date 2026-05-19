@@ -1,5 +1,6 @@
 import 'package:choice_app/userRole/user_role.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../appAssets/app_assets.dart';
 import '../../../appColors/colors.dart';
@@ -10,7 +11,6 @@ import '../../restaurant/profile_menu/profile_menu_widgets.dart';
 import '../../restaurant/profile_menu/restaurant_about/restaurant_about_view.dart';
 import '../../restaurant/profile_menu/restaurant_choice_view.dart';
 import '../../restaurant/profile_menu/restaurant_posts_view.dart';
-import '../../restaurant/setting/setting_view.dart';
 import '../leisure_about/leisure_about_view.dart';
 
 class LeisureProfileView extends StatefulWidget {
@@ -72,10 +72,7 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
           );
         },
         onSetting: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SettingView()),
-          );
+          context.push('/setting');
         },
       ),
       body: Column(
@@ -135,10 +132,12 @@ class _LeisureProfileViewState extends State<LeisureProfileView> with SingleTick
             child: TabBarView(
               controller: _tabController,
               children: [
-                const RestaurantChoiceView(enableOnTap: true,),
+                const RestaurantChoiceView(enableOnTap: true),
                 const RestaurantPostsView(),
-                if(roleProvider.role == UserRole.leisure) const LeisureAboutView(),
-                if(roleProvider.role == UserRole.restaurant) const RestaurantAboutView(),
+                if (roleProvider.role == UserRole.restaurant)
+                  const RestaurantAboutView()
+                else
+                  const LeisureAboutView(),
               ],
             ),
           ),

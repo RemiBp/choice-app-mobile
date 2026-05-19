@@ -239,7 +239,7 @@ class _BookingChartCardState extends State<BookingChartCard> {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: getWidth() * 0.08,
+                          reservedSize: 40,
                           getTitlesWidget: (value, meta) {
                             return CustomText(
                               text: value.toInt().toString(),
@@ -252,7 +252,7 @@ class _BookingChartCardState extends State<BookingChartCard> {
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: getHeight() * 0.06,
+                          reservedSize: 40,
                           getTitlesWidget: (value, meta) {
                             if (value.toInt() >= 0 && value.toInt() < xLabels.length) {
                               return SizedBox(
